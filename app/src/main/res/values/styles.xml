@@ -5,4 +5,20 @@
         <item name="android:fontFamily">@font/metropolis</item>
         <item name="android:textAlignment">center</item>
     </style>
+
+
+
+    <style name="BasicTextViewStyleGrey">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/metropolis_regular</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="BasicTextViewStyleBlackVarient">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/metropolis_regular</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/black_variant</item>
+    </style>
 </resources>
