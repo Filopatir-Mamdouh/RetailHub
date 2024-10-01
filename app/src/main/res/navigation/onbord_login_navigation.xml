@@ -9,4 +9,9 @@
         android:name="com.iti4.retailhub.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" />
+    <fragment
+        android:id="@+id/loginInFragment"
+        android:name="com.iti4.retailhub.LoginInFragment"
+        android:label="fragment_login_in"
+        tools:layout="@layout/fragment_login_in" />
 </navigation>
