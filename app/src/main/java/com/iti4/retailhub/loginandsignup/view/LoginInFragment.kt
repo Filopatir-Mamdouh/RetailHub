@@ -40,7 +40,7 @@ class LoginInFragment : Fragment() {
         loginUpBinding.sigInBtn.setOnClickListener {
             val email = loginUpBinding.emailTextInput.editText?.text.toString()
             val password = loginUpBinding.passowrdTex.editText?.text.toString()
-            userAuthViewModel.createUser(email, password)
+            userAuthViewModel.signInWithEmailAndPassword(email, password)
         }
         lifecycleScope.launch {
             userAuthViewModel.authStateFlow.collect { authResultState ->
