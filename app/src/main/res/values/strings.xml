@@ -9,4 +9,5 @@
     <string name="DeleteFromList">Delete from list</string>
     <string name="YourPromoCodes">Your Promo Codes</string>
     <string name="Apply">Apply</string>
+    <string name="ShippingAddress">Shipping address</string>
 </resources>

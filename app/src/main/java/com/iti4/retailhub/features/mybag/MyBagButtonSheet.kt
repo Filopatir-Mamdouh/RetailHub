@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iti4.retailhub.databinding.MybagbottomSheetLayoutBinding
@@ -65,7 +66,8 @@ class MyBottomSheetFragment(private val communicator: Communicator) : BottomShee
         super.onStart()
 
         val bottomSheet =
-            dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            dialog?.findViewById<View>(R.id.design_bottom_sheet)
+
         bottomSheet?.let {
             val behavior = BottomSheetBehavior.from(it)
             behavior.isFitToContents = false
