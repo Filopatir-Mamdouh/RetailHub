@@ -2,4 +2,7 @@
     <string name="app_name">RetailHub</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="EnterYourPromoCode">Enter Your Promo Code</string>
+    <string name="TotalAmount">Total amount:</string>
+    <string name="Checkout">CHECK OUT</string>
 </resources>

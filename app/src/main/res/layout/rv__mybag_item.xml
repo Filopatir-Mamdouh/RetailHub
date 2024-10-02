@@ -7,7 +7,7 @@
 
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cvAlarmItem"
+        android:id="@+id/cvMyBagProduct"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/ivMyBagProductImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -34,7 +34,7 @@
                 app:srcCompat="@drawable/photo" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tvMyBagProductName"
                 style="@style/MainTextViewStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                 android:text="Pullover"
                 android:textSize="16sp"
                 android:textColor="@color/black_variant"
-                app:layout_constraintStart_toEndOf="@+id/imageView2"
+                app:layout_constraintStart_toEndOf="@+id/ivMyBagProductImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -54,11 +54,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="Color: "
-                app:layout_constraintStart_toStartOf="@+id/textView"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                app:layout_constraintStart_toStartOf="@+id/tvMyBagProductName"
+                app:layout_constraintTop_toBottomOf="@+id/tvMyBagProductName" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tvMyBagProductColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -74,11 +74,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Size: "
-                app:layout_constraintStart_toEndOf="@+id/textView3"
-                app:layout_constraintTop_toTopOf="@+id/textView3" />
+                app:layout_constraintStart_toEndOf="@+id/tvMyBagProductColor"
+                app:layout_constraintTop_toTopOf="@+id/tvMyBagProductColor" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/tvMyBagProductSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -88,6 +88,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView4" />
 
             <ImageButton
+                android:id="@+id/btnMyBagPopmenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -100,7 +101,7 @@
             </ImageButton>
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/tvMyBagProductPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
@@ -113,7 +114,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/btnMyBagRemove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -124,28 +125,28 @@
                 app:srcCompat="@drawable/ic_minus" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/tvMyBagProductCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:fontFamily="@font/metropolis_medium"
-                android:text="TextView"
+                android:text="2"
                 android:textColor="@color/black_variant"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageButton3"
-                app:layout_constraintStart_toEndOf="@+id/imageButton3"
-                app:layout_constraintTop_toTopOf="@+id/imageButton3" />
+                app:layout_constraintBottom_toBottomOf="@+id/btnMyBagRemove"
+                app:layout_constraintStart_toEndOf="@+id/btnMyBagRemove"
+                app:layout_constraintTop_toTopOf="@+id/btnMyBagRemove" />
 
             <ImageButton
-                android:id="@+id/imageButton4"
+                android:id="@+id/btnMyBagAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/circular_background"
                 android:elevation="8dp"
-                app:layout_constraintStart_toEndOf="@+id/textView7"
-                app:layout_constraintTop_toTopOf="@+id/imageButton3"
-                app:srcCompat="@drawable/ic_add" />
+                app:layout_constraintStart_toEndOf="@+id/tvMyBagProductCount"
+                app:layout_constraintTop_toTopOf="@+id/btnMyBagRemove"
+                app:srcCompat="@drawable/ic_plus" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

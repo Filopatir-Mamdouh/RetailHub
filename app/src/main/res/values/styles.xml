@@ -21,4 +21,17 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/black_variant</item>
     </style>
+
+
+    <style name="OrangeWideButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/metropolis_medium</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:backgroundTint">@color/red_color</item>
+        <item name="android:radius">10dp</item>
+        <item name="elevation">2dp</item>
+    </style>
+
+
 </resources>
