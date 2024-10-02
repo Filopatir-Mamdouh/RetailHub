@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "796027719691",
+    "project_id": "retailhup",
+    "storage_bucket": "retailhup.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796027719691:android:7f06ba9cc6acb4da31370e",
+        "android_client_info": {
+          "package_name": "com.iti4.retailhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjjHP0Zr8F25uhjCqTnnWBy2L45hflcuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
