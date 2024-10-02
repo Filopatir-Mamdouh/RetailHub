@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="MainTextViewStyle">
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">@font/metropolis</item>
         <item name="android:textAlignment">center</item>
+
     </style>
 
 
+
+    <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@drawable/roundedcorner_background_white</item>
+        <item name="android:itemTextAppearance">@style/CustomPopupMenuItemText</item>
+    </style>
+
+
+    <style name="CustomPopupMenuItemText" parent="TextAppearance.AppCompat.Widget.PopupMenu.Large">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/black_variant</item>
+        <item name="android:fontFamily">@font/metropolis_regular</item>
+    </style>
 
     <style name="BasicTextViewStyleGrey">
         <item name="android:textSize">11sp</item>

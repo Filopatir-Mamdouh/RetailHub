@@ -23,7 +23,7 @@
 
         <include
             android:id="@+id/promocode_edittext"
-            layout="@layout/promocode_edittext"
+            layout="@layout/mybag_promocode_edittext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -60,7 +60,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/Checkout"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tvMyBagProductPrice"
             app:layout_constraintStart_toStartOf="@+id/textView8"
             app:layout_constraintTop_toBottomOf="@+id/textView8" />

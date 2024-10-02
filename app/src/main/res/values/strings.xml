@@ -5,4 +5,8 @@
     <string name="EnterYourPromoCode">Enter Your Promo Code</string>
     <string name="TotalAmount">Total amount:</string>
     <string name="Checkout">CHECK OUT</string>
+    <string name="AddToFavorites">Add to favorites</string>
+    <string name="DeleteFromList">Delete from list</string>
+    <string name="YourPromoCodes">Your Promo Codes</string>
+    <string name="Apply">Apply</string>
 </resources>

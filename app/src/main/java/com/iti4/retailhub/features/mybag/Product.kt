@@ -7,6 +7,14 @@ data class Product(
     var price: Double,
     var color: String,
     var size: String,
-    var image: Int
+    var image: Int,
+    var quantity:Int
+) : Serializable {
+}
+
+data class Promo(
+    var title: String,
+    var code: String,
+    var remainingTime: String,
 ) : Serializable {
 }
