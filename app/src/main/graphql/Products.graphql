@@ -1,0 +1,36 @@
+query Products($query: String!) {
+    products(first: 10, query: $query) {
+        edges {
+            cursor
+            node {
+                description
+                id
+                title
+                totalInventory
+                media(first: 1) {
+                    nodes {
+                        ... on MediaImage {
+                            image {
+                                url
+                            }
+                        }
+                    }
+                }
+                variants(first: 1) {
+                    nodes {
+                        availableForSale
+                        presentmentPrices(first: 5) {
+                            nodes {
+                                price {
+                                    amount
+                                    currencyCode
+                                }
+                            }
+                        }
+                    }
+                }
+                vendor
+            }
+        }
+    }
+}

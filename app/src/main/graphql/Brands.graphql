@@ -1,0 +1,11 @@
+query Collections {
+    collections(first: 13) {
+        nodes {
+            id
+            image {
+                url
+            }
+            title
+        }
+    }
+}

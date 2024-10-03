@@ -10,4 +10,11 @@
     <string name="or_login_in_with_social_account">Or login with social account</string>
     <string name="login">Login</string>
     <string name="web_client_id">820047487372-bh211dcltqq130mtvhdm26qb1ru56eev.apps.googleusercontent.com</string>
+    <string name="old_usd"><strike>%.2f $</strike></string>
+    <string name="number_usd">%.2f $</string>
+    <string name="number_eur">%.2f €</string>
+    <string name="number_egp">%.2f جم</string>
+    <string name="number_aed">%.2f د.إ</string>
+    <string name="number_ksr">%.2f ر.س</string>
+    <string name="new_item">New</string>
 </resources>
