@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
+
     app:startDestination="@id/checkoutFragment">
 
     <fragment
@@ -15,4 +16,12 @@
         android:name="com.iti4.retailhub.CheckoutFragment"
         android:label="fragment_checkout"
         tools:layout="@layout/fragment_checkout" />
+
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.iti4.retailhub.features.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
 </navigation>

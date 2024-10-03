@@ -18,4 +18,11 @@
     <string name="Order">Order:</string>
     <string name="Discount">Discount:</string>
     <string name="SubmitOrder">SUBMIT ORDER</string>
+    <string name="old_usd"><strike>%.2f $</strike></string>
+    <string name="number_usd">%.2f $</string>
+    <string name="number_eur">%.2f €</string>
+    <string name="number_egp">%.2f جم</string>
+    <string name="number_aed">%.2f د.إ</string>
+    <string name="number_ksr">%.2f ر.س</string>
+    <string name="new_item">New</string>
 </resources>
