@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 
-class UserLocalProfileData private constructor(private val context: Context) {
+class UserLocalProfileData private constructor(context: Context) {
 
     private val profileData: SharedPreferences = context.getSharedPreferences("ProfileData", Context.MODE_PRIVATE)
     private val profileDataEditor: SharedPreferences.Editor = profileData.edit()
