@@ -12,7 +12,7 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 
 
-class MyBagFragment : Fragment() , Communicator {
+class MyBagFragment : Fragment() {
     private lateinit var binding: FragmentMyBagBinding
 
     override fun onCreateView(
@@ -25,28 +25,6 @@ class MyBagFragment : Fragment() , Communicator {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.promocodeEdittext.btnInsertCode.setOnClickListener {
-                val bottomSheet = MyBottomSheetFragment(this)
-                bottomSheet.show(this.requireActivity().supportFragmentManager, bottomSheet.tag)
-        }
-        binding.promocodeEdittext.btnDeleteCode.setOnClickListener{
-            binding.promocodeEdittext.btnInsertCode.visibility=View.VISIBLE
-            binding.promocodeEdittext.btnDeleteCode.visibility=View.GONE
-            binding.promocodeEdittext.etPromoCode.setText("")
-            binding.promocodeEdittext.etPromoCode.isFocusableInTouchMode=false
-            binding.promocodeEdittext.etPromoCode.isFocusable=false
-        }
-
-        binding.promocodeEdittext.etPromoCode.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_UP) {
-                binding.promocodeEdittext.etPromoCode.isFocusableInTouchMode=true
-                binding.promocodeEdittext.etPromoCode.isFocusable=true
-                val bottomSheet = MyBottomSheetFragment(this)
-                bottomSheet.show(this.requireActivity().supportFragmentManager, bottomSheet.tag)
-                return@setOnTouchListener true
-            }
-            false
-        }
 
         val manager = LinearLayoutManager(requireContext())
         manager.setOrientation(RecyclerView.VERTICAL)
@@ -67,12 +45,6 @@ class MyBagFragment : Fragment() , Communicator {
                 Product("Shirt7", 67.0, "Green", "L", R.drawable.photo, 12),
             )
         )
-    }
-
-    override fun passData(data: String) {
-        binding.promocodeEdittext.btnInsertCode.visibility=View.GONE
-        binding.promocodeEdittext.btnDeleteCode.visibility=View.VISIBLE
-        binding.promocodeEdittext.etPromoCode.setText(data)
     }
 
 

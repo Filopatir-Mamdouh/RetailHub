@@ -9,5 +9,13 @@
     <string name="DeleteFromList">Delete from list</string>
     <string name="YourPromoCodes">Your Promo Codes</string>
     <string name="Apply">Apply</string>
-    <string name="ShippingAddress">Shipping address</string>
+    <string name="ShippingAddress">Shipping Address</string>
+    <string name="Change">Change</string>
+    <string name="Payment">Payment</string>
+    <string name="CashOnDelivery">"Cash On Delivery (COD) "</string>
+    <string name="Promo">Promo</string>
+    <string name="PromoCode">Promo Code</string>
+    <string name="Order">Order:</string>
+    <string name="Discount">Discount:</string>
+    <string name="SubmitOrder">SUBMIT ORDER</string>
 </resources>
