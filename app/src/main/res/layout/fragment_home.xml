@@ -6,6 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".features.home.HomeFragment">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingGIF"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading" />
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
@@ -37,7 +46,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="300dp"
                 android:fontFamily="@font/metropolis_black"
-                android:text="Fashion\nSale"
+                android:text="@string/fashion_sale"
                 android:textAlignment="textStart"
                 android:textColor="@color/white"
                 android:textSize="48sp" />
@@ -63,6 +72,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
             tools:layout_editor_absoluteX="0dp">
+            <include android:id="@+id/newItemRow" layout="@layout/home_row_item"/>
         </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

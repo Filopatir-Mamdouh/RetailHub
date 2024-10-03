@@ -7,12 +7,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentHomeBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.home.adapter.NewItemAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -37,20 +39,27 @@ class HomeFragment : Fragment() {
                 viewModel.products.collect{ item ->
                     when(item){
                         is ApiState.Success<*> -> {
+                            binding.loadingGIF.visibility = View.GONE
                             val data = item.data as ProductsQuery.Products
-                            data.edges.forEach {
-                                Log.d("Filo", "onViewCreated: ${it.node}")
-                            }
+                            displayUIData(data)
                         }
                         is ApiState.Error -> {
-                            Log.d("Filo", "onViewCreated: ${item.exception}")
+                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
                         }
-                        is ApiState.Loading -> {
-                            Log.d("Filo", "onViewCreated: Loading")
-                        }
+                        is ApiState.Loading -> {}
                     }
                 }
             }
+        }
+    }
+
+    private fun displayUIData(data: ProductsQuery.Products){
+        binding.newItemRow.apply {
+            title.text = getString(R.string.new_item)
+            subtitle.text = getString(R.string.you_ve_never_seen_it_before)
+            val adapter = NewItemAdapter()
+            recyclerView.adapter = adapter
+            adapter.submitList(data.edges)
         }
     }
 }

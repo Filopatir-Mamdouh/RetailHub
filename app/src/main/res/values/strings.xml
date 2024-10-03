@@ -7,4 +7,6 @@
     <string name="number_aed">%.2f د.إ</string>
     <string name="number_ksr">%.2f ر.س</string>
     <string name="new_item">New</string>
+    <string name="fashion_sale">Fashion\nSale</string>
+    <string name="you_ve_never_seen_it_before">You’ve never seen it before!</string>
 </resources>
