@@ -4,6 +4,7 @@ import android.util.Log
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
 import com.iti4.retailhub.CollectionsQuery
+import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductsQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -24,6 +25,16 @@ class RemoteDataSourceImpl @Inject constructor (private val apolloClient: Apollo
         val response = apolloClient.query(CollectionsQuery()).execute()
         if (!response.hasErrors() && response.data != null){
             emit(response.data!!.collections)
+        }
+        else{
+            throw Exception(response.errors?.get(0)?.message?: "Something went wrong")
+        }
+    }
+
+    override fun getOrders(query: String): Flow<OrdersQuery.Orders> = flow{
+        val response = apolloClient.query(OrdersQuery(query)).execute()
+        if (!response.hasErrors() && response.data != null){
+            emit(response.data!!.orders)
         }
         else{
             throw Exception(response.errors?.get(0)?.message?: "Something went wrong")

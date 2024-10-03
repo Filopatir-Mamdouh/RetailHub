@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: IRepository): ViewModel() {
-    val dispatcher = Dispatchers.IO
+    private val dispatcher = Dispatchers.IO
     private val _products = MutableStateFlow<ApiState>(ApiState.Loading)
     val products = _products.onStart { getProducts() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
