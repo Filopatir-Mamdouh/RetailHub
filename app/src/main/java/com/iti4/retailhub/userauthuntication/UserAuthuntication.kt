@@ -1,64 +1,83 @@
 package com.iti4.retailhub.userauthuntication
 
 import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
+import android.provider.Settings.Global.getString
+import android.util.Log
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
+import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import com.iti4.retailhub.R
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.cancellation.CancellationException
 
-class UserAuthuntication private constructor() : UserAuthunticationInterface {
-    var auth: FirebaseAuth = FirebaseAuth.getInstance()
+class UserAuthuntication(
+    private val context: Context
+) : UserAuthunticationInterface {
+val auth =Firebase.auth
 
-    override suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResultState {
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            AuthResultState.Success(result) // Return success state
-        } catch (e: FirebaseAuthWeakPasswordException) {
-            AuthResultState.Failure("Password is too weak.")
-        } catch (e: FirebaseAuthInvalidCredentialsException) {
-            AuthResultState.Failure("Invalid email format.")
-        } catch (e: FirebaseAuthUserCollisionException) {
-            AuthResultState.Failure("Email is already in use.")
+    override suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult? {
+        return auth.createUserWithEmailAndPassword(email, password).await()
+    }
+
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult? {
+        return auth.signInWithEmailAndPassword(email, password).await()
+    }
+    override suspend fun loginOut():Boolean {
+        try {
+            auth.signOut()
+            return true
         } catch (e: Exception) {
-            AuthResultState.Failure("Error: ${e.message}")
+            return false
         }
     }
-    override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResultState {
+    suspend fun sendEmailVerification(user: FirebaseUser): Boolean {
         return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            AuthResultState.Success(result) // Return success state
-        } catch (e:FirebaseAuthInvalidCredentialsException){
-            AuthResultState.Failure("email or password is incorrect.")
-        }catch (e: FirebaseAuthInvalidUserException){
-            AuthResultState.Failure("Email account does not exist")
+            user.sendEmailVerification().await()
+            true // Success
         } catch (e: Exception) {
-            AuthResultState.Failure("Error: ${e.message}")
+            false // Failure
         }
     }
-
-    override  fun loginOut(){
-         auth.signOut()
+    override  suspend fun signIn(): IntentSender? = try {
+        val result = Identity.getSignInClient(context).beginSignIn(buildSignInRequest()).await()
+        result.pendingIntent.intentSender
+    } catch (e: Exception) {
+        null
     }
-
-
-    companion object {
-        @get:Synchronized
-        var instance: UserAuthuntication? = null
-            get() {
-                if (field == null) {
-                    field = UserAuthuntication()
-                }
-                return field
-            }
-            private set
+        private fun buildSignInRequest(): BeginSignInRequest {
+            return BeginSignInRequest.Builder()
+                .setGoogleIdTokenRequestOptions(
+                    GoogleIdTokenRequestOptions.builder()
+                        .setSupported(true)
+                        .setFilterByAuthorizedAccounts(false)
+                        .setServerClientId(context.getString(R.string.web_client_id))
+                        .build()
+                )
+                .setAutoSelectEnabled(true)
+                .build()
+        }
+    override suspend fun signInWithIntent(intent: Intent): AuthResult? {
+        val credential = Identity.getSignInClient(context).getSignInCredentialFromIntent(intent)
+        val googleIdToken = credential.googleIdToken
+        if (googleIdToken != null) {
+            val firebaseCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
+            return auth.signInWithCredential(firebaseCredential).await()
+        }
+        return null
     }
 }
 

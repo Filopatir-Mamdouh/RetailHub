@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "796027719691",
-    "project_id": "retailhup",
-    "storage_bucket": "retailhup.appspot.com"
+    "project_number": "820047487372",
+    "project_id": "retailhub-a6bb3",
+    "storage_bucket": "retailhub-a6bb3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:796027719691:android:7f06ba9cc6acb4da31370e",
+        "mobilesdk_app_id": "1:820047487372:android:3755431bf088a12a17b6a9",
         "android_client_info": {
           "package_name": "com.iti4.retailhub"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "820047487372-tqp03r7o303tu522rjupeuiul4o0cbf4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iti4.retailhub",
+            "certificate_hash": "0632c64d7cc0d642194a2cc271c950d97894c4a3"
+          }
+        },
+        {
+          "client_id": "820047487372-bh211dcltqq130mtvhdm26qb1ru56eev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCjjHP0Zr8F25uhjCqTnnWBy2L45hflcuI"
+          "current_key": "AIzaSyD9RMCioPDMy0WrEeF-3X8kHS41a8MfVw8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "820047487372-bh211dcltqq130mtvhdm26qb1ru56eev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

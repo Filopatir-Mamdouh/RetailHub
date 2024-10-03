@@ -1,20 +1,19 @@
 package com.iti4.retailhub
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.Button
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.iti4.retailhub.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
 
 class MainActivity : AppCompatActivity() {
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        findViewById<Button>(R.id.button).setOnClickListener {
+            userAuthViewModel.signOut()
+            finish()
         }
     }
 }

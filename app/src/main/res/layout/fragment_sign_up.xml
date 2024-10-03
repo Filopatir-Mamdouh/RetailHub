@@ -6,20 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#59000000"
-        android:id="@+id/progressBar"
-        android:visibility="gone"
-        >
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-    </FrameLayout>
 
     <TextView
         android:id="@+id/textView"
@@ -38,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="70dp"
         android:layout_marginHorizontal="20dp"
+        app:errorEnabled="true"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -58,6 +46,7 @@
         tools:layout_editor_absoluteY="110dp"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
+        app:errorEnabled="true"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -76,7 +65,9 @@
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="40dp"
         android:layout_marginHorizontal="20dp"
-        tools:layout_editor_absoluteY="110dp">
+        tools:layout_editor_absoluteY="110dp"
+        app:errorEnabled="true"
+        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -151,10 +142,10 @@
             app:cardCornerRadius="24dp"
             app:cardUseCompatPadding="true"
             android:layout_marginEnd="10dp"
+            android:id="@+id/googleCard"
             >
 
             <ImageView
-                android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/google_icon"
@@ -167,10 +158,10 @@
             android:layout_height="84dp"
             app:cardCornerRadius="24dp"
             app:cardUseCompatPadding="true"
+            android:id="@+id/facebookCard"
             >
 
             <ImageView
-                android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/facebook_icon"
