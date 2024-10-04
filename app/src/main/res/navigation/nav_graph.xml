@@ -10,4 +10,9 @@
         android:name="com.iti4.retailhub.features.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/shopFragment"
+        android:name="com.iti4.retailhub.features.shop.ShopFragment"
+        android:label="fragment_shop"
+        tools:layout="@layout/fragment_shop" />
 </navigation>
