@@ -1,4 +1,4 @@
-package com.iti4.retailhub
+package com.iti4.retailhub.features.checkout
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
-import com.iti4.retailhub.features.mybag.Communicator
-import com.iti4.retailhub.features.mybag.MyBottomSheetFragment
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 

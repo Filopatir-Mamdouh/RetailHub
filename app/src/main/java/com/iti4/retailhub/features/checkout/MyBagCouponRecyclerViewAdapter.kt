@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.checkout
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.databinding.RvMybagCoupounItemBinding
+import com.iti4.retailhub.features.mybag.Promo
 
-class DiffUtilPromo : DiffUtil.ItemCallback<Promo>() {
+class DiffUtilPromo : DiffUtil.ItemCallback<Promo>()  {
     override fun areItemsTheSame(oldItem: Promo, newItem: Promo): Boolean {
         return oldItem.title == newItem.title
     }

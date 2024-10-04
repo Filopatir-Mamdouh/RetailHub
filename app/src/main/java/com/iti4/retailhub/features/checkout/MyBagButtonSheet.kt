@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.checkout
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,7 @@ import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iti4.retailhub.databinding.MybagbottomSheetLayoutBinding
+import com.iti4.retailhub.features.mybag.Promo
 
 class MyBottomSheetFragment(private val communicator: Communicator) : BottomSheetDialogFragment(),
     OnClickApply {

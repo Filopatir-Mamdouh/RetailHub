@@ -13,7 +13,7 @@
         tools:layout="@layout/fragment_my_bag" />
     <fragment
         android:id="@+id/checkoutFragment"
-        android:name="com.iti4.retailhub.CheckoutFragment"
+        android:name="com.iti4.retailhub.features.checkout.CheckoutFragment"
         android:label="fragment_checkout"
         tools:layout="@layout/fragment_checkout" />
 
