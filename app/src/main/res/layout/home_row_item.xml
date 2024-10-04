@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/metropolis_regular"
-        tools:text="TextView"
+        android:text="@string/view_all"
         android:textColor="@color/black_variant"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="@+id/title"

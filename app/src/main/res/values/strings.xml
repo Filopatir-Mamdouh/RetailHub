@@ -9,4 +9,7 @@
     <string name="new_item">New</string>
     <string name="fashion_sale">Fashion\nSale</string>
     <string name="you_ve_never_seen_it_before">You’ve never seen it before!</string>
+    <string name="view_all"><u>View All</u></string>
+    <string name="brands">Brands</string>
+    <string name="brands_subtitle">Top brands just for you</string>
 </resources>
