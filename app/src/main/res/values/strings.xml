@@ -25,4 +25,5 @@
     <string name="number_aed">%.2f د.إ</string>
     <string name="number_ksr">%.2f ر.س</string>
     <string name="new_item">New</string>
+    <string name="MaximumAmount">Max quanity reached</string>
 </resources>

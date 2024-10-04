@@ -1,6 +1,7 @@
 package com.iti4.retailhub.datastorage
 
 import com.iti4.retailhub.CollectionsQuery
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
@@ -15,4 +16,10 @@ class Repository @Inject constructor(private val remoteDataSource: RemoteDataSou
     override fun getBrands() : Flow<CollectionsQuery.Collections> {
         return remoteDataSource.getBrands()
     }
+
+    override fun getMyBagProducts(query: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
+        return remoteDataSource.getMyBagProducts(query)
+    }
+
+
 }

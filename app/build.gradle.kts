@@ -56,6 +56,7 @@ android {
 
 dependencies {
     //Pagination
+
     implementation("androidx.paging:paging-runtime:3.3.2")
 
     //Apollo
@@ -104,6 +105,9 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.common)
     kapt(libs.hilt.android.compiler)
+
+    //Stripe
+    implementation ("com.stripe:stripe-android:20.51.1")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

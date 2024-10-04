@@ -1,5 +1,7 @@
 package com.iti4.retailhub.features.mybag
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -10,23 +12,26 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.RvMybagProductItemBinding
 
-class DiffUtilProduct : DiffUtil.ItemCallback<Product>() {
-    override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+class DiffUtilProduct : DiffUtil.ItemCallback<GetDraftOrdersByCustomerQuery.Node1>() {
+    override fun areItemsTheSame(oldItem: GetDraftOrdersByCustomerQuery.Node1, newItem: GetDraftOrdersByCustomerQuery.Node1): Boolean {
         return oldItem.title == newItem.title
     }
 
-    override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+    override fun areContentsTheSame(oldItem: GetDraftOrdersByCustomerQuery.Node1, newItem: GetDraftOrdersByCustomerQuery.Node1): Boolean {
         return oldItem == newItem
     }
 }
 
 class MyBagProductRecyclerViewAdapter() :
-    ListAdapter<Product, MyBagProductRecyclerViewAdapter.ViewHolder>(DiffUtilProduct()) {
-
+    ListAdapter<GetDraftOrdersByCustomerQuery.Node1, MyBagProductRecyclerViewAdapter.ViewHolder>(DiffUtilProduct()) {
+    var context : Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        context=parent.context
         val binding = RvMybagProductItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
@@ -35,12 +40,24 @@ class MyBagProductRecyclerViewAdapter() :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         with(holder.binding) {
-            ivMyBagProductImage.setImageResource(item.image)
+            Glide.with(context!!)
+                .load( item.variant?.product?.media?.nodes?.get(0)?.onMediaImage?.image?.url as String)
+                .into(ivMyBagProductImage)
+            val quantity = item.quantity
+            val inventoryQuantity = item.variant.inventoryQuantity
+
+
             tvMyBagProductName.text = item.title
-            tvMyBagProductPrice.text = item.price.toString() + "$"
-            tvMyBagProductColor.text = item.color
-            tvMyBagProductSize.text = item.size
-            tvMyBagProductCount.text = 1.toString()
+            tvMyBagProductPrice.text = item.variant?.price.toString() + "$"
+            tvMyBagProductColor.text = item.variant?.selectedOptions?.get(1)?.value
+            tvMyBagProductSize.text = item.variant?.selectedOptions?.get(0)?.value
+
+            if(inventoryQuantity!!<1)
+                tvMyBagProductCount.text ="Out of Stock"
+
+            if(quantity>inventoryQuantity)
+                tvMyBagProductCount.text = inventoryQuantity.toString()
+
 
             btnMyBagPopmenu.setOnClickListener {
                 showPopupMenu(btnMyBagPopmenu)
@@ -48,15 +65,23 @@ class MyBagProductRecyclerViewAdapter() :
 
             btnMyBagAdd.setOnClickListener {
                 val currentCountString = tvMyBagProductCount.text.toString()
-                val currentCount = Integer.parseInt(currentCountString)
-                tvMyBagProductCount.text = (currentCount + 1).toString()
+                val currentCount = Integer.parseInt(currentCountString)+1
+                if(currentCount>inventoryQuantity ){
+                    tvMyBagProductCount.text = inventoryQuantity.toString()
+                    tvMaxReached.visibility=View.VISIBLE
+                }
+                else
+                tvMyBagProductCount.text = (currentCount).toString()
             }
 
             btnMyBagRemove.setOnClickListener {
                 val currentCountString = tvMyBagProductCount.text.toString()
-                val currentCount = Integer.parseInt(currentCountString)
-                if (currentCount > 1) {
-                    tvMyBagProductCount.text = (currentCount - 1).toString()
+                val currentCount = Integer.parseInt(currentCountString)-1
+                if(currentCount<inventoryQuantity && currentCount>0){
+                    tvMaxReached.visibility=View.GONE
+                }
+                if (currentCount >= 1) {
+                    tvMyBagProductCount.text = (currentCount).toString()
                 }
             }
 

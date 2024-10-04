@@ -36,14 +36,19 @@
             <TextView
                 android:id="@+id/tvMyBagProductName"
                 style="@style/MainTextViewStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:ellipsize="end"
                 android:fontFamily="@font/metropolis_semibold"
+                android:maxLines="1"
                 android:text="Pullover"
                 android:textColor="@color/black_variant"
                 android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnMyBagPopmenu"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/ivMyBagProductImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -147,6 +152,18 @@
                 app:layout_constraintStart_toEndOf="@+id/tvMyBagProductCount"
                 app:layout_constraintTop_toTopOf="@+id/btnMyBagRemove"
                 app:srcCompat="@drawable/ic_plus" />
+
+            <TextView
+                android:id="@+id/tvMaxReached"
+                style="@style/BasicTextViewStyleGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/MaximumAmount"
+                android:textColor="@color/red_color"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@+id/btnMyBagAdd"
+                app:layout_constraintTop_toTopOf="@+id/btnMyBagAdd" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
