@@ -14,7 +14,7 @@ import com.google.firebase.auth.auth
 import com.iti4.retailhub.R
 import kotlinx.coroutines.tasks.await
 
-class UserAuthuntication(
+class UserAuthuntication (
     private val context: Context
 ) : UserAuthunticationInterface {
 val auth =Firebase.auth
@@ -34,7 +34,7 @@ val auth =Firebase.auth
             return false
         }
     }
-    suspend fun sendEmailVerification(user: FirebaseUser): Boolean {
+    override suspend fun sendEmailVerification(user: FirebaseUser): Boolean {
         return try {
             user.sendEmailVerification().await()
             true // Success

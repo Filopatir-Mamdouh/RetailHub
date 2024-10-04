@@ -16,17 +16,18 @@ import androidx.navigation.Navigation.findNavController
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
+import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
+@AndroidEntryPoint
 class SignUpFragment : Fragment() {
-
+    private var isLaunched = false
     lateinit var signUpBinding: FragmentSignUpBinding
     val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
     lateinit var customMesssageDialog :CustomMessageDialog
     lateinit var customLoadingDialog :CustomLoadingDialog
-    lateinit var userName:String
     val EMAIL_REGEX: String = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,9 +49,9 @@ class SignUpFragment : Fragment() {
             signUpBinding.nameTextInput.error = null // Clear error message
             signUpBinding.emailTextInput.error = null // Clear error message
             signUpBinding.passowrdTex.error = null // Clear error message
-            userName = signUpBinding.nameTextInput.editText?.text.toString()
-            val email = signUpBinding.emailTextInput.editText?.text.toString()
-            val password = signUpBinding.passowrdTex.editText?.text.toString()
+            val userName = signUpBinding.nameTextInput.editText?.text.toString().removeSuffix(" ")
+            val email = signUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
+            val password = signUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
             if (userName.isEmpty()) {
                 signUpBinding.nameTextInput.error = "Please enter your name"
                 return@setOnClickListener
@@ -75,6 +76,8 @@ class SignUpFragment : Fragment() {
         signUpBinding.googleCard.setOnClickListener {
             userAuthViewModel.signInWithGoogle()
         }
+        if (!isLaunched) {
+            isLaunched = true
         lifecycleScope.launch {
             userAuthViewModel.authState.collect { authResultState ->
                 when (authResultState) {
@@ -109,9 +112,11 @@ class SignUpFragment : Fragment() {
                         val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
                         signInResultLauncher.launch(request)
                     }
+
                 }
             }
         }
+    }
     }
     private val signInResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
