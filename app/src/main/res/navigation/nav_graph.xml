@@ -3,16 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
+
     app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/myBagFragment"
+        android:name="com.iti4.retailhub.features.mybag.MyBagFragment"
+        android:label="fragment_my_bag"
+        tools:layout="@layout/fragment_my_bag" />
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.iti4.retailhub.features.checkout.CheckoutFragment"
+        android:label="fragment_checkout"
+        tools:layout="@layout/fragment_checkout" />
+
 
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.iti4.retailhub.features.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+
     <fragment
         android:id="@+id/shopFragment"
         android:name="com.iti4.retailhub.features.shop.ShopFragment"
         android:label="fragment_shop"
         tools:layout="@layout/fragment_shop" />
+
 </navigation>

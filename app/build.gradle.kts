@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.apollo)
 }
@@ -47,10 +48,16 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+
+    }
 }
 
 dependencies {
     //Pagination
+
     implementation("androidx.paging:paging-runtime:3.3.2")
 
     //Apollo
@@ -99,6 +106,9 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.common)
     kapt(libs.hilt.android.compiler)
+
+    //Stripe
+    implementation ("com.stripe:stripe-android:20.51.1")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

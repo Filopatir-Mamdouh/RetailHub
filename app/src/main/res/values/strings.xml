@@ -1,5 +1,23 @@
 <resources>
     <string name="app_name">RetailHub</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="EnterYourPromoCode">Enter Your Promo Code</string>
+    <string name="TotalAmount">Total amount:</string>
+    <string name="Checkout">CHECK OUT</string>
+    <string name="AddToFavorites">Add to favorites</string>
+    <string name="DeleteFromList">Delete from list</string>
+    <string name="YourPromoCodes">Your Promo Codes</string>
+    <string name="Apply">Apply</string>
+    <string name="ShippingAddress">Shipping Address</string>
+    <string name="Change">Change</string>
+    <string name="Payment">Payment</string>
+    <string name="CashOnDelivery">"Cash On Delivery (COD) "</string>
+    <string name="Promo">Promo</string>
+    <string name="PromoCode">Promo Code</string>
+    <string name="Order">Order:</string>
+    <string name="Discount">Discount:</string>
+    <string name="SubmitOrder">SUBMIT ORDER</string>
     <string name="old_usd"><strike>%.2f $</strike></string>
     <string name="number_usd">%.2f $</string>
     <string name="number_eur">%.2f €</string>
@@ -7,6 +25,9 @@
     <string name="number_aed">%.2f د.إ</string>
     <string name="number_ksr">%.2f ر.س</string>
     <string name="new_item">New</string>
+    <string name="MaximumAmount">Max quanity reached</string>
+    <string name="Summary">Summary</string>
+    <string name="PayWithCard">Pay With Card</string>
     <string name="fashion_sale">Fashion\nSale</string>
     <string name="you_ve_never_seen_it_before">You’ve never seen it before!</string>
     <string name="view_all"><u>View All</u></string>
@@ -17,7 +38,5 @@
     <string name="bag">Bag</string>
     <string name="favorites">Favorites</string>
     <string name="profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="check">Check</string>
 </resources>

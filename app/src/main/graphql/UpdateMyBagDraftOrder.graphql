@@ -1,0 +1,8 @@
+mutation updateDraftOrder($id: ID!, $input: DraftOrderInput!) {
+    draftOrderUpdate(id: $id, input: $input) {
+        userErrors {
+            field
+            message
+        }
+    }
+}

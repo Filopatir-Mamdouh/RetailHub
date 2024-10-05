@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvMyBagProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivMyBagProductImage"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/photo" />
+
+            <TextView
+                android:id="@+id/tvMyBagProductName"
+                style="@style/MainTextViewStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/metropolis_semibold"
+                android:maxLines="1"
+                android:text="Pullover"
+                android:textColor="@color/black_variant"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnMyBagPopmenu"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/ivMyBagProductImage"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/BasicTextViewStyleGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Color: "
+                app:layout_constraintStart_toStartOf="@+id/tvMyBagProductName"
+                app:layout_constraintTop_toBottomOf="@+id/tvMyBagProductName" />
+
+            <TextView
+                android:id="@+id/tvMyBagProductColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="Black"
+                style="@style/BasicTextViewStyleBlackVarient"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/BasicTextViewStyleGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Size: "
+                app:layout_constraintStart_toEndOf="@+id/tvMyBagProductColor"
+                app:layout_constraintTop_toTopOf="@+id/tvMyBagProductColor" />
+
+            <TextView
+                android:id="@+id/tvMyBagProductSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="L"
+                style="@style/BasicTextViewStyleBlackVarient"
+                app:layout_constraintStart_toEndOf="@+id/textView4"
+                app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+            <ImageButton
+                android:id="@+id/btnMyBagPopmenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_threedots"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </ImageButton>
+
+            <TextView
+                android:id="@+id/tvMyBagProductPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/metropolis_medium"
+                android:text="51$"
+                android:textSize="14sp"
+                android:textColor="@color/black_variant"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnMyBagRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:elevation="8dp"
+                android:background="@drawable/circular_background"
+                app:layout_constraintStart_toStartOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:srcCompat="@drawable/ic_minus" />
+
+            <TextView
+                android:id="@+id/tvMyBagProductCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/metropolis_medium"
+                android:text="2"
+                android:textColor="@color/black_variant"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/btnMyBagRemove"
+                app:layout_constraintStart_toEndOf="@+id/btnMyBagRemove"
+                app:layout_constraintTop_toTopOf="@+id/btnMyBagRemove" />
+
+            <ImageButton
+                android:id="@+id/btnMyBagAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/circular_background"
+                android:elevation="8dp"
+                app:layout_constraintStart_toEndOf="@+id/tvMyBagProductCount"
+                app:layout_constraintTop_toTopOf="@+id/btnMyBagRemove"
+                app:srcCompat="@drawable/ic_plus" />
+
+            <TextView
+                android:id="@+id/tvMaxReached"
+                style="@style/BasicTextViewStyleGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/MaximumAmount"
+                android:textColor="@color/red_color"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@+id/btnMyBagAdd"
+                app:layout_constraintTop_toTopOf="@+id/btnMyBagAdd" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
