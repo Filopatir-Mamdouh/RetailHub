@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.home
 
+import android.app.Activity
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -75,6 +76,7 @@ class HomeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         (requireActivity() as ToolbarController).setVisibility(false)
+        (activity as MainActivity).supportActionBar?.hide()
     }
 
     private fun displayNewItemRowData(data: List<HomeProducts>){
