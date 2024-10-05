@@ -5,9 +5,14 @@ import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
+import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
+import com.iti4.retailhub.logic.toBrandsList
+import com.iti4.retailhub.logic.toProductsList
+import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
 import com.iti4.retailhub.type.DraftOrderLineItemInput
@@ -15,23 +20,31 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+
 class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloClient) :
     RemoteDataSource {
-    override fun getProducts(query: String): Flow<ProductsQuery.Products> = flow {
+    override fun getProducts(query: String): Flow<List<HomeProducts>> = flow {
         val response = apolloClient.query(ProductsQuery(query)).execute()
         if (!response.hasErrors() && response.data != null) {
-            emit(response.data!!.products)
+            emit(response.data!!.products.toProductsList())
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
 
-    override fun getBrands(): Flow<CollectionsQuery.Collections> = flow {
+    override fun getBrands(): Flow<List<Brands>> = flow {
         val response = apolloClient.query(CollectionsQuery()).execute()
         if (!response.hasErrors() && response.data != null) {
-            emit(response.data!!.collections)
+            emit(response.data!!.collections.toBrandsList())
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
+
+    override fun getOrders(query: String): Flow<OrdersQuery.Orders> = flow {
+        val response = apolloClient.query(OrdersQuery(query)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response.data!!.orders)
         }
     }
 

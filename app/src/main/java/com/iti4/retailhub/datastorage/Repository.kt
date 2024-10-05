@@ -5,10 +5,14 @@ import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
+
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
 import com.iti4.retailhub.features.payments.Customer
 import com.iti4.retailhub.features.payments.PaymentRequest
 import com.iti4.retailhub.models.CartProduct
+
+import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.HomeProducts
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,11 +24,13 @@ class Repository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val retrofitDataSource: RetrofitDataSource
 ) : IRepository {
-    override fun getProducts(query: String): Flow<ProductsQuery.Products> {
+
+
+
+    override fun getProducts(query: String) : Flow<List<HomeProducts>> {
         return remoteDataSource.getProducts(query)
     }
-
-    override fun getBrands(): Flow<CollectionsQuery.Collections> {
+    override fun getBrands() : Flow<List<Brands>> {
         return remoteDataSource.getBrands()
     }
 

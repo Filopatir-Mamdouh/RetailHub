@@ -28,4 +28,15 @@
     <string name="MaximumAmount">Max quanity reached</string>
     <string name="Summary">Summary</string>
     <string name="PayWithCard">Pay With Card</string>
+    <string name="fashion_sale">Fashion\nSale</string>
+    <string name="you_ve_never_seen_it_before">You’ve never seen it before!</string>
+    <string name="view_all"><u>View All</u></string>
+    <string name="brands">Brands</string>
+    <string name="brands_subtitle">Top brands just for you</string>
+    <string name="home">Home</string>
+    <string name="shop">Shop</string>
+    <string name="bag">Bag</string>
+    <string name="favorites">Favorites</string>
+    <string name="profile">Profile</string>
+    <string name="check">Check</string>
 </resources>

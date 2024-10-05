@@ -19,17 +19,19 @@ query Products($query: String!) {
                 variants(first: 1) {
                     nodes {
                         availableForSale
-                        presentmentPrices(first: 5) {
-                            nodes {
-                                price {
-                                    amount
-                                    currencyCode
-                                }
-                            }
-                        }
                     }
                 }
                 vendor
+                priceRangeV2 {
+                    maxVariantPrice {
+                        amount
+                        currencyCode
+                    }
+                    minVariantPrice {
+                        amount
+                        currencyCode
+                    }
+                }
             }
         }
     }

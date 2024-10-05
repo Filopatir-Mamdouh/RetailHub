@@ -2,19 +2,24 @@ package com.iti4.retailhub.features.home
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.iti4.retailhub.ProductsQuery
+import androidx.recyclerview.widget.GridLayoutManager
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
+import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentHomeBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.home.adapter.BrandAdapter
+import com.iti4.retailhub.features.home.adapter.NewItemAdapter
+import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -22,7 +27,7 @@ class HomeFragment : Fragment() {
 
     private val viewModel by viewModels<HomeViewModel>()
 
-    lateinit var binding: FragmentHomeBinding
+    private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,20 +42,58 @@ class HomeFragment : Fragment() {
                 viewModel.products.collect{ item ->
                     when(item){
                         is ApiState.Success<*> -> {
-                            val data = item.data as ProductsQuery.Products
-                            data.edges.forEach {
-                                Log.d("Filo", "onViewCreated: ${it.node}")
-                            }
+                            binding.animationView.visibility = View.GONE
+                            val data = item.data as List<HomeProducts>
+                            displayNewItemRowData(data)
                         }
                         is ApiState.Error -> {
-                            Log.d("Filo", "onViewCreated: ${item.exception}")
+                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
                         }
-                        is ApiState.Loading -> {
-                            Log.d("Filo", "onViewCreated: Loading")
-                        }
+                        is ApiState.Loading -> {}
                     }
                 }
             }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){
+                viewModel.brands.collect{ item ->
+                    when(item){
+                        is ApiState.Success<*> -> {
+                            val data = item.data as List<Brands>
+                            displayBrandsRowData(data)
+                        }
+                        is ApiState.Error -> {
+                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
+                        }
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as ToolbarController).setVisibility(false)
+    }
+
+    private fun displayNewItemRowData(data: List<HomeProducts>){
+        binding.newItemRow.apply {
+            title.text = getString(R.string.new_item)
+            subtitle.text = getString(R.string.you_ve_never_seen_it_before)
+            val adapter = NewItemAdapter()
+            recyclerView.adapter = adapter
+            adapter.submitList(data)
+        }
+    }
+    private fun displayBrandsRowData(data: List<Brands>){
+        binding.brandItemRow.apply {
+            title.text = getString(R.string.brands)
+            subtitle.text = getString(R.string.brands_subtitle)
+            val adapter = BrandAdapter()
+            recyclerView.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.HORIZONTAL, false)
+            recyclerView.adapter = adapter
+            adapter.submitList(data)
         }
     }
 }

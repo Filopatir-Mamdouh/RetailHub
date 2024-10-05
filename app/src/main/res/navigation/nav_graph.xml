@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
 
-    app:startDestination="@id/myBagFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/myBagFragment"
@@ -23,10 +23,11 @@
         android:name="com.iti4.retailhub.features.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+
     <fragment
-        android:id="@+id/paymentFragment"
-        android:name="com.iti4.retailhub.features.payments.PaymentFragment"
-        android:label="fragment_payment"
-        tools:layout="@layout/fragment_payment" />
+        android:id="@+id/shopFragment"
+        android:name="com.iti4.retailhub.features.shop.ShopFragment"
+        android:label="fragment_shop"
+        tools:layout="@layout/fragment_shop" />
 
 </navigation>
