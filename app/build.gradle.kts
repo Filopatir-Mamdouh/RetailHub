@@ -1,8 +1,12 @@
+import com.android.build.gradle.internal.generators.BuildConfigData
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.apollo)
 }
 
 android {
@@ -15,8 +19,16 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String", "ADMIN_ACCESS_TOKEN", properties.getProperty("ADMIN_ACCESS_TOKEN_STRING"))
+        buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig= true
     }
 
     buildTypes {
@@ -38,12 +50,18 @@ android {
 }
 
 dependencies {
+    //Pagination
+    implementation("androidx.paging:paging-runtime:3.3.2")
+
+    //Apollo
+    implementation(libs.apollo.runtime)
+
     // navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.1")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.1")
 
     // lottie animation
-    implementation("com.airbnb.android:lottie:5.0.3")
+    implementation("com.airbnb.android:lottie:6.5.0")
 
     // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
@@ -94,4 +112,17 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+apollo {
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+    service("service") {
+        packageName.set("com.iti4.retailhub")
+        introspection {
+            endpointUrl.set("https://android-alex-team4.myshopify.com/admin/api/2024-10/graphql.json")
+            headers.put("X-Shopify-Access-Token", properties.getProperty("ADMIN_ACCESS_TOKEN"))
+            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        }
+    }
 }

@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">RetailHub</string>
+    <string name="old_usd"><strike>%.2f $</strike></string>
+    <string name="number_usd">%.2f $</string>
+    <string name="number_eur">%.2f €</string>
+    <string name="number_egp">%.2f جم</string>
+    <string name="number_aed">%.2f د.إ</string>
+    <string name="number_ksr">%.2f ر.س</string>
+    <string name="new_item">New</string>
+    <string name="fashion_sale">Fashion\nSale</string>
+    <string name="you_ve_never_seen_it_before">You’ve never seen it before!</string>
+    <string name="view_all"><u>View All</u></string>
+    <string name="brands">Brands</string>
+    <string name="brands_subtitle">Top brands just for you</string>
+    <string name="home">Home</string>
+    <string name="shop">Shop</string>
+    <string name="bag">Bag</string>
+    <string name="favorites">Favorites</string>
+    <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="check">Check</string>
 </resources>

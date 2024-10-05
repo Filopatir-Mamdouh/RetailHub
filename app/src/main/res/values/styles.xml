@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MainTextViewStyle">
+        <item name="android:textColor">@color/black_variant</item>
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">@font/metropolis</item>
         <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="CardSubTitleTextStyle">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:fontFamily">@font/metropolis_regular</item>
     </style>
 </resources>
