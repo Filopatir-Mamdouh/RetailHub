@@ -10,7 +10,9 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
+import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentHomeBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.adapter.BrandAdapter
@@ -25,7 +27,7 @@ class HomeFragment : Fragment() {
 
     private val viewModel by viewModels<HomeViewModel>()
 
-    lateinit var binding: FragmentHomeBinding
+    private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,6 +70,11 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as ToolbarController).setVisibility(false)
     }
 
     private fun displayNewItemRowData(data: List<HomeProducts>){

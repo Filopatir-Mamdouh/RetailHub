@@ -9,14 +9,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-    lateinit var binding : ActivityMainBinding
+class MainActivity : AppCompatActivity() , ToolbarController {
+    private lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -39,6 +40,21 @@ class MainActivity : AppCompatActivity() {
                 binding.pageName.visibility = View.VISIBLE
                 binding.collapsedPageName.visibility = View.GONE
             }
+        }
+    }
+
+    override fun setVisibility(visibility: Boolean) {
+        binding.apply {
+            appBar.visibility = if (visibility) View.VISIBLE else View.GONE
+            toolbar.visibility = if (visibility) View.VISIBLE else View.GONE
+            collapsingToolbar.visibility = if (visibility) View.VISIBLE else View.GONE
+        }
+    }
+
+    override fun setTitle(title: String) {
+        binding.apply {
+            pageName.text = title
+            collapsedPageName.text = title
         }
     }
 }
