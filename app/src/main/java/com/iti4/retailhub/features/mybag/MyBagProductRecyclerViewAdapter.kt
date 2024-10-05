@@ -75,6 +75,7 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
                     tvMaxReached.visibility = View.VISIBLE
                 } else{
                     item.itemQuantity = currentCount
+                    item.didQuantityChanged=true
                     handleActions.updateTotalPrice()
                     tvMyBagProductCount.text = (currentCount).toString()
                 }
@@ -88,6 +89,7 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
                 }
                 if (currentCount >= 1) {
                     item.itemQuantity = currentCount
+                    item.didQuantityChanged=true
                     handleActions.updateTotalPrice()
                     tvMyBagProductCount.text = (currentCount).toString()
                 }
@@ -117,7 +119,7 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
                     val currentList = currentList.toMutableList()
                     currentList.remove(cartProduct)
                     submitList(currentList)
-                    handleActions.deleteMyBagItem(cartProduct.draftOrderId)
+                    handleActions.deleteMyBagItem(cartProduct)
                     true
                 }
 

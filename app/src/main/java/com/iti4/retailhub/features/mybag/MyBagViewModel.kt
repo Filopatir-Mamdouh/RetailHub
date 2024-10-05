@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,9 +27,12 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     private val _myBagProductsRemove = MutableStateFlow<ApiState>(ApiState.Loading)
     val myBagProductsRemove = _myBagProductsRemove.asStateFlow()
 
+    private val _myBagProductsUpdate = MutableStateFlow<ApiState>(ApiState.Loading)
+    val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
+
     private fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {
-            repository.getMyBagProducts("customer_id:6945540964394")
+            repository.getMyBagProducts("customer_id:6945540800554")
                 .catch { e -> _myBagProducts.emit(ApiState.Error(e)) }.collect {
                     _myBagProducts.emit(ApiState.Success(it))
                 }
@@ -37,6 +42,15 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     fun deleteMyBagItem(itemId: String) {
         viewModelScope.launch(dispatcher) {
             repository.deleteMyBagItem(itemId)
+                .catch { e -> _myBagProductsRemove.emit(ApiState.Error(e)) }.collect {
+                    _myBagProductsRemove.emit(ApiState.Success(it))
+                }
+        }
+    }
+
+    fun updateMyBagItem(cartProduct: CartProduct) {
+        GlobalScope.launch(dispatcher) {
+            repository.updateMyBagItem(cartProduct)
                 .catch { e -> _myBagProductsRemove.emit(ApiState.Error(e)) }.collect {
                     _myBagProductsRemove.emit(ApiState.Success(it))
                 }

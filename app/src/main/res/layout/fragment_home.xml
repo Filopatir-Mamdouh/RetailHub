@@ -43,7 +43,7 @@
                 android:textSize="48sp" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/button"
+                android:id="@+id/btnSubmitOrder"
                 android:layout_width="193dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"

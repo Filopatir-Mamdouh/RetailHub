@@ -26,4 +26,6 @@
     <string name="number_ksr">%.2f ر.س</string>
     <string name="new_item">New</string>
     <string name="MaximumAmount">Max quanity reached</string>
+    <string name="Summary">Summary</string>
+    <string name="PayWithCard">Pay With Card</string>
 </resources>

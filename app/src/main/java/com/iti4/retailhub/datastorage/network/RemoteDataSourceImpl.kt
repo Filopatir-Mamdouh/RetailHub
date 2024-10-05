@@ -1,12 +1,16 @@
 package com.iti4.retailhub.datastorage.network
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductsQuery
+import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.type.DraftOrderDeleteInput
+import com.iti4.retailhub.type.DraftOrderInput
+import com.iti4.retailhub.type.DraftOrderLineItemInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -42,18 +46,40 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
     }
 
 
-   override fun deleteMyBagItem(query: String): Flow<DeleteDraftOrderMutation.DraftOrderDelete> = flow {
-        val deleteDraftOrderInput = DraftOrderDeleteInput(id = query)
-        val deleteDraftOrderMutation = DeleteDraftOrderMutation(deleteDraftOrderInput)
-        val response = apolloClient.mutation(deleteDraftOrderMutation).execute()
+    override fun deleteMyBagItem(query: String): Flow<DeleteDraftOrderMutation.DraftOrderDelete> =
+        flow {
+            val deleteDraftOrderInput = DraftOrderDeleteInput(id = query)
+            val deleteDraftOrderMutation = DeleteDraftOrderMutation(deleteDraftOrderInput)
+            val response = apolloClient.mutation(deleteDraftOrderMutation).execute()
 
-        if (!response.hasErrors() && response.data != null) {
-            emit(response.data!!.draftOrderDelete!!)
-        } else {
-            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.draftOrderDelete!!)
+            } else {
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
         }
 
-    }
+    override fun updateMyBagItem(cartProduct: CartProduct): Flow<UpdateDraftOrderMutation.DraftOrderUpdate> =
+        flow {
+            val draftOrderInput = DraftOrderInput(
+                lineItems = Optional.present(
+                    listOf(
+                        DraftOrderLineItemInput(
+                            variantId = Optional.present(cartProduct.itemId),
+                            quantity = cartProduct.itemQuantity
+                        )
+                    )
+                )
+            )
+            val updateDraftOrderMutation =
+                UpdateDraftOrderMutation(cartProduct.draftOrderId, draftOrderInput)
+            val response = apolloClient.mutation(updateDraftOrderMutation).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.draftOrderUpdate!!)
+            } else {
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
+        }
 
 
     private fun extractCart(item: GetDraftOrdersByCustomerQuery.DraftOrders): List<CartProduct> {

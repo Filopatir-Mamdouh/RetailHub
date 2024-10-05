@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CartProduct
@@ -25,7 +27,8 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     private val adapter by lazy {
         MyBagProductRecyclerViewAdapter(this)
     }
-    private var oldList: MutableList<CartProduct>? = null
+    private var totalPrice: Double? = null
+    private var cartProductList: MutableList<CartProduct>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,7 +46,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                     when (item) {
                         is ApiState.Success<*> -> {
                             val data = item.data as List<CartProduct>
-                            oldList = data.toMutableList()
+                            cartProductList = data.toMutableList()
                             updateTotalPrice()
                             adapter.submitList(data)
                         }
@@ -60,7 +63,11 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             }
         }
         binding.btnCheckout.setOnClickListener {
-            Log.i("here", "onViewCreated: " + oldList?.get(1)!!.itemQuantity)
+            val bundle = Bundle().apply {
+                putParcelableArrayList("data",cartProductList as ArrayList<CartProduct>)
+                putDouble("totalprice", totalPrice ?: 0.0)
+            }
+            findNavController().navigate(R.id.checkoutFragment, bundle)
         }
 
         val manager = LinearLayoutManager(requireContext())
@@ -73,20 +80,20 @@ class MyBagFragment : Fragment(), OnClickMyBag {
         )
     }
 
-    override fun deleteMyBagItem(itemId: String) {
-        viewModel.deleteMyBagItem(itemId)
+    override fun deleteMyBagItem(cartProduct: CartProduct) {
+        viewModel.deleteMyBagItem(cartProduct.draftOrderId)
+        cartProductList?.remove(cartProduct)
+        updateTotalPrice()
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.myBagProductsRemove.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            // viewModel.updateTotalPrice(data.nodes[0].lineItems.nodes)
                             Toast.makeText(
                                 this@MyBagFragment.requireContext(),
                                 "Item Deleted",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            //  adapter.submitList(data)
                         }
 
                         is ApiState.Error -> {
@@ -104,16 +111,26 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
 
     override fun updateTotalPrice() {
-        var totalPrice = 0.0
-        oldList!!.forEach{
-            Log.i("here", "updateTotalPrice: " +it.itemQuantity+" q price " + it.itemPrice +" inv" + it.inventoryQuantity)
-        }
-        totalPrice = oldList?.sumOf {
+        totalPrice = 0.0
+        totalPrice = cartProductList?.sumOf {
             val price = it.itemPrice?.toDoubleOrNull() ?: 0.0
             price * it.itemQuantity
 
         }!!
         binding.tvMyBagProductPrice.text = "$totalPrice $"
+    }
+
+    private fun updateQuantity() {
+        cartProductList?.forEach {
+            if (it.didQuantityChanged) {
+                viewModel.updateMyBagItem(it)
+            }
+        }
+    }
+
+    override fun onStop() {
+        updateQuantity()
+        super.onStop()
     }
 }
 

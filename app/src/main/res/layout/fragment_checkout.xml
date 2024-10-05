@@ -99,93 +99,6 @@
 
 
     <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:fontFamily="@font/metropolis_medium"
-        android:text="@string/Change"
-        android:textColor="@color/red_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView11" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvAddressCOD"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textView11">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:fontFamily="@font/metropolis_regular"
-                android:text="@string/CashOnDelivery"
-                android:textColor="@color/black_variant"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvAddressCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="3dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textView11">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/tvAddressNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:fontFamily="@font/metropolis_regular"
-                android:text="**** **** **** 1231"
-                android:textColor="@color/black_variant"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvCardTypeImage"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/tvCardTypeImage"
-                android:layout_width="80dp"
-                android:layout_height="60dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_mc"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <TextView
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -194,8 +107,8 @@
         android:text="@string/PromoCode"
         android:textColor="@color/black_variant"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/cvAddressCard"
-        app:layout_constraintTop_toBottomOf="@+id/cvAddressCard" />
+        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupPaymentMethod" />
 
 
     <include
@@ -224,7 +137,7 @@
 
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/tvOrderPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
@@ -249,8 +162,53 @@
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
 
+    <RadioGroup
+        android:id="@+id/radioGroupPaymentMethod"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="end"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView11">
+
+        <RadioButton
+            android:id="@+id/rbCOD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/roundedcorner_background_white"
+            android:button="@null"
+            android:checked="true"
+            android:drawableRight="@android:drawable/btn_radio"
+            android:elevation="3dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:text="@string/CashOnDelivery"
+            android:textColor="@color/black_variant" />
+
+        <RadioButton
+            android:id="@+id/rbCARD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/roundedcorner_background_white"
+            android:button="@null"
+            android:checked="true"
+            android:drawableRight="@drawable/abc_btn_radio_material"
+            android:elevation="3dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:text="@string/PayWithCard"
+            android:textColor="@color/black_variant" />
+
+
+    </RadioGroup>
+
+
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tvDiscountPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
@@ -268,7 +226,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:fontFamily="@font/metropolis_semibold"
-        android:text="@string/Discount"
+        android:text="@string/Summary"
         android:textColor="@color/grey"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/textView7"
@@ -276,7 +234,7 @@
 
 
     <TextView
-        android:id="@+id/textView18"
+        android:id="@+id/tvSummary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
@@ -288,7 +246,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView17" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnSubmitOrder"
         style="@style/OrangeWideButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
