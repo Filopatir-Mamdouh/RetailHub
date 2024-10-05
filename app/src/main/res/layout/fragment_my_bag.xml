@@ -14,11 +14,12 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.909">
 
     </androidx.recyclerview.widget.RecyclerView>
-
 
     <TextView
         android:id="@+id/textView8"
@@ -32,16 +33,16 @@
         app:layout_constraintBottom_toTopOf="@+id/btnCheckout"
         app:layout_constraintStart_toStartOf="@id/rvMyBag" />
 
-        <TextView
-            android:id="@+id/tvMyBagProductPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:fontFamily="@font/metropolis_semibold"
-            android:text="124$"
-            android:textColor="@color/black_variant"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView8" />
+    <TextView
+        android:id="@+id/tvMyBagProductPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/metropolis_semibold"
+        android:text="124$"
+        android:textColor="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
 
     <Button
         android:id="@+id/btnCheckout"
@@ -55,4 +56,4 @@
         app:layout_constraintStart_toStartOf="@+id/textView8" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
