@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.payments.PaymentIntentResponse
@@ -26,6 +27,7 @@ class CheckoutFragment : Fragment(), Communicator {
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
     private lateinit var paymentSheet: PaymentSheet
+    private lateinit var appearance : PaymentSheet.Appearance
 
     private val viewModel by viewModels<CheckoutViewModel>()
     private var totalPrice: Double? = null
@@ -50,6 +52,7 @@ class CheckoutFragment : Fragment(), Communicator {
         viewModel.createPaymentIntent()
         binding.btnSubmitOrder.setOnClickListener {
             Log.i("here", "onViewCreated: hello ")
+            initPaymentSheetAppearance()
             presentPaymentSheet()
         }
         binding.promocodeEdittext.btnInsertCode.setOnClickListener {
@@ -130,7 +133,39 @@ class CheckoutFragment : Fragment(), Communicator {
             paymentIntentClientSecret,
             PaymentSheet.Configuration(
                 merchantDisplayName = "RetailHub",
-                customer = customerConfig
+                customer = customerConfig,
+                appearance = appearance
+            )
+        )
+    }
+
+    private fun initPaymentSheetAppearance() {
+        appearance = PaymentSheet.Appearance(
+            colorsLight = PaymentSheet.Colors(
+                primary = resources.getColor(R.color.red_color),
+                component = resources.getColor(R.color.white),
+                surface = resources.getColor(R.color.background_color),
+                componentBorder = resources.getColor(R.color.transparent),
+                componentDivider = resources.getColor(R.color.black_variant),
+                onComponent = resources.getColor(R.color.black_variant),
+                subtitle = resources.getColor(R.color.black_variant),
+                placeholderText = resources.getColor(R.color.grey),
+                onSurface = resources.getColor(R.color.black_variant),
+                appBarIcon = resources.getColor(R.color.black_variant),
+                error = resources.getColor(R.color.red_color),
+            ),
+            shapes = PaymentSheet.Shapes(
+                cornerRadiusDp = 12.0f,
+                borderStrokeWidthDp = 0.5f
+            ),
+            typography = PaymentSheet.Typography.default.copy(
+                fontResId = R.font.metropolis_regular,
+                sizeScaleFactor = 1.10f
+            ),
+            primaryButton = PaymentSheet.PrimaryButton(
+                shape = PaymentSheet.PrimaryButtonShape(
+                    cornerRadiusDp = 20f
+                ),
             )
         )
     }
