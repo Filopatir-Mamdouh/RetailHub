@@ -11,10 +11,12 @@ import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.type.CustomerInput
 import kotlinx.coroutines.flow.Flow
+import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.HomeProducts
 
 interface IRepository {
-    fun getProducts(query: String): Flow<ProductsQuery.Products>
-    fun getBrands(): Flow<CollectionsQuery.Collections>
+    fun getProducts(query: String): Flow<List<HomeProducts>>
+    fun getBrands(): Flow<List<Brands>>
     fun createUser(input: CustomerInput): Flow<CreateCustomerMutation.CustomerCreate>
 
     suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult?

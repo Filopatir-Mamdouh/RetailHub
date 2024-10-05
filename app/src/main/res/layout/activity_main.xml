@@ -19,6 +19,19 @@
         android:text="Button" />
         android:layout_height="match_parent"
         app:navGraph="@navigation/nav_graph"
+        android:layout_marginBottom="?actionBarSize"
         />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_navigation_background"
+        app:labelVisibilityMode="labeled"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemIconTint="@drawable/bottom_nav_item"
+        app:itemTextColor="@drawable/bottom_nav_item"
+        app:menu="@menu/bottom_nav_menu" />
 
 </FrameLayout>
