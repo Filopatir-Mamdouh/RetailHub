@@ -1,7 +1,9 @@
 package com.iti4.retailhub.datastorage
 
+import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
+import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetCustomerByIdQuery
 
 import com.iti4.retailhub.UpdateDraftOrderMutation
@@ -26,5 +28,6 @@ interface IRepository {
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
     fun  createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-
+    fun emailCheckoutDraftOrder(draftOrderId:String ): Flow<DraftOrderInvoiceSendMutation.DraftOrder>
+    fun completeCheckoutDraftOrder(draftOrderId:String ): Flow<CompleteDraftOrderMutation.DraftOrder>
 }

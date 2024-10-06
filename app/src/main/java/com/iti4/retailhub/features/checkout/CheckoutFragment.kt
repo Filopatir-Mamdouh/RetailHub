@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.checkout
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,10 +8,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
@@ -30,9 +33,10 @@ class CheckoutFragment : Fragment(), Communicator {
     private lateinit var paymentIntentClientSecret: String
     private lateinit var paymentSheet: PaymentSheet
     private lateinit var appearance: PaymentSheet.Appearance
-
-    private val viewModel by viewModels<CheckoutViewModel>()
     private var totalPrice: Double? = null
+    private var totalPriceInCents: Int? = null
+    private val viewModel by viewModels<CheckoutViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,19 +50,28 @@ class CheckoutFragment : Fragment(), Communicator {
         cartProducts =
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
-        binding.tvSummary.text = totalPrice.toString()
+        totalPriceInCents = totalPrice!!.times(100).toInt()
+        binding.tvOrderPrice.text = totalPrice.toString()
+
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
-        initConfiguration()
+        viewModel.getCustomerData()
+        listenToPIChanges()
+        listenToCustomerDataResponse()
+
 
         binding.btnSubmitOrder.setOnClickListener {
             if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
                 when (view.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
                     getString(R.string.CashOnDelivery) -> {
                         viewModel.createCheckoutDraftOrder(cartProducts)
-
+                        listenToCreateCheckoutDraftOrder()
                     }
                     getString(R.string.PayWithCard) -> {
-                        viewModel.createPaymentIntent()
+                        binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
+                        binding.btnSubmitOrder.isEnabled = false
+                        binding.btnSubmitOrder.text = ""
+                        viewModel.createPaymentIntent(totalPriceInCents!!)
+
                     }
                 }
             }
@@ -74,7 +87,6 @@ class CheckoutFragment : Fragment(), Communicator {
             binding.promocodeEdittext.etPromoCode.isFocusableInTouchMode = false
             binding.promocodeEdittext.etPromoCode.isFocusable = false
         }
-
         binding.promocodeEdittext.etPromoCode.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 binding.promocodeEdittext.etPromoCode.isFocusableInTouchMode = true
@@ -93,25 +105,7 @@ class CheckoutFragment : Fragment(), Communicator {
         binding.promocodeEdittext.etPromoCode.setText(data)
     }
 
-
-    private fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
-        when (paymentSheetResult) {
-            is PaymentSheetResult.Completed -> {
-                Log.i("here", "onPaymentSheetResult: Payment Completed ")
-            }
-
-            is PaymentSheetResult.Canceled -> {
-                Log.i("here", "Payment canceled!")
-            }
-
-            is PaymentSheetResult.Failed -> {
-                val error = paymentSheetResult.error
-                Log.i("here", "Payment failed" + error.localizedMessage ?: "Unknown error")
-            }
-        }
-    }
-
-    private fun initConfiguration() {
+    private fun listenToPIChanges() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.paymentIntentResponse.collect { item ->
@@ -125,6 +119,49 @@ class CheckoutFragment : Fragment(), Communicator {
                             paymentIntentClientSecret = paymentIntentResponse.clientSecret
                             initPaymentSheetAppearance()
                             presentPaymentSheet()
+                        }
+                        is ApiState.Error -> {}
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun listenToCustomerDataResponse() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.customerResponse.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            val response = item.data as GetCustomerByIdQuery.Customer
+                            binding.shimmerCheckout.stopShimmer()
+                            binding.shimmerCheckout.hideShimmer()
+                            // show customer address
+                            //load customer discounts
+                        }
+
+                        is ApiState.Error -> {}
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun listenToCreateCheckoutDraftOrder() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.checkoutDraftOrderCreated.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            binding.lottieAnimSubmitOrder.visibility = View.GONE
+                            binding.lottieAnimSubmitOrder.pauseAnimation()
+                            binding.btnSubmitOrder.isEnabled = true
+                            binding.btnSubmitOrder.text = "CONTINUE"
+                            Toast.makeText(this@CheckoutFragment.requireActivity(), "Payment Completed", Toast.LENGTH_SHORT).show()
                         }
                         is ApiState.Error -> {}
                         is ApiState.Loading -> {}
@@ -175,6 +212,31 @@ class CheckoutFragment : Fragment(), Communicator {
                 ),
             )
         )
+    }
+
+    private fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
+        when (paymentSheetResult) {
+            is PaymentSheetResult.Completed -> {
+                viewModel.createCheckoutDraftOrder(cartProducts)
+                listenToCreateCheckoutDraftOrder()
+            }
+
+            is PaymentSheetResult.Canceled -> {
+                binding.lottieAnimSubmitOrder.visibility = View.GONE
+                binding.lottieAnimSubmitOrder.pauseAnimation()
+                binding.btnSubmitOrder.isEnabled = true
+                binding.btnSubmitOrder.text = "SUBMIT ORDER"
+                Toast.makeText(this.requireActivity(), "Payment Canceled", Toast.LENGTH_SHORT).show()
+            }
+
+            is PaymentSheetResult.Failed -> {
+                binding.lottieAnimSubmitOrder.visibility = View.GONE
+                binding.lottieAnimSubmitOrder.pauseAnimation()
+                binding.btnSubmitOrder.isEnabled = true
+                binding.btnSubmitOrder.text = "SUBMIT ORDER"
+                Toast.makeText(this.requireActivity(), "Payment Failed", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onStart() {

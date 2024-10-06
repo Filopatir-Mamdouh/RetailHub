@@ -1,7 +1,9 @@
 package com.iti4.retailhub.datastorage
 
+import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
+import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
@@ -52,6 +54,13 @@ class Repository @Inject constructor(
 
     override fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate> {
         return remoteDataSource.createCheckoutDraftOrder(draftOrderInputModel)
+    }
+    override fun emailCheckoutDraftOrder(draftOrderId:String ): Flow<DraftOrderInvoiceSendMutation.DraftOrder> {
+        return remoteDataSource.emailCheckoutDraftOrder(draftOrderId)
+    }
+
+    override fun completeCheckoutDraftOrder(draftOrderId:String ): Flow<CompleteDraftOrderMutation.DraftOrder> {
+        return remoteDataSource.completeCheckoutDraftOrder(draftOrderId)
     }
 
 

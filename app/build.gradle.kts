@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.generators.BuildConfigData
 import java.util.Properties
 
 plugins {
@@ -23,13 +22,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
-        buildConfigField("String", "ADMIN_ACCESS_TOKEN", properties.getProperty("ADMIN_ACCESS_TOKEN_STRING"))
+        buildConfigField(
+            "String",
+            "ADMIN_ACCESS_TOKEN",
+            properties.getProperty("ADMIN_ACCESS_TOKEN_STRING")
+        )
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
     }
 
     buildFeatures {
         viewBinding = true
-        buildConfig= true
+        buildConfig = true
     }
 
     buildTypes {
@@ -108,7 +111,11 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     //Stripe
-    implementation ("com.stripe:stripe-android:20.51.1")
+    implementation("com.stripe:stripe-android:20.51.1")
+
+    // facebook shimmer
+
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
