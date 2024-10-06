@@ -29,21 +29,16 @@ interface RemoteDataSource {
     fun updateMyBagItem(cartProduct: CartProduct): Flow<UpdateDraftOrderMutation.DraftOrderUpdate>
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
-    fun getOrders(query: String): Flow<OrdersQuery.Orders>
     fun getProductTypesOfCollection(): Flow<List<Category>>
     fun getCustomerInfoById(id: String): Flow<GetCustomerByIdQuery.Customer>
     fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate>
     fun emailCheckoutDraftOrder(draftOrderId: String): Flow<DraftOrderInvoiceSendMutation.DraftOrder>
     fun completeCheckoutDraftOrder(draftOrderId: String): Flow<CompleteDraftOrderMutation.DraftOrder>
-    fun insertMyBagItem(
-        varientId: String,
-        customerId: String
-    ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-
+    fun insertMyBagItem( varientId: String, customerId: String): Flow<CreateDraftOrderMutation.DraftOrderCreate>
     fun markOrderAsPaid(orderId: String): Flow<MarkAsPaidMutation.OrderMarkAsPaid>
     fun createUser(input: CustomerInput): Flow<CreateCustomerMutation.CustomerCreate>
     fun getCustomerIdByEmail(email: String): Flow<CustomerEmailSearchQuery.Customers>
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
-    fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 }

@@ -70,6 +70,7 @@ class Repository @Inject constructor(
 
     override fun getProductTypesOfCollection(): Flow<List<Category>> {
         return remoteDataSource.getProductTypesOfCollection()
+    }
     override fun getCustomerInfoById(id: String): Flow<GetCustomerByIdQuery.Customer> {
         return remoteDataSource.getCustomerInfoById(id)
     }
@@ -169,7 +170,7 @@ class Repository @Inject constructor(
     }
 
     override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
-        return remoteDataSource.GetDraftOrdersByCustomer(varientId)
+        return remoteDataSource.getDraftOrdersByCustomer(varientId)
     }
 
 }

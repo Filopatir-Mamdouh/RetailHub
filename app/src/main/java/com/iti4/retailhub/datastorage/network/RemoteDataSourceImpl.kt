@@ -195,7 +195,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             }
         }
 
-    override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
+    override fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
         flow {
             val response =
                 apolloClient.query(GetDraftOrdersByCustomerQuery(varientId))
