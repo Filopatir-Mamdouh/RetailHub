@@ -5,9 +5,10 @@ import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.MarkAsPaidMutation
 
 import com.iti4.retailhub.UpdateDraftOrderMutation
-import com.iti4.retailhub.features.payments.PaymentRequest
+import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.CartProduct
 
 import com.iti4.retailhub.models.Brands
@@ -30,4 +31,5 @@ interface IRepository {
     fun  createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate>
     fun emailCheckoutDraftOrder(draftOrderId:String ): Flow<DraftOrderInvoiceSendMutation.DraftOrder>
     fun completeCheckoutDraftOrder(draftOrderId:String ): Flow<CompleteDraftOrderMutation.DraftOrder>
+    fun markOrderAsPaid(orderId: String): Flow<MarkAsPaidMutation.OrderMarkAsPaid>
 }

@@ -1,12 +1,11 @@
 package com.iti4.retailhub.features.checkout
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.features.payments.PaymentIntentResponse
-import com.iti4.retailhub.features.payments.PaymentRequest
+import com.iti4.retailhub.features.summary.PaymentIntentResponse
+import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.AddressInputModel
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CustomerInputModel
@@ -28,7 +27,6 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     private val dispatcher = Dispatchers.IO
     private lateinit var customerEmail: String
     private lateinit var customerName: String
-    private lateinit var customerTotalPrice: String
 
     private val _customerDataResponse = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerResponse = _customerDataResponse.onStart { }
@@ -61,8 +59,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         }
     }
 
-
-    fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>) {
+    fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>, isCard: Boolean) {
         //    val customerData = CustomerInput("customer_id:6945540800554")
         viewModelScope.launch(dispatcher) {
             val lineItems = listOfCartProduct.map { it.toLineItem() }
@@ -75,7 +72,6 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 lineItems, customerInputModel, addressInputModel, customerEmail, null, false
             )
             listOfCartProduct.forEach {
-                Log.i("here", "deleting" + it.draftOrderId)
                 repository.deleteMyBagItem(it.draftOrderId).collect {}
             }
             repository.createCheckoutDraftOrder(draftOrderInputModel).catch { e ->
@@ -84,7 +80,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
                     repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
                         .collect { responseFromComplete ->
-                            Log.i("here", "order"+responseFromComplete.order!!.id)
+                            if(isCard){repository.markOrderAsPaid(responseFromComplete.order!!.id).collect{}}
                             repository.deleteMyBagItem(responseFromComplete.id).collect {
                                 _checkoutDraftOrderCreated.emit(ApiState.Success(it))
                             }
@@ -99,7 +95,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         viewModelScope.launch(dispatcher) {
             repository.createStripePaymentIntent(
                 PaymentRequest(
-                    customerEmail, customerName, orderPrice, "usd"
+                    customerEmail, customerName, orderPrice, "Egp"
                 )
             ).collect {
                 val response = it

@@ -118,7 +118,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             price * it.itemQuantity
 
         }!!
-        binding.tvMyBagProductPrice.text = "$totalPrice $"
+        binding.tvMyBagProductPrice.text = "$totalPrice EGP"
     }
 
     private fun updateQuantity() {

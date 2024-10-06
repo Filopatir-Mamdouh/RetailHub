@@ -9,6 +9,7 @@ import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
+import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
@@ -22,6 +23,7 @@ import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
 import com.iti4.retailhub.type.DraftOrderLineItemInput
 import com.iti4.retailhub.type.MailingAddressInput
+import com.iti4.retailhub.type.OrderMarkAsPaidInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -80,6 +82,19 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
                 apolloClient.mutation(CreateDraftOrderMutation(draftOrderInput)).execute()
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.draftOrderCreate!!)
+            } else {
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
+        }
+
+
+    override fun markOrderAsPaid(orderId: String): Flow<MarkAsPaidMutation.OrderMarkAsPaid> =
+        flow {
+            val orderMarkAsPaidInput = OrderMarkAsPaidInput(id = orderId)
+            val response =
+                apolloClient.mutation(MarkAsPaidMutation(orderMarkAsPaidInput)).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.orderMarkAsPaid!!)
             } else {
                 throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
             }

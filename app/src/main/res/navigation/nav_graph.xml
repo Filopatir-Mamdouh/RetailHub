@@ -29,5 +29,10 @@
         android:name="com.iti4.retailhub.features.shop.ShopFragment"
         android:label="fragment_shop"
         tools:layout="@layout/fragment_shop" />
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.iti4.retailhub.features.summary.SummaryFragment"
+        android:label="fragment_summary"
+        tools:layout="@layout/fragment_summary" />
 
 </navigation>

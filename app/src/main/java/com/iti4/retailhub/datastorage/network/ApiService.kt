@@ -2,8 +2,8 @@ package com.iti4.retailhub.datastorage.network
 
 
 
-import com.iti4.retailhub.features.payments.Customer
-import com.iti4.retailhub.features.payments.PaymentRequest
+import com.iti4.retailhub.features.summary.Customer
+import com.iti4.retailhub.features.summary.PaymentRequest
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit

@@ -5,10 +5,11 @@ import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
-import com.iti4.retailhub.features.payments.PaymentRequest
+import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.DraftOrderInputModel
@@ -61,6 +62,9 @@ class Repository @Inject constructor(
 
     override fun completeCheckoutDraftOrder(draftOrderId:String ): Flow<CompleteDraftOrderMutation.DraftOrder> {
         return remoteDataSource.completeCheckoutDraftOrder(draftOrderId)
+    }
+    override fun markOrderAsPaid(orderId: String): Flow<MarkAsPaidMutation.OrderMarkAsPaid> {
+        return remoteDataSource.markOrderAsPaid(orderId)
     }
 
 

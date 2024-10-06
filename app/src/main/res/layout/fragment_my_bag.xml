@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:fontFamily="@font/metropolis_semibold"
-        android:text="124$"
+        android:text="0 Egp"
         android:textColor="@color/black_variant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView8" />

@@ -39,4 +39,7 @@
     <string name="favorites">Favorites</string>
     <string name="profile">Profile</string>
     <string name="check">Check</string>
+    <string name="Success">Success</string>
+    <string name="SuccessText">Your order will be delivered soon. Thank you for choosing our app!</string>
+    <string name="ContinueShopping">Continue Shopping</string>
 </resources>

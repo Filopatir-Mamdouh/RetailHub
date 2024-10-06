@@ -1,8 +1,6 @@
 package com.iti4.retailhub.features.checkout
 
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -13,12 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.features.payments.PaymentIntentResponse
+import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.models.CartProduct
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -51,7 +50,8 @@ class CheckoutFragment : Fragment(), Communicator {
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
         totalPriceInCents = totalPrice!!.times(100).toInt()
-        binding.tvOrderPrice.text = totalPrice.toString()
+        binding.tvOrderPrice.text = totalPrice.toString()+" EGP"
+        binding.tvSummary.text = totalPrice.toString()+" EGP"
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         viewModel.getCustomerData()
@@ -63,7 +63,10 @@ class CheckoutFragment : Fragment(), Communicator {
             if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
                 when (view.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
                     getString(R.string.CashOnDelivery) -> {
-                        viewModel.createCheckoutDraftOrder(cartProducts)
+                        binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
+                        binding.btnSubmitOrder.isEnabled = false
+                        binding.btnSubmitOrder.text = ""
+                        viewModel.createCheckoutDraftOrder(cartProducts, false)
                         listenToCreateCheckoutDraftOrder()
                     }
                     getString(R.string.PayWithCard) -> {
@@ -161,7 +164,8 @@ class CheckoutFragment : Fragment(), Communicator {
                             binding.lottieAnimSubmitOrder.pauseAnimation()
                             binding.btnSubmitOrder.isEnabled = true
                             binding.btnSubmitOrder.text = "CONTINUE"
-                            Toast.makeText(this@CheckoutFragment.requireActivity(), "Payment Completed", Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(R.id.summaryFragment)
+                            Toast.makeText(this@CheckoutFragment.requireActivity(), "Order Submitted", Toast.LENGTH_SHORT).show()
                         }
                         is ApiState.Error -> {}
                         is ApiState.Loading -> {}
@@ -217,7 +221,7 @@ class CheckoutFragment : Fragment(), Communicator {
     private fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
         when (paymentSheetResult) {
             is PaymentSheetResult.Completed -> {
-                viewModel.createCheckoutDraftOrder(cartProducts)
+                viewModel.createCheckoutDraftOrder(cartProducts, true)
                 listenToCreateCheckoutDraftOrder()
             }
 
