@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
@@ -24,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnClickGoToDetails {
 
     private val viewModel by viewModels<HomeViewModel>()
 
@@ -83,7 +84,7 @@ class HomeFragment : Fragment() {
         binding.newItemRow.apply {
             title.text = getString(R.string.new_item)
             subtitle.text = getString(R.string.you_ve_never_seen_it_before)
-            val adapter = NewItemAdapter()
+            val adapter = NewItemAdapter(this@HomeFragment)
             recyclerView.adapter = adapter
             adapter.submitList(data)
         }
@@ -97,5 +98,11 @@ class HomeFragment : Fragment() {
             recyclerView.adapter = adapter
             adapter.submitList(data)
         }
+    }
+
+    override fun goToDetails(productId: String) {
+        val bundle = Bundle()
+        bundle.putString("productid",productId)
+        findNavController().navigate(R.id.productDetailsFragment, bundle)
     }
 }

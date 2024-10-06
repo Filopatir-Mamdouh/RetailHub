@@ -6,6 +6,7 @@ plugins {
     id("kotlin-kapt")
     id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
     alias(libs.plugins.apollo)
 }
 
@@ -59,6 +60,10 @@ android {
 }
 
 dependencies {
+    //firebase auth
+    implementation (platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation ("com.google.android.gms:play-services-auth:20.0.0")
     //Pagination
 
     implementation("androidx.paging:paging-runtime:3.3.2")

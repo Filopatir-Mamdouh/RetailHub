@@ -31,8 +31,9 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
 
     private fun getMyBagProducts() {
+        //6966019850282
         viewModelScope.launch(dispatcher) {
-            repository.getMyBagProducts("customer_id:6945540800554")
+            repository.getMyBagProducts("customer_id:6966019850282")
                 .catch { e -> _myBagProducts.emit(ApiState.Error(e)) }.collect {
                     _myBagProducts.emit(ApiState.Success(it))
                 }

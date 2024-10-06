@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-
     app:startDestination="@id/homeFragment">
 
     <fragment
@@ -30,9 +29,25 @@
         android:label="fragment_shop"
         tools:layout="@layout/fragment_shop" />
     <fragment
+
         android:id="@+id/summaryFragment"
         android:name="com.iti4.retailhub.features.summary.SummaryFragment"
         android:label="fragment_summary"
         tools:layout="@layout/fragment_summary" />
+
+        <fragment
+        android:id="@+id/reviewsFragment"
+        android:name="com.iti4.retailhub.features.reviwes.view.ReviewsFragment"
+        android:label="fragment_reviews"
+        tools:layout="@layout/fragment_reviews" />
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.iti4.retailhub.productdetails.view.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details" >
+        <action
+            android:id="@+id/action_productDetailsFragment_to_reviewsFragment"
+            app:destination="@id/reviewsFragment" />
+    </fragment>
 
 </navigation>
