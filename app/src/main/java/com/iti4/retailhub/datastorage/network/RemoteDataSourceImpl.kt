@@ -5,13 +5,16 @@ import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
+import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
+import com.iti4.retailhub.logic.toCategory
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
@@ -36,6 +39,19 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         val response = apolloClient.query(CollectionsQuery()).execute()
         if (!response.hasErrors() && response.data != null) {
             emit(response.data!!.collections.toBrandsList())
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
+
+    override fun getProductTypesOfCollection(query:String): Flow<List<Category>> = flow {
+        val response = apolloClient.query(GetProductTypesOfCollectionQuery(query)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            val list = ArrayList<Category>()
+            response.data!!.collections.nodes.forEach {
+                list.add(it.toCategory())
+            }
+            emit(list)
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }

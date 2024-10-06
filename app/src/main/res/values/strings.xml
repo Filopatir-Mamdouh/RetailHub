@@ -39,4 +39,7 @@
     <string name="favorites">Favorites</string>
     <string name="profile">Profile</string>
     <string name="check">Check</string>
+    <string name="men">Men</string>
+    <string name="women">Women</string>
+    <string name="kids">Kids</string>
 </resources>

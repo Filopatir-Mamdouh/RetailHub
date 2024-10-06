@@ -1,0 +1,13 @@
+query GetProductTypesOfCollection($query: String!) {
+    collections(first: 1, query:$query) {
+        nodes{
+            id
+            title
+            products(first: 10, reverse: true) {
+                nodes {
+                    productType
+                }
+            }
+        }
+    }
+}

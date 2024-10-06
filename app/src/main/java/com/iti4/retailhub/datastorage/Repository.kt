@@ -12,6 +12,7 @@ import com.iti4.retailhub.features.payments.PaymentRequest
 import com.iti4.retailhub.models.CartProduct
 
 import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.HomeProducts
 
 import kotlinx.coroutines.flow.Flow
@@ -54,5 +55,8 @@ class Repository @Inject constructor(
         return retrofitDataSource.createStripePaymentIntent(paymentRequest)
     }
 
+    override fun getProductTypesOfCollection(query: String): Flow<List<Category>> {
+        return remoteDataSource.getProductTypesOfCollection(query)
+    }
 
 }
