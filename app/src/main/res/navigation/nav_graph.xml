@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/myBagFragment"
+        android:name="com.iti4.retailhub.features.mybag.MyBagFragment"
+        android:label="fragment_my_bag"
+        tools:layout="@layout/fragment_my_bag" />
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.iti4.retailhub.features.checkout.CheckoutFragment"
+        android:label="fragment_checkout"
+        tools:layout="@layout/fragment_checkout" />
+
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.iti4.retailhub.features.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/shopFragment"
+        android:name="com.iti4.retailhub.features.shop.ShopFragment"
+        android:label="fragment_shop"
+        tools:layout="@layout/fragment_shop" />
+    <fragment
+
+        android:id="@+id/summaryFragment"
+        android:name="com.iti4.retailhub.features.summary.SummaryFragment"
+        android:label="fragment_summary"
+        tools:layout="@layout/fragment_summary" />
+
+        <fragment
+        android:id="@+id/reviewsFragment"
+        android:name="com.iti4.retailhub.features.reviwes.view.ReviewsFragment"
+        android:label="fragment_reviews"
+        tools:layout="@layout/fragment_reviews" />
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.iti4.retailhub.productdetails.view.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details" >
+        <action
+            android:id="@+id/action_productDetailsFragment_to_reviewsFragment"
+            app:destination="@id/reviewsFragment" />
+    </fragment>
 
 </navigation>
