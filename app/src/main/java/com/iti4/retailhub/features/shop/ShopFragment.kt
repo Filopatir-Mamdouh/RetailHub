@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 class ShopFragment : Fragment() {
     lateinit var binding : FragmentShopBinding
     private val viewModel by viewModels<ShopViewModel>()
-    private val tabTitles = arrayOf("MEN", "WOMEN", "KID")
+    private val tabTitles = arrayOf("Men", "Women", "Kids")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,7 +36,7 @@ class ShopFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentShopBinding.inflate(inflater, container, false)
         return binding.root
@@ -71,15 +71,8 @@ class ShopFragment : Fragment() {
                 }
             }
         }
-        binding.tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    viewModel.getCategoriesList(tabTitles[it.position])
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
+        TabLayoutMediator(binding.tablayout, binding.viewPager) {
+            tab, position -> tab.text = tabTitles[position]
+        }.attach()
     }
 }

@@ -1,5 +1,5 @@
-query GetProductTypesOfCollection($query: String!) {
-    collections(first: 1, query:$query) {
+query GetProductTypesOfCollection {
+    collections(first: 4, reverse: true) {
         nodes{
             id
             title

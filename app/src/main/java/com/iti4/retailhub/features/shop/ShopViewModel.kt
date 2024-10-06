@@ -19,11 +19,11 @@ import javax.inject.Inject
 class ShopViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
     private val _categoriesList = MutableStateFlow<ApiState>(ApiState.Loading)
-    val categoriesList = _categoriesList.onStart { getCategoriesList("Men") }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
+    val categoriesList = _categoriesList.onStart { getCategoriesList() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
-    fun getCategoriesList(category: String) {
+    private fun getCategoriesList() {
         viewModelScope.launch(dispatcher) {
-            repository.getProductTypesOfCollection("title:$category").catch { e -> _categoriesList.emit(ApiState.Error(e)) }.collect{
+            repository.getProductTypesOfCollection().catch { e -> _categoriesList.emit(ApiState.Error(e)) }.collect{
                 _categoriesList.emit(ApiState.Success(it))
             }
         }

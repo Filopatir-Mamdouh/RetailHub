@@ -44,13 +44,15 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         }
     }
 
-    override fun getProductTypesOfCollection(query:String): Flow<List<Category>> = flow {
-        val response = apolloClient.query(GetProductTypesOfCollectionQuery(query)).execute()
+    override fun getProductTypesOfCollection(): Flow<List<Category>> = flow {
+        val response = apolloClient.query(GetProductTypesOfCollectionQuery()).execute()
         if (!response.hasErrors() && response.data != null) {
             val list = ArrayList<Category>()
             response.data!!.collections.nodes.forEach {
                 list.add(it.toCategory())
             }
+            list.removeFirst()
+            list.reverse()
             emit(list)
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")

@@ -18,5 +18,5 @@ interface RemoteDataSource {
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
-    fun getProductTypesOfCollection(query: String): Flow<List<Category>>
+    fun getProductTypesOfCollection(): Flow<List<Category>>
 }

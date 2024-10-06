@@ -29,5 +29,5 @@ interface IRepository {
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
 
-    fun getProductTypesOfCollection(query: String): Flow<List<Category>>
+    fun getProductTypesOfCollection(): Flow<List<Category>>
 }

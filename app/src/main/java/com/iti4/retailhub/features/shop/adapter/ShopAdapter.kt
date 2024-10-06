@@ -21,8 +21,16 @@ class ShopAdapter : ListAdapter<Category, ShopAdapter.ViewHolder>(CategoryDiffUt
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.binding.shopCategoryRV.apply {
-            adapter = CategoryItemAdapter(item.productTypes, item.id)
+        when(position){
+            0-> holder.binding.shopCategoryRV.apply {
+                adapter = CategoryItemAdapter(item.productTypes, item.id)
+            }
+            1-> holder.binding.shopCategoryRV.apply {
+                adapter = CategoryItemAdapter(item.productTypes, item.id)
+            }
+            2-> holder.binding.shopCategoryRV.apply {
+                adapter = CategoryItemAdapter(item.productTypes, item.id)
+            }
         }
     }
 }
