@@ -9,6 +9,7 @@ import com.iti4.retailhub.CustomerEmailSearchQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.OrdersQuery
+import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
@@ -31,6 +32,16 @@ class RemoteDataSourceImpl @Inject constructor (private val apolloClient: Apollo
         val response = apolloClient.query(CustomerEmailSearchQuery(email)).execute()
         if (!response.hasErrors() && response.data != null){
             emit(response.data!!.customers)
+        }
+        else{
+            throw Exception(response.errors?.get(0)?.message?: "Something went wrong")
+        }
+    }
+
+    override  fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?> = flow{
+        val response = apolloClient.query(ProductDetailsQuery(id)).execute()
+        if (!response.hasErrors() && response.data != null){
+            emit(response.data?.node?.onProduct)
         }
         else{
             throw Exception(response.errors?.get(0)?.message?: "Something went wrong")

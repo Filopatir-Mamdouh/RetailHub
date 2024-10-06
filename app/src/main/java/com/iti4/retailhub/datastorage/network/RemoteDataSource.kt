@@ -6,6 +6,7 @@ import com.iti4.retailhub.CustomerEmailSearchQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.OrdersQuery
+import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.HomeProducts
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +18,5 @@ interface RemoteDataSource {
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
+    fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
 }

@@ -7,6 +7,8 @@ import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.Repository
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RemoteDataSourceImpl
+import com.iti4.retailhub.datastorage.reviews.ReviewsDataStore
+import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
 import com.iti4.retailhub.userauthuntication.UserAuthuntication
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import com.iti4.retailhub.userlocalprofiledata.UserLocalProfileData
@@ -24,8 +26,11 @@ import javax.inject.Singleton
 class AppModule {
     @Provides
     @Singleton
-    fun provideRepository(remoteDataSource: RemoteDataSource , userAuthuntication: UserAuthunticationInterface,UserLocalProfileData: UserLocalProfileDataInterface): IRepository {
-        return Repository(remoteDataSource, userAuthuntication,UserLocalProfileData)
+    fun provideRepository(remoteDataSource: RemoteDataSource ,
+                          userAuthuntication: UserAuthunticationInterface,
+                          UserLocalProfileData: UserLocalProfileDataInterface,
+                          reviewsDataStore: ReviewsDataStoreInterface): IRepository {
+        return Repository(remoteDataSource, userAuthuntication,UserLocalProfileData,reviewsDataStore)
     }
 
 
@@ -44,12 +49,19 @@ class AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideUserAuthuntication(@ApplicationContext context: Context): UserAuthunticationInterface {
         return UserAuthuntication(context)
     }
     @Provides
+    @Singleton
     fun provideUserLocalProfileData(@ApplicationContext context: Context): UserLocalProfileDataInterface {
         return UserLocalProfileData(context)
+    }
+    @Provides
+    @Singleton
+    fun reviewsDataStore(): ReviewsDataStoreInterface {
+        return ReviewsDataStore()
     }
 
 }

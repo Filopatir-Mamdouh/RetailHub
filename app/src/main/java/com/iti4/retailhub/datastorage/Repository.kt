@@ -11,15 +11,18 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
+import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import com.iti4.retailhub.userlocalprofiledata.UserLocalProfileDataInterface
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Review
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -27,7 +30,9 @@ import javax.inject.Inject
 
 class Repository @Inject constructor(private val remoteDataSource: RemoteDataSource,
     private val userAuthuntication: UserAuthunticationInterface,
-    private val UserLocalProfileData: UserLocalProfileDataInterface) : IRepository {
+    private val UserLocalProfileData: UserLocalProfileDataInterface,
+    private val reviewsDataStore: ReviewsDataStoreInterface
+) : IRepository {
 
     override fun getProducts(query: String) : Flow<List<HomeProducts>> {
         return remoteDataSource.getProducts(query)
@@ -83,5 +88,16 @@ class Repository @Inject constructor(private val remoteDataSource: RemoteDataSou
     }
     override fun getCustomerIdByEmail(email: String): Flow<CustomerEmailSearchQuery.Customers>{
         return remoteDataSource.getCustomerIdByEmail(email)
+    }
+    override  fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>{
+        return remoteDataSource.getProductDetails(id)
+    }
+
+    override fun addReview(review: Review) {
+        reviewsDataStore.addReview(review)
+    }
+
+    override  fun getAllReviews(reviewsNumbers:Int): List<Review> {
+        return reviewsDataStore.getAllReviews(reviewsNumbers)
     }
 }

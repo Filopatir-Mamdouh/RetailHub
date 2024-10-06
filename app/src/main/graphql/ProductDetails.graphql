@@ -1,0 +1,66 @@
+query ProductDetails($id: ID!){
+    node(id: $id) {
+        id
+        ... on Product {
+            title
+            description
+            totalInventory
+            variantsCount{
+                count
+            }
+            variants(first: 20) {
+                edges {
+                    node {
+                        id
+                        title
+                        displayName
+                        inventoryQuantity
+                        media(first:20){
+                            nodes{
+                                mediaContentType
+                                alt
+                                preview{
+                                    status
+                                    image{
+                                        url
+                                    }
+                                }
+                            }
+                        }
+                        selectedOptions {
+                            name
+                            value
+                        }
+                        presentmentPrices(first: 10) {
+                            edges {
+                                node {
+
+                                    price {
+                                        amount
+                                        currencyCode
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            images(first: 5) {
+                edges {
+                    node {
+                        url
+                    }
+                }
+            }
+            collections(first: 5) {
+                edges {
+                    node {
+                        id
+                        title
+                    }
+                }
+            }
+        }
+    }
+}

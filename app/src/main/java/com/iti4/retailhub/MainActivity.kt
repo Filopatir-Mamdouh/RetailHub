@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.iti4.retailhub.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels()
+//    private lateinit var navController: NavController
     lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        binding.navigationView.setupWithNavController(Navigation.findNavController(this,R.id.fragmentContainerView2))
+//      //  binding.navigationView.setupWithNavController(Navigation.findNavController(this,R.id.fragmentContainerView2))
+//        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) as NavHostFragment
+//        // Get the NavController
+//        navController = navHostFragment.navController
     }
 }
