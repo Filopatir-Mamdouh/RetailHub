@@ -2,7 +2,9 @@ package com.iti4.retailhub.datastorage.network
 
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.CreateCustomerMutation
+import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.OrdersQuery
@@ -19,4 +21,10 @@ interface RemoteDataSource {
     fun getBrands(): Flow<List<Brands>>
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
+    fun insertMyBagItem(
+        varientId: String,
+        customerId: String
+    ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
+
+    fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 }

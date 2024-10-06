@@ -6,7 +6,9 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.CreateCustomerMutation
+import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.datastorage.network.ApiState
@@ -39,4 +41,10 @@ interface IRepository {
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
     fun addReview(review: Review)
     fun getAllReviews(reviewsNumbers:Int): List<Review>
+    fun insertMyBagItem(
+        varientId: String,
+        customerId: String
+    ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
+
+    fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 }

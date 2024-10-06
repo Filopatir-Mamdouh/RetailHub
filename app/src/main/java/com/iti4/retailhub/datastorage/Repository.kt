@@ -2,6 +2,7 @@ package com.iti4.retailhub.datastorage
 
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.Identity
@@ -10,7 +11,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.CreateCustomerMutation
+import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.R
@@ -99,5 +102,12 @@ class Repository @Inject constructor(private val remoteDataSource: RemoteDataSou
 
     override  fun getAllReviews(reviewsNumbers:Int): List<Review> {
         return reviewsDataStore.getAllReviews(reviewsNumbers)
+    }
+    override fun insertMyBagItem(varientId: String, customerId: String): Flow<CreateDraftOrderMutation.DraftOrderCreate>{
+        Log.d("TAG", "insertMyBagItem:start ")
+        return remoteDataSource.insertMyBagItem(varientId,customerId)
+    }
+    override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>{
+        return remoteDataSource.GetDraftOrdersByCustomer(varientId)
     }
 }

@@ -16,6 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
+import com.iti4.retailhub.CreateDraftOrderMutation
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
@@ -27,15 +29,15 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class ProductDetailsFragment : Fragment(){
+class ProductDetailsFragment : Fragment() {
 
     lateinit var binding: FragmentProductDetailsBinding
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private val reviewsViewModel by viewModels<ReviewsViewModel>()
     lateinit var produsctDetailsAdapter: ProductDetailsDiffUtilAdapter
-    var productVariants:List<ProductDetailsQuery.Edge>? = null
-    var selectedProductVariantId:String=""
-
+    var productVariants: List<ProductDetailsQuery.Edge>? = null
+    var selectedProductVariantId: String = ""
+    var isVariantInCustomerDraftOrders=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -54,86 +56,171 @@ class ProductDetailsFragment : Fragment(){
         binding.sesMoreReviews.setOnClickListener {
 //            findNavController.navigate(R.id.action_productDetailsFragment_to_reviewsFragment)
         }
-        produsctDetailsAdapter=ProductDetailsDiffUtilAdapter(requireContext())
-        binding.productImages.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.productImages.adapter=produsctDetailsAdapter
+        produsctDetailsAdapter = ProductDetailsDiffUtilAdapter(requireContext())
+        binding.productImages.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.productImages.adapter = produsctDetailsAdapter
         productDetailsViewModel.getProductDetails("gid://shopify/Product/7467930452010")
         lifecycleScope.launch {
-                productDetailsViewModel.productDetails.collect{ item ->
-                    when(item){
-                        is ApiState.Success<*> -> {
-                            val data = item.data as ProductDetailsQuery.OnProduct
-                            productVariants=data.variants.edges.filter { it-> it.node.inventoryQuantity!! >0 }
+            productDetailsViewModel.productDetails.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        val data = item.data as ProductDetailsQuery.OnProduct
+                        productVariants =
+                            data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
-                            val productTitle=data.title.split("|")
-                            binding.productTitle.text = productTitle[2]
-                            produsctDetailsAdapter.submitList(data.images.edges)
-                            binding.productPrand.text=productTitle[0]
-                            binding.productDescription.text= data.description
-                            binding.productPrice.text="${productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount} ${productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.currencyCode}"
-                            binding.textView14.text=productTitle[1]
-                            binding.inInventory.text="In Inventory: ${productVariants!!.get(0).node.inventoryQuantity}"
+                        val productTitle = data.title.split("|")
+                        binding.productTitle.text = productTitle[2]
+                        produsctDetailsAdapter.submitList(data.images.edges)
+                        binding.productPrand.text = productTitle[0]
+                        binding.productDescription.text = data.description
+                        binding.productPrice.text =
+                            "${productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount} ${
+                                productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.currencyCode
+                            }"
+                        binding.textView14.text = productTitle[1]
+                        binding.inInventory.text =
+                            "In Inventory: ${productVariants!!.get(0).node.inventoryQuantity}"
+                        selectedProductVariantId=productVariants!!.get(0).node.id
+
+                        val allSizes = productVariants!!
+                            .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
+                            .distinct()
+                        val allColors = productVariants!!
+                            .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
+                            .distinct()
+
+                        val spinner2adapter =
+                            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, allSizes)
+                        spinner2adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+                        binding.spinner2.adapter = spinner2adapter
+
+                         val images = intArrayOf(R.drawable.ic_menu_view, R.drawable.ic_menu_view, R.drawable.ic_menu_view)
+                            val spinneradapter = CustomSpinnerAdapter(requireContext(), allColors, images)
+                            binding.spinner.adapter = spinneradapter
 
 
-                            val allSizes = productVariants!!
-                                .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
-                                .distinct()
+                    }
 
-                            val spinner2adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, allSizes)
-                            spinner2adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-                            binding.spinner2.adapter = spinner2adapter
+                    is ApiState.Error -> {
+                        Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
 
-                           /* val images = intArrayOf(R.drawable.ic_menu_view, R.drawable.ic_menu_view, R.drawable.ic_menu_view)
-                            val spinneradapter = CustomSpinnerAdapter(requireContext(),  data.options[1].values, images)
-                            binding.spinner.adapter = spinneradapter*/
+                    is ApiState.Loading -> {
 
-
-                        }
-                        is ApiState.Error -> {
-                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
-                        }
-                        is ApiState.Loading -> {
-
-                        }
                     }
                 }
             }
-        binding.back.setOnClickListener {
-            activity?.supportFragmentManager?.popBackStack()
         }
+        lifecycleScope.launch {
+            productDetailsViewModel.createDraftOrder.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
+                        Toast.makeText(
+                            requireContext(),
+                            "Added to your card",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    is ApiState.Error -> {
+                        Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    is ApiState.Loading -> {
+
+                    }
+                }
+
+                lifecycleScope.launch {
+                    productDetailsViewModel.customerDraftOrders.collect { item ->
+                        when (item) {
+                            is ApiState.Success<*> -> {
+                                val data = item.data as GetDraftOrdersByCustomerQuery.DraftOrders
+
+                                // Iterate through draft orders
+                                data.nodes.forEach { draftOrder ->
+                                    // Iterate through line items in each draft order
+                                    draftOrder.lineItems.nodes.forEach { lineItem ->
+                                        // Check if the current line item has the variant ID you are looking for
+                                        if (lineItem.variant?.id == selectedProductVariantId) {
+                                            // Variant found, do something
+                                          isVariantInCustomerDraftOrders=true
+                                        }
+                                    }
+                                }
+                            }
+
+                            is ApiState.Error -> {
+                                Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+
+                            is ApiState.Loading -> {
+
+                            }
+                        }}}
+
+                binding.back.setOnClickListener {
+                    activity?.supportFragmentManager?.popBackStack()
+                }
 
 
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                binding.spinner.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?,
+                            p1: View?,
+                            p2: Int,
+                            p3: Long
+                        ) {
+                            Toast.makeText(requireContext(),p2.toString(),Toast.LENGTH_SHORT).show()
+                        }
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                        }
+
+                    }
+
+                binding.spinner2.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
+                            selectedProductVariantId = productVariants!![position].node.id
+                            binding.productPrice.text =
+                                "${productVariants!![position].node.presentmentPrices.edges[0].node.price.amount} ${productVariants!![position].node.presentmentPrices.edges[0].node.price.currencyCode}"
+                            binding.inInventory.text =
+                                "In Inventory: ${productVariants!![position].node.inventoryQuantity}"
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>) {
+                            // Do something when no item is selected
+                        }
+                    }
+                val allReviews = reviewsViewModel.getAllReviews(3)
+                val reviewsAdapter = ReviewsDiffUtilAdapter(requireContext())
+                binding.reviewsRecycleView.layoutManager = LinearLayoutManager(context)
+                binding.reviewsRecycleView.adapter = reviewsAdapter
+                reviewsAdapter.submitList(allReviews)
+
+                binding.addtocard.setOnClickListener {
+                    if (!isVariantInCustomerDraftOrders){
+                        binding.addtocard.text="Add to cart"
+                        productDetailsViewModel.addToCart(selectedProductVariantId)
+                    }else{
+                        binding.addtocard.text="Open In Your Cart"
+                    }
+
+
+
             }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
         }
-
-        binding.spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                selectedProductVariantId= productVariants!![position].node.id
-                binding.productPrice.text="${productVariants!![position].node.presentmentPrices.edges[0].node.price.amount} ${productVariants!![position].node.presentmentPrices.edges[0].node.price.currencyCode}"
-                binding.inInventory.text="In Inventory: ${productVariants!![position].node.inventoryQuantity}"
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do something when no item is selected
-            }
-        }
-        val allReviews=reviewsViewModel.getAllReviews(3)
-        val reviewsAdapter= ReviewsDiffUtilAdapter(requireContext())
-        binding.reviewsRecycleView.layoutManager = LinearLayoutManager(context)
-        binding.reviewsRecycleView.adapter=reviewsAdapter
-        reviewsAdapter.submitList(allReviews)
-
-        binding.addtocard.setOnClickListener {
-
-        }
-
     }
-}
-
+}}
 

@@ -3,9 +3,12 @@ package com.iti4.retailhub.datastorage.network
 import android.util.Log
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.CreateCustomerMutation
+import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.OrdersQuery
@@ -14,6 +17,8 @@ import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.type.DraftOrderInput
+import com.iti4.retailhub.type.DraftOrderLineItemInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -78,4 +83,41 @@ class RemoteDataSourceImpl @Inject constructor (private val apolloClient: Apollo
         }
     }
 
+    override fun insertMyBagItem(varientId: String, customerId: String): Flow<CreateDraftOrderMutation.DraftOrderCreate> =
+        flow {
+            Log.d("TAG", "insertMyBagItem:start ")
+            val draftOrderInput = createDraftOrderFromVairentOnly(varientId,customerId)
+            val response =
+                apolloClient.mutation(CreateDraftOrderMutation(draftOrderInput)).execute()
+            Log.d("TAG", "insertMyBagItem:response ${response} ")
+            if (!response.hasErrors() && response.data != null) {
+                Log.d("TAG", "insertMyBagItem:if ${response.data!!.draftOrderCreate!!}")
+                emit(response.data!!.draftOrderCreate!!)
+            } else {
+                Log.d("TAG", "insertMyBagItem:else ${response.errors?.get(0)?.message ?: "Something went wrong"}")
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
+        }
+    fun createDraftOrderFromVairentOnly(varientId: String, customerId: String): DraftOrderInput {
+        return DraftOrderInput(
+            lineItems = Optional.present(
+                listOf(
+                    DraftOrderLineItemInput(
+                        variantId = Optional.present(varientId), quantity = 1
+                    )
+                )
+            ),
+            customerId = Optional.present(customerId)
+        )
+    }
+    override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
+        flow {
+            val response =
+                apolloClient.query(GetDraftOrdersByCustomerQuery(varientId)).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.draftOrders)
+            } else {
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
+        }
 }

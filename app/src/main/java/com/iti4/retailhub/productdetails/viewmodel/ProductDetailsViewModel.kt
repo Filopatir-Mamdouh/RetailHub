@@ -1,11 +1,14 @@
 package com.iti4.retailhub.productdetails.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -18,7 +21,10 @@ import javax.inject.Inject
 class ProductDetailsViewModel @Inject constructor(private val repository: IRepository): ViewModel() {
     private val _productDetails = MutableStateFlow<ApiState>(ApiState.Loading)
     val productDetails = _productDetails
-//        _productDetails.onStart { getProductDetails() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
+    private val _createDraftOrder = MutableStateFlow<ApiState>(ApiState.Loading)
+    val createDraftOrder = _createDraftOrder
+    private val _customerDraftOrders = MutableStateFlow<ApiState>(ApiState.Loading)
+    val customerDraftOrders = _customerDraftOrders
 
      fun getProductDetails(id:String) {
         viewModelScope.launch(Dispatchers.IO){
@@ -31,4 +37,36 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
             }
         }
     }
+fun  GetDraftOrdersByCustomer(varientId: String){
+    viewModelScope.launch(Dispatchers.IO){
+        repository.GetDraftOrdersByCustomer(varientId)
+            .catch {
+                    e -> _customerDraftOrders.emit(ApiState.Error(e))
+            }
+            .collect{
+                _customerDraftOrders.emit(ApiState.Success(it))
+    }
 }
+}
+    fun addToCart(selectedProductVariantId: String) {
+        Log.d("TAG", "addToCart:start ")
+        val customerId=repository.getUserShopLocalId()
+        viewModelScope.launch(Dispatchers.IO){
+            Log.d("TAG", "addToCart:launch ")
+            /*if (customerId != null) {*/
+                Log.d("TAG", "addToCart:if ")
+                repository.insertMyBagItem(selectedProductVariantId,"gid://shopify/Customer/6966019850282")
+                    .catch { e ->
+                        _createDraftOrder.emit(ApiState.Error(e))
+                        Log.d("TAG", "addToCart:catch ${e.message}")
+                    }
+                    .collect{
+                        _createDraftOrder.emit(ApiState.Success(it))
+                        Log.d("TAG", "addToCart:collect ${it} ")
+                    }
+//            }
+        }
+    }
+}
+
+
