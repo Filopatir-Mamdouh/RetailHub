@@ -3,18 +3,19 @@ package com.iti4.retailhub.features.home.adapter
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.iti4.retailhub.CollectionsQuery
-import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.NewCardItemBinding
+import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.models.HomeProducts
 
-class NewItemAdapter : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewItemUtils()) {
-    lateinit var context : Context
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+class NewItemAdapter(val handleAction:OnClickGoToDetails) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewItemUtils()) {
+    lateinit var context: Context
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = NewCardItemBinding.bind(itemView)
     }
 
@@ -33,6 +34,11 @@ class NewItemAdapter : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewI
                 append(item.maxPrice)
                 append(" ")
                 append(item.currencyCode)
+
+            }
+
+            root.setOnClickListener{
+                handleAction.goToDetails(item.id!!)
             }
         }
     }

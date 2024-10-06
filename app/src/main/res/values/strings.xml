@@ -18,6 +18,15 @@
     <string name="Order">Order:</string>
     <string name="Discount">Discount:</string>
     <string name="SubmitOrder">SUBMIT ORDER</string>
+    <string name="signup">Sign up</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="or_sign_up_with_social_account">Or sign up with social account</string>
+    <string name="enter_password">Password</string>
+    <string name="enter_email">Email</string>
+    <string name="enter_name">Name</string>
+    <string name="or_login_in_with_social_account">Or login with social account</string>
+    <string name="login">Login</string>
+    <string name="web_client_id">820047487372-bh211dcltqq130mtvhdm26qb1ru56eev.apps.googleusercontent.com</string>
     <string name="old_usd"><strike>%.2f $</strike></string>
     <string name="number_usd">%.2f $</string>
     <string name="number_eur">%.2f €</string>
@@ -25,7 +34,7 @@
     <string name="number_aed">%.2f د.إ</string>
     <string name="number_ksr">%.2f ر.س</string>
     <string name="new_item">New</string>
-    <string name="MaximumAmount">Max quanity reached</string>
+    <string name="MaximumAmount">Max quality reached</string>
     <string name="Summary">Summary</string>
     <string name="PayWithCard">Pay With Card</string>
     <string name="fashion_sale">Fashion\nSale</string>
@@ -39,4 +48,14 @@
     <string name="favorites">Favorites</string>
     <string name="profile">Profile</string>
     <string name="check">Check</string>
+    <string name="Success">Success</string>
+    <string name="SuccessText">Your order will be delivered soon. Thank you for choosing our app!</string>
+    <string name="ContinueShopping">Continue Shopping</string>
+    <string name="size">Size:</string>
+    <string name="color">Color:</string>
+    <string name="reviews">Reviews</string>
+    <string name="seemore">See More Reviews</string>
+    <string name="addtocard">ADD TO CART</string>
+    <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
+
 </resources>

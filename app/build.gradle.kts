@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.generators.BuildConfigData
 import java.util.Properties
 
 plugins {
@@ -7,6 +6,7 @@ plugins {
     id("kotlin-kapt")
     id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
     alias(libs.plugins.apollo)
 }
 
@@ -23,13 +23,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
-        buildConfigField("String", "ADMIN_ACCESS_TOKEN", properties.getProperty("ADMIN_ACCESS_TOKEN_STRING"))
+        buildConfigField(
+            "String",
+            "ADMIN_ACCESS_TOKEN",
+            properties.getProperty("ADMIN_ACCESS_TOKEN_STRING")
+        )
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
     }
 
     buildFeatures {
         viewBinding = true
-        buildConfig= true
+        buildConfig = true
     }
 
     buildTypes {
@@ -56,6 +60,10 @@ android {
 }
 
 dependencies {
+    //firebase auth
+    implementation (platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation ("com.google.android.gms:play-services-auth:20.0.0")
     //Pagination
 
     implementation("androidx.paging:paging-runtime:3.3.2")
@@ -108,7 +116,11 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     //Stripe
-    implementation ("com.stripe:stripe-android:20.51.1")
+    implementation("com.stripe:stripe-android:20.51.1")
+
+    // facebook shimmer
+
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

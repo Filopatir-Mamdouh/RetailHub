@@ -2,7 +2,6 @@ package com.iti4.retailhub.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
 
 
 data class CartProduct(
@@ -47,7 +46,13 @@ data class CartProduct(
         override fun newArray(size: Int): Array<CartProduct?> {
             return arrayOfNulls(size)
         }
-
-
     }
+
+}
+
+fun CartProduct.toLineItem(): LineItemInputModel {
+    return LineItemInputModel(
+        variantId = this.itemId,
+        quantity = this.itemQuantity
+    )
 }
