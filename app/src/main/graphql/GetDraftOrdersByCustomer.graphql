@@ -1,0 +1,14 @@
+query GetDraftOrdersByCustomerNormal($query: String!) {
+    draftOrders(query: $query, first: 100) {
+        nodes {
+            id
+            lineItems(first: 1) {
+                nodes {
+                    variant {
+                        id
+                    }
+                }
+            }
+        }
+    }
+}

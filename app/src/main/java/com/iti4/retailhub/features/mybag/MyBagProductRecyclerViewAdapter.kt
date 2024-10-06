@@ -51,7 +51,7 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
 
 
             tvMyBagProductName.text = item.itemTitle
-            tvMyBagProductPrice.text = item.itemPrice + "$"
+            tvMyBagProductPrice.text = item.itemPrice + " EGP"
             tvMyBagProductColor.text = item.itemColor
             tvMyBagProductSize.text = item.itemSize
 

@@ -1,5 +1,6 @@
 package com.iti4.retailhub
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ToolbarController {
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity(), ToolbarController {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         binding.navigationView.setupWithNavController(
             Navigation.findNavController(
                 this,
@@ -45,22 +48,24 @@ class MainActivity : AppCompatActivity(), ToolbarController {
             val totalScrollRange = appBarLayout.totalScrollRange
             if (abs(verticalOffset.toDouble()) >= totalScrollRange) {
                 // Collapsed
-                binding.toolbar.setBackgroundColor(getResources().getColor(R.color.white))
+                actionBar?.setBackgroundDrawable(getResources().getColor(R.color.white) as Drawable)
                 binding.pageName.visibility = View.GONE
                 binding.collapsedPageName.visibility = View.VISIBLE
             } else {
                 // Expanded
-                binding.toolbar.setBackgroundColor(getResources().getColor(R.color.background_color))
+                actionBar?.setBackgroundDrawable(getResources().getColor(R.color.background_color) as Drawable)
                 binding.pageName.visibility = View.VISIBLE
                 binding.collapsedPageName.visibility = View.GONE
             }
         }
+
     }
 
     override fun setVisibility(visibility: Boolean) {
         binding.apply {
             appBar.visibility = if (visibility) View.VISIBLE else View.GONE
             toolbar.visibility = if (visibility) View.VISIBLE else View.GONE
+            actionBar?.hide()
             collapsingToolbar.visibility = if (visibility) View.VISIBLE else View.GONE
         }
     }
@@ -72,5 +77,14 @@ class MainActivity : AppCompatActivity(), ToolbarController {
         }
     }
 
+
+    override fun onBackPressed() {
+        val navController = Navigation.findNavController(this, R.id.fragmentContainerView2)
+        if (navController.previousBackStackEntry != null) {
+            navController.navigateUp()
+        } else {
+            super.onBackPressed()
+        }
+    }
 
 }

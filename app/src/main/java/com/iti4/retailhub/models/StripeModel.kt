@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.payments
+package com.iti4.retailhub.features.summary
 
 data class Customer(
     val id: String,
