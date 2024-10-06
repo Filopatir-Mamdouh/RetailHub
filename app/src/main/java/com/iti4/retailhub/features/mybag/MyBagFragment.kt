@@ -46,10 +46,16 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                 viewModel.products.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
+
                             val data = item.data as List<CartProduct>
-                            cartProductList = data.toMutableList()
-                            updateTotalPrice()
-                            adapter.submitList(data)
+                            if(!data.isNullOrEmpty()){
+                                cartProductList = data.toMutableList()
+                                updateTotalPrice()
+                                adapter.submitList(data)
+                                binding.lottibagAnimation.visibility=View.GONE
+                            }
+                            else
+                                binding.lottibagAnimation.visibility=View.VISIBLE
                         }
 
                         is ApiState.Error -> {
@@ -64,11 +70,13 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             }
         }
         binding.btnCheckout.setOnClickListener {
-            val bundle = Bundle().apply {
-                putParcelableArrayList("data",cartProductList as ArrayList<CartProduct>)
-                putDouble("totalprice", totalPrice ?: 0.0)
+            if(!cartProductList.isNullOrEmpty()){
+                val bundle = Bundle().apply {
+                    putParcelableArrayList("data",cartProductList as ArrayList<CartProduct>)
+                    putDouble("totalprice", totalPrice ?: 0.0)
+                }
+                findNavController().navigate(R.id.checkoutFragment, bundle)
             }
-            findNavController().navigate(R.id.checkoutFragment, bundle)
         }
 
         val manager = LinearLayoutManager(requireContext())

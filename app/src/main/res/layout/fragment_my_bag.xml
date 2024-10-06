@@ -44,6 +44,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView8" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottibagAnimation"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="112dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        android:visibility="gone"
+        app:lottie_fileName="emptycartanimation.json"
+        app:lottie_loop="true" />
+
     <Button
         android:id="@+id/btnCheckout"
         style="@style/OrangeWideButton"

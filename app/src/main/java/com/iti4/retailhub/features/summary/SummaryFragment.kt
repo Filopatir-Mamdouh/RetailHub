@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentSummaryBinding
@@ -41,6 +43,13 @@ class SummaryFragment : Fragment() {
         (requireActivity() as ToolbarController).apply {
             setVisibility(false)
         }
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.GONE
     }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.VISIBLE
+    }
+
 
 }

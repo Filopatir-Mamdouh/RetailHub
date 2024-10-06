@@ -50,8 +50,8 @@ class CheckoutFragment : Fragment(), Communicator {
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
         totalPriceInCents = totalPrice!!.times(100).toInt()
-        binding.tvOrderPrice.text = totalPrice.toString()+" EGP"
-        binding.tvSummary.text = totalPrice.toString()+" EGP"
+        binding.tvOrderPrice.text = totalPrice.toString() + " EGP"
+        binding.tvSummary.text = totalPrice.toString() + " EGP"
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         viewModel.getCustomerData()
@@ -69,6 +69,7 @@ class CheckoutFragment : Fragment(), Communicator {
                         viewModel.createCheckoutDraftOrder(cartProducts, false)
                         listenToCreateCheckoutDraftOrder()
                     }
+
                     getString(R.string.PayWithCard) -> {
                         binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
                         binding.btnSubmitOrder.isEnabled = false
@@ -123,6 +124,7 @@ class CheckoutFragment : Fragment(), Communicator {
                             initPaymentSheetAppearance()
                             presentPaymentSheet()
                         }
+
                         is ApiState.Error -> {}
                         is ApiState.Loading -> {}
                     }
@@ -165,8 +167,13 @@ class CheckoutFragment : Fragment(), Communicator {
                             binding.btnSubmitOrder.isEnabled = true
                             binding.btnSubmitOrder.text = "CONTINUE"
                             findNavController().navigate(R.id.summaryFragment)
-                            Toast.makeText(this@CheckoutFragment.requireActivity(), "Order Submitted", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@CheckoutFragment.requireActivity(),
+                                "Order Submitted",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         is ApiState.Error -> {}
                         is ApiState.Loading -> {}
                     }
@@ -230,7 +237,8 @@ class CheckoutFragment : Fragment(), Communicator {
                 binding.lottieAnimSubmitOrder.pauseAnimation()
                 binding.btnSubmitOrder.isEnabled = true
                 binding.btnSubmitOrder.text = "SUBMIT ORDER"
-                Toast.makeText(this.requireActivity(), "Payment Canceled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.requireActivity(), "Payment Canceled", Toast.LENGTH_SHORT)
+                    .show()
             }
 
             is PaymentSheetResult.Failed -> {
