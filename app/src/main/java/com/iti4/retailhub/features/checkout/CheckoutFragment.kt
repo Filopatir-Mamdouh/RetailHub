@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.iti4.retailhub.R
+import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.payments.PaymentIntentResponse
@@ -27,7 +29,7 @@ class CheckoutFragment : Fragment(), Communicator {
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
     private lateinit var paymentSheet: PaymentSheet
-    private lateinit var appearance : PaymentSheet.Appearance
+    private lateinit var appearance: PaymentSheet.Appearance
 
     private val viewModel by viewModels<CheckoutViewModel>()
     private var totalPrice: Double? = null
@@ -45,15 +47,21 @@ class CheckoutFragment : Fragment(), Communicator {
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
         binding.tvSummary.text = totalPrice.toString()
-
-        paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         initConfiguration()
-        viewModel.createPaymentIntent()
+
         binding.btnSubmitOrder.setOnClickListener {
-            Log.i("here", "onViewCreated: hello ")
-            initPaymentSheetAppearance()
-            presentPaymentSheet()
+            if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
+                when (view.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
+                    getString(R.string.CashOnDelivery) -> {
+                        viewModel.createCheckoutDraftOrder(cartProducts)
+
+                    }
+                    getString(R.string.PayWithCard) -> {
+                        viewModel.createPaymentIntent()
+                    }
+                }
+            }
         }
         binding.promocodeEdittext.btnInsertCode.setOnClickListener {
             val bottomSheet = MyBottomSheetFragment(this)
@@ -115,10 +123,9 @@ class CheckoutFragment : Fragment(), Communicator {
                                 paymentIntentResponse.ephemeralKey
                             )
                             paymentIntentClientSecret = paymentIntentResponse.clientSecret
-
-
+                            initPaymentSheetAppearance()
+                            presentPaymentSheet()
                         }
-
                         is ApiState.Error -> {}
                         is ApiState.Loading -> {}
                     }
@@ -168,6 +175,14 @@ class CheckoutFragment : Fragment(), Communicator {
                 ),
             )
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as ToolbarController).apply {
+            setVisibility(true)
+            setTitle("Checkout")
+        }
     }
 
 

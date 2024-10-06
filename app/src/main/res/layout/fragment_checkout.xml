@@ -187,7 +187,7 @@
                 android:background="@drawable/roundedcorner_background_white"
                 android:button="@null"
                 android:checked="true"
-                android:drawableRight="@android:drawable/btn_radio"
+                android:drawableRight="@drawable/abc_btn_radio_material"
                 android:elevation="3dp"
                 android:fontFamily="@font/metropolis_medium"
                 android:text="@string/CashOnDelivery"

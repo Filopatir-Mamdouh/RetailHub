@@ -1,11 +1,17 @@
 package com.iti4.retailhub.features.checkout
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.payments.PaymentIntentResponse
 import com.iti4.retailhub.features.payments.PaymentRequest
+import com.iti4.retailhub.models.AddressInputModel
+import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.CustomerInputModel
+import com.iti4.retailhub.models.DraftOrderInputModel
+import com.iti4.retailhub.models.toLineItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +33,29 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     val paymentIntentResponse = _paymentIntentResponse.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
+
+    fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>) {
+        //    val customerData = CustomerInput("customer_id:6945540800554")
+
+        viewModelScope.launch(dispatcher) {
+            val lineItems = listOfCartProduct.map { it.toLineItem() }
+            val customerId = "gid://shopify/Customer/6945540800554"
+            repository.getCustomerInfoById(customerId).collect {
+                val customerInputModel = CustomerInputModel(customerId, it.firstName, it.lastName, it.email)
+                val addressInputModel =
+                    AddressInputModel("3 NewBridge Court", "Chino Hills", "CA", "91709", "USA")
+                val draftOrderInputModel =
+                    DraftOrderInputModel(lineItems, customerInputModel, addressInputModel, it.email, null, false)
+                listOfCartProduct.forEach{
+                    Log.i("here", "deleting" + it.draftOrderId)
+                    repository.deleteMyBagItem(it.draftOrderId).collect{}}
+                repository.createCheckoutDraftOrder(draftOrderInputModel).collect{
+                    Log.i("here", "createCheckoutDraftOrder: "+it.toString())
+                }
+            }
+
+        }
+    }
 
     fun createPaymentIntent() {
         viewModelScope.launch(dispatcher) {

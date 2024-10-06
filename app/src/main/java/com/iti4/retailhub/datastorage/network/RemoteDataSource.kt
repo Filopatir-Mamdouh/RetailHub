@@ -1,10 +1,13 @@
 package com.iti4.retailhub.datastorage.network
 
+import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
+import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import kotlinx.coroutines.flow.Flow
 
@@ -17,5 +20,7 @@ interface RemoteDataSource {
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
+    fun getCustomerInfoById(id: String): Flow<GetCustomerByIdQuery.Customer>
+    fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel):  Flow<CreateDraftOrderMutation.DraftOrderCreate>
 
 }
