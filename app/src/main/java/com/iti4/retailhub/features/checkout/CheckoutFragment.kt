@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.R
@@ -26,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CheckoutFragment : Fragment(), Communicator {
+class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private lateinit var binding: FragmentCheckoutBinding
     private lateinit var cartProducts: List<CartProduct>
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration

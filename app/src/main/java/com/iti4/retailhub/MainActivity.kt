@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity(), ToolbarController {
         binding.appBar.setExpanded(true, true);
     }
 
-
     override fun onBackPressed() {
         val navController = Navigation.findNavController(this, R.id.fragmentContainerView2)
         if (navController.previousBackStackEntry != null) {
@@ -94,5 +93,7 @@ class MainActivity : AppCompatActivity(), ToolbarController {
             super.onBackPressed()
         }
     }
+
+
 
 }

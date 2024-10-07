@@ -63,5 +63,12 @@
     <string name="Edit">Edit</string>
     <string name="ShippingDefaultText">Use as the shipping address</string>
     <string name="AddToCart">Add To Cart</string>
+    <string name="FullName">Full Name</string>
+    <string name="Address">Address</string>
+    <string name="Appartment">Appartment</string>
+    <string name="City">City</string>
+    <string name="Country">Country</string>
+    <string name="Phone">Phone</string>
+    <string name="SaveAddress">Save Address</string>
 
 </resources>

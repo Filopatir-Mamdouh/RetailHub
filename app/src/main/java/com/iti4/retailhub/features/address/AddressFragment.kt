@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -18,17 +19,18 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.models.CustomerAddress
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AddressFragment : Fragment() {
-
+class AddressFragment : Fragment(), OnClickAddress {
+    private lateinit var addressesList: List<GetAddressesByIdQuery.Address>
     private lateinit var binding: FragmentAddressBinding
     private val viewModel by viewModels<AddressViewModel>()
 
     private val adapter by lazy {
-        AddressRecyclerViewAdapter()
+        AddressRecyclerViewAdapter(this)
     }
 
     override fun onCreateView(
@@ -52,6 +54,17 @@ class AddressFragment : Fragment() {
         )
         listenToAddressesState()
 
+
+
+        binding.btnAddAddress.setOnClickListener {
+
+        }
+        binding.btnAddAddressText.setOnClickListener {
+            val bundle = Bundle().apply {
+                putString("reason", "new")
+            }
+            findNavController().navigate(R.id.addressDetails, bundle)
+        }
     }
 
 
@@ -61,16 +74,15 @@ class AddressFragment : Fragment() {
                 viewModel.addressState.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            val response = item.data as  GetAddressesByIdQuery.Customer
-
-                            Log.i("here", "listenToAddressesState: "+response)
-                           adapter.submitList(response.addresses)
-
+                            val response = item.data as GetAddressesByIdQuery.Customer
+                            addressesList = response.addresses
+                            adapter.submitList(addressesList)
                         }
 
                         is ApiState.Error -> {
                             Log.i("here", "error: ")
                         }
+
                         is ApiState.Loading -> {}
                     }
                 }
@@ -87,15 +99,30 @@ class AddressFragment : Fragment() {
             collapse()
         }
 
-        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.GONE
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
+            View.GONE
     }
 
     override fun onStop() {
         super.onStop()
-        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.VISIBLE
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
+            View.VISIBLE
         (requireActivity() as ToolbarController).apply {
             expand()
         }
+
+    }
+
+    override fun saveAddressDetails(address: CustomerAddress) {
+        //
+    }
+
+    override fun editDetails(address: CustomerAddress) {
+        val bundle = Bundle().apply {
+            putString("reason", "edit")
+            putParcelable("data", address)
+        }
+        findNavController().navigate(R.id.addressDetails, bundle)
 
     }
 

@@ -74,7 +74,7 @@
                 android:id="@+id/cbAddressDefault"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:fontFamily="@font/metropolis_regular"
                 android:text="@string/ShippingDefaultText"
@@ -86,7 +86,7 @@
                 android:id="@+id/tvAddressPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="+2356755477979"
                 app:layout_constraintStart_toStartOf="@+id/tvAddress2Add"
                 app:layout_constraintTop_toBottomOf="@+id/tvAddress2Add" />

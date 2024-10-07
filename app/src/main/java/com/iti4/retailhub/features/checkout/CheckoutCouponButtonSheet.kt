@@ -12,7 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iti4.retailhub.databinding.MybagbottomSheetLayoutBinding
 import com.iti4.retailhub.features.mybag.Promo
 
-class MyBottomSheetFragment(private val communicator: Communicator) : BottomSheetDialogFragment(),
+class MyBottomSheetFragment(private val onClickBottomSheet: OnClickBottomSheet) : BottomSheetDialogFragment(),
     OnClickApply {
     private lateinit var binding: MybagbottomSheetLayoutBinding
 
@@ -32,7 +32,7 @@ class MyBottomSheetFragment(private val communicator: Communicator) : BottomShee
 
         binding.promocodeEdittext.btnInsertCode.setOnClickListener {
             if (binding.promocodeEdittext.etPromoCode.text.isNotEmpty()) {
-                communicator.passData(binding.promocodeEdittext.etPromoCode.text.toString())
+                onClickBottomSheet.passData(binding.promocodeEdittext.etPromoCode.text.toString())
                 dismiss()
             }
         }
