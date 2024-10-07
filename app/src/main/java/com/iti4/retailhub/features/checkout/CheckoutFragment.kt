@@ -11,14 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
+import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.CartProduct
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -255,11 +254,7 @@ class CheckoutFragment : Fragment(), Communicator {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("Checkout")
-        }
+        ToolbarSetup.setupToolbar(binding.checkoutAppbar, "Checkout",resources, findNavController())
     }
-
 
 }

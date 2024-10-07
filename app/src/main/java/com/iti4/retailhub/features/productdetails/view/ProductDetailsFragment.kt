@@ -17,7 +17,6 @@ import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilA
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
@@ -51,6 +50,12 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.productDetailsAppBar.apply{
+            appBar.setExpanded(false)
+            backButton.setOnClickListener {
+                findNavController().navigateUp()
+            }
+        }
         productId = arguments?.getString("productid") as String
         binding.sesMoreReviews.setOnClickListener {
             findNavController().navigate(com.iti4.retailhub.R.id.reviewsFragment)
@@ -68,16 +73,11 @@ class ProductDetailsFragment : Fragment() {
                         productVariants =
                             data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
-
                         val productTitle = data.title.split("|")
                         if (productTitle.size > 2)
-                            (requireActivity() as ToolbarController).apply {
-                                setTitle(productTitle[2])
-                            }
+                                binding.productDetailsAppBar.collapsedPageName.text = productTitle[2]
                         else
-                            (requireActivity() as ToolbarController).apply {
-                                setTitle(productTitle[1])
-                            }
+                            binding.productDetailsAppBar.collapsedPageName.text =productTitle[1]
                         produsctDetailsAdapter.submitList(data.images.edges)
                         binding.productPrand.text = productTitle[0]
                         binding.productDescription.text = data.description
@@ -242,15 +242,6 @@ class ProductDetailsFragment : Fragment() {
             }
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("")
-        }
-    }
-
 
 }
 

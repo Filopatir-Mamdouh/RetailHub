@@ -11,9 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentHomeBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.adapter.BrandAdapter
@@ -84,19 +82,6 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        (requireActivity() as ToolbarController).setVisibility(false)
-        (activity as MainActivity).supportActionBar?.hide()
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (requireActivity() as ToolbarController).setVisibility(false)
-        (activity as MainActivity).supportActionBar?.hide()
     }
 
     private fun displayNewItemRowData(data: List<HomeProducts>) {

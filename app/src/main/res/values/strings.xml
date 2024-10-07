@@ -63,5 +63,5 @@
     <string name="Edit">Edit</string>
     <string name="ShippingDefaultText">Use as the shipping address</string>
     <string name="AddToCart">Add To Cart</string>
-
+    <string name="my_bag">My Bag</string>
 </resources>
