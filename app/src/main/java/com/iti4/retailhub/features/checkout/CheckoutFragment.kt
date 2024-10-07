@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.R
@@ -166,6 +167,7 @@ class CheckoutFragment : Fragment(), Communicator {
                             binding.lottieAnimSubmitOrder.pauseAnimation()
                             binding.btnSubmitOrder.isEnabled = true
                             binding.btnSubmitOrder.text = "CONTINUE"
+                            findNavController().clearBackStack(R.id.homeFragment)
                             findNavController().navigate(R.id.summaryFragment)
                             Toast.makeText(
                                 this@CheckoutFragment.requireActivity(),

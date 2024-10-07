@@ -78,6 +78,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         super.onResume()
         (requireActivity() as ToolbarController).setVisibility(false)
         (activity as MainActivity).supportActionBar?.hide()
+        
     }
 
     private fun displayNewItemRowData(data: List<HomeProducts>){

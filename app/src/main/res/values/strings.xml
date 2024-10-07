@@ -62,5 +62,6 @@
     <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
     <string name="Edit">Edit</string>
     <string name="ShippingDefaultText">Use as the shipping address</string>
+    <string name="AddToCart">Add To Cart</string>
 
 </resources>

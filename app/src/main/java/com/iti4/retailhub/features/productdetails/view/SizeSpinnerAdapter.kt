@@ -36,7 +36,7 @@ class CustomSpinnerAdapter(
         val textView = view.findViewById<TextView>(R.id.textView)
         val imageView = view.findViewById<ImageView>(R.id.imageView)
         textView.text = items[p0]
-        imageView.setImageResource(images[p0])
+        imageView.visibility = View.GONE
         return view
     }
 

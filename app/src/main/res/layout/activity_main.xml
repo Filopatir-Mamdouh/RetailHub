@@ -43,9 +43,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
+                android:fontFamily="@font/metropolis_bold"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
-                android:textSize="30sp"
+                android:textColor="@color/black_variant"
+                android:textSize="34sp"
                 app:layout_collapseMode="parallax"
                 tools:text="Your Page Name" />
 
@@ -55,8 +56,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
+                android:fontFamily="@font/metropolis_semibold"
+                android:textColor="@color/black_variant"
+                android:textSize="18sp"
                 android:visibility="gone"
                 app:layout_collapseMode="pin"
                 tools:text="Your Page Name" />

@@ -17,11 +17,12 @@ import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilA
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
+import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
-import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,6 @@ class ProductDetailsFragment : Fragment() {
     var productVariants: List<ProductDetailsQuery.Edge>? = null
     var selectedProductVariantId: String = ""
     var isVariantInCustomerDraftOrders = false
-
 
 
     override fun onCreateView(
@@ -68,11 +68,16 @@ class ProductDetailsFragment : Fragment() {
                         productVariants =
                             data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
+
                         val productTitle = data.title.split("|")
-                        if(productTitle.size>2)
-                        binding.productTitle.text =productTitle[2]
+                        if (productTitle.size > 2)
+                            (requireActivity() as ToolbarController).apply {
+                                setTitle(productTitle[2])
+                            }
                         else
-                            binding.productTitle.text =productTitle[1]
+                            (requireActivity() as ToolbarController).apply {
+                                setTitle(productTitle[1])
+                            }
                         produsctDetailsAdapter.submitList(data.images.edges)
                         binding.productPrand.text = productTitle[0]
                         binding.productDescription.text = data.description
@@ -177,9 +182,9 @@ class ProductDetailsFragment : Fragment() {
                     }
                 }
 
-                binding.back.setOnClickListener {
-                    activity?.supportFragmentManager?.popBackStack()
-                }
+//                binding.back.setOnClickListener {
+//                    activity?.supportFragmentManager?.popBackStack()
+//                }
 
 
                 binding.spinner.onItemSelectedListener =
@@ -226,16 +231,26 @@ class ProductDetailsFragment : Fragment() {
 
                 binding.addtocard.setOnClickListener {
                     if (!isVariantInCustomerDraftOrders) {
-                        binding.addtocard.text = "Add to cart"
+                        binding.addtocard.text = "Item Added"
                         productDetailsViewModel.addToCart(selectedProductVariantId)
+                        it.isEnabled=false
                     } else {
+                        it.isEnabled=false
                         binding.addtocard.text = "Open In Your Cart"
                     }
-
-
                 }
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as ToolbarController).apply {
+            setVisibility(true)
+            setTitle("")
+        }
+    }
+
+
 }
 
