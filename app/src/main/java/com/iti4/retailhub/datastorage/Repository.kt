@@ -23,6 +23,7 @@ import com.iti4.retailhub.datastorage.network.RetrofitDataSource
 import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -68,6 +69,9 @@ class Repository @Inject constructor(
         return retrofitDataSource.createStripePaymentIntent(paymentRequest)
     }
 
+    override fun getProductTypesOfCollection(): Flow<List<Category>> {
+        return remoteDataSource.getProductTypesOfCollection()
+    }
     override fun getCustomerInfoById(id: String): Flow<GetCustomerByIdQuery.Customer> {
         return remoteDataSource.getCustomerInfoById(id)
     }
@@ -171,7 +175,7 @@ class Repository @Inject constructor(
         return remoteDataSource.getAddressesById(customerId)
     }
     override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
-        return remoteDataSource.GetDraftOrdersByCustomer(varientId)
+        return remoteDataSource.getDraftOrdersByCustomer(varientId)
     }
 
 }

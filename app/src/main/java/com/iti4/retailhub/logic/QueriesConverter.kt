@@ -1,9 +1,12 @@
 package com.iti4.retailhub.logic
 
 import com.iti4.retailhub.CollectionsQuery
+import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.HomeProducts
+import java.util.stream.Collectors.toList
 
 fun ProductsQuery.Products.toProductsList(): List<HomeProducts> {
     val list = ArrayList<HomeProducts>()
@@ -29,4 +32,8 @@ fun CollectionsQuery.Collections.toBrandsList(): List<Brands> {
     }
     list.removeFirst()
     return list
+}
+
+fun GetProductTypesOfCollectionQuery.Node.toCategory() : Category{
+    return Category(this.id, this.title, this.products.nodes.distinct().map { it.productType })
 }

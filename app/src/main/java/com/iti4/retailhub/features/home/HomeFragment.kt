@@ -74,8 +74,8 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         (requireActivity() as ToolbarController).setVisibility(false)
         (activity as MainActivity).supportActionBar?.hide()
     }

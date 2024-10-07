@@ -19,6 +19,7 @@ import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -38,6 +39,7 @@ interface IRepository {
     fun getProducts(query: String): Flow<List<HomeProducts>>
     fun getBrands(): Flow<List<Brands>>
 
+    fun getProductTypesOfCollection(): Flow<List<Category>>
     fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate>
     fun emailCheckoutDraftOrder(draftOrderId: String): Flow<DraftOrderInvoiceSendMutation.DraftOrder>
     fun completeCheckoutDraftOrder(draftOrderId: String): Flow<CompleteDraftOrderMutation.DraftOrder>

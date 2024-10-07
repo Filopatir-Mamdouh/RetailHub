@@ -12,15 +12,18 @@ import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
+import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
+import com.iti4.retailhub.logic.toCategory
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.CustomerInput
@@ -79,6 +82,21 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         val response = apolloClient.query(CollectionsQuery()).execute()
         if (!response.hasErrors() && response.data != null) {
             emit(response.data!!.collections.toBrandsList())
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
+
+    override fun getProductTypesOfCollection(): Flow<List<Category>> = flow {
+        val response = apolloClient.query(GetProductTypesOfCollectionQuery()).execute()
+        if (!response.hasErrors() && response.data != null) {
+            val list = ArrayList<Category>()
+            response.data!!.collections.nodes.forEach {
+                list.add(it.toCategory())
+            }
+            list.removeFirst()
+            list.reverse()
+            emit(list)
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
@@ -161,7 +179,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             }
         }
 
-    override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
+    override fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
         flow {
             val response =
                 apolloClient.query(GetDraftOrdersByCustomerQuery(varientId))

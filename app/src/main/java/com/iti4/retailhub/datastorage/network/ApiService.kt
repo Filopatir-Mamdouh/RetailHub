@@ -26,7 +26,7 @@ interface ApiService {
 
 
 object RetrofitHelper {
-    const val BASE_URL = "https://nodejs-serverless-function-express-self-eta.vercel.app/api/"
+    private const val BASE_URL = "https://nodejs-serverless-function-express-self-eta.vercel.app/api/"
     val retrofitInstance = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
