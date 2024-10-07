@@ -16,8 +16,8 @@ import com.iti4.retailhub.datastorage.reviews.ReviewsDataStore
 import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
 import com.iti4.retailhub.userauthuntication.UserAuthuntication
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
-import com.iti4.retailhub.userlocalprofiledata.UserLocalProfileData
-import com.iti4.retailhub.userlocalprofiledata.UserLocalProfileDataInterface
+import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileData
+import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +31,7 @@ import javax.inject.Singleton
 class AppModule {
     @Provides
     @Singleton
-    fun provideRepository(remoteDataSource: RemoteDataSource ,
+    fun provideRepository(remoteDataSource: RemoteDataSource,
                           retrofitDataSource: RetrofitDataSource,
                           userAuthuntication: UserAuthunticationInterface,
                           UserLocalProfileData: UserLocalProfileDataInterface,

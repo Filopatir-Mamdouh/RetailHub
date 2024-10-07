@@ -1,4 +1,4 @@
-package com.iti4.retailhub.userlocalprofiledata
+package com.iti4.retailhub.datastorage.userlocalprofiledata
 
 interface UserLocalProfileDataInterface {
     fun addUserName(name:String):Int

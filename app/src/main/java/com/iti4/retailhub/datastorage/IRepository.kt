@@ -11,6 +11,7 @@ import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
+import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
@@ -67,4 +68,5 @@ interface IRepository {
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
     fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 
+    fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
 }

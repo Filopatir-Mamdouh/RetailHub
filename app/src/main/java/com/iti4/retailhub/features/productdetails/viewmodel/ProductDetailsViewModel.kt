@@ -1,4 +1,4 @@
-package com.iti4.retailhub.productdetails.viewmodel
+package com.iti4.retailhub.features.productdetails.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -25,6 +25,7 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
     val createDraftOrder = _createDraftOrder
     private val _customerDraftOrders = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerDraftOrders = _customerDraftOrders
+    val customerId by lazy {repository.getUserShopLocalId()}
 
      fun getProductDetails(id:String) {
         viewModelScope.launch(Dispatchers.IO){
@@ -49,13 +50,12 @@ fun  GetDraftOrdersByCustomer(varientId: String){
 }
 }
     fun addToCart(selectedProductVariantId: String) {
-        Log.d("TAG", "addToCart:start ")
-        val customerId=repository.getUserShopLocalId()
+
         viewModelScope.launch(Dispatchers.IO){
             Log.d("TAG", "addToCart:launch ")
             /*if (customerId != null) {*/
                 Log.d("TAG", "addToCart:if ")
-                repository.insertMyBagItem(selectedProductVariantId,"gid://shopify/Customer/6966019850282")
+                repository.insertMyBagItem(selectedProductVariantId,customerId!!)
                     .catch { e ->
                         _createDraftOrder.emit(ApiState.Error(e))
                         Log.d("TAG", "addToCart:catch ${e.message}")

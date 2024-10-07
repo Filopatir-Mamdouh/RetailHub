@@ -9,6 +9,7 @@ import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
+import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
@@ -150,23 +151,6 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         }
 
 
-
-    fun createDraftOrderFromVairentOnly(
-        varientId: String,
-        customerId: String
-    ): DraftOrderInput {
-        return DraftOrderInput(
-            lineItems = Optional.present(
-                listOf(
-                    DraftOrderLineItemInput(
-                        variantId = Optional.present(varientId), quantity = 1
-                    )
-                )
-            ),
-            customerId = Optional.present(customerId)
-        )
-    }
-
     override fun emailCheckoutDraftOrder(draftOrderId: String): Flow<DraftOrderInvoiceSendMutation.DraftOrder> =
         flow {
             val response =
@@ -184,6 +168,20 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
                     .execute()
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.draftOrders)
+            } else {
+                throw Exception(
+                    response.errors?.get(0)?.message ?: "Something went wrong"
+                )
+            }
+        }
+
+    override fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer> =
+        flow {
+            val response =
+                apolloClient.query(GetAddressesByIdQuery(customerId))
+                    .execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.customer!!)
             } else {
                 throw Exception(
                     response.errors?.get(0)?.message ?: "Something went wrong"
@@ -275,7 +273,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         }
     }
 
-    fun toGraphQLDraftOrderInput(draftOrderInputModel: DraftOrderInputModel): DraftOrderInput {
+    private fun toGraphQLDraftOrderInput(draftOrderInputModel: DraftOrderInputModel): DraftOrderInput {
         return DraftOrderInput(
             lineItems = Optional.present(draftOrderInputModel.lineItems.map { lineItem ->
                 DraftOrderLineItemInput(
@@ -298,5 +296,21 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         )
     }
 
+
+    private fun createDraftOrderFromVairentOnly(
+        varientId: String,
+        customerId: String
+    ): DraftOrderInput {
+        return DraftOrderInput(
+            lineItems = Optional.present(
+                listOf(
+                    DraftOrderLineItemInput(
+                        variantId = Optional.present(varientId), quantity = 1
+                    )
+                )
+            ),
+            customerId = Optional.present(customerId)
+        )
+    }
 }
 

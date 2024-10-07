@@ -40,9 +40,11 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     val paymentIntentResponse = _paymentIntentResponse.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
+
+    val customerId by lazy {(repository.getUserShopLocalId()!!)}
     fun getCustomerData() {
         viewModelScope.launch(dispatcher) {
-            repository.getCustomerInfoById("gid://shopify/Customer/6945540800554")
+            repository.getCustomerInfoById(customerId)
                 .catch { e ->
                     _customerDataResponse.emit(ApiState.Error(e))
                 }

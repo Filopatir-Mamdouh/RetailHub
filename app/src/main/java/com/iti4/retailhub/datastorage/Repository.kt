@@ -12,6 +12,7 @@ import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
+import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
@@ -28,7 +29,7 @@ import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
-import com.iti4.retailhub.userlocalprofiledata.UserLocalProfileDataInterface
+import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -165,6 +166,10 @@ class Repository @Inject constructor(
         return remoteDataSource.insertMyBagItem(varientId, customerId)
     }
 
+
+    override fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer> {
+        return remoteDataSource.getAddressesById(customerId)
+    }
     override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
         return remoteDataSource.GetDraftOrdersByCustomer(varientId)
     }

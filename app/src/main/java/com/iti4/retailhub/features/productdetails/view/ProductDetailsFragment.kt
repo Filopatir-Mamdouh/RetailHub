@@ -1,4 +1,4 @@
-package com.iti4.retailhub.productdetails.view
+package com.iti4.retailhub.features.productdetails.view
 
 import android.R
 import android.os.Bundle
@@ -21,7 +21,7 @@ import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
-import com.iti4.retailhub.productdetails.viewmodel.ProductDetailsViewModel
+import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -69,7 +69,10 @@ class ProductDetailsFragment : Fragment() {
                             data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
                         val productTitle = data.title.split("|")
-                        binding.productTitle.text = productTitle[2]
+                        if(productTitle.size>2)
+                        binding.productTitle.text =productTitle[2]
+                        else
+                            binding.productTitle.text =productTitle[1]
                         produsctDetailsAdapter.submitList(data.images.edges)
                         binding.productPrand.text = productTitle[0]
                         binding.productDescription.text = data.description

@@ -1,4 +1,4 @@
-package com.iti4.retailhub.productdetails.view
+package com.iti4.retailhub.features.productdetails.view
 
 
 import android.annotation.SuppressLint

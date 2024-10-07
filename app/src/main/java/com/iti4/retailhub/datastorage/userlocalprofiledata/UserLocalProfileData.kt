@@ -1,4 +1,4 @@
-package com.iti4.retailhub.userlocalprofiledata
+package com.iti4.retailhub.datastorage.userlocalprofiledata
 
 import android.content.Context
 import android.content.SharedPreferences

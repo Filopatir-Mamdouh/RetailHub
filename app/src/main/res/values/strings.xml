@@ -57,5 +57,7 @@
     <string name="seemore">See More Reviews</string>
     <string name="addtocard">ADD TO CART</string>
     <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
+    <string name="Edit">Edit</string>
+    <string name="ShippingDefaultText">Use as the shipping address</string>
 
 </resources>
