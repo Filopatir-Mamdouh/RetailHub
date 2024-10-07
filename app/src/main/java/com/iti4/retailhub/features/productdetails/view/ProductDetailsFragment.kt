@@ -2,6 +2,7 @@ package com.iti4.retailhub.features.productdetails.view
 
 import android.R
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,21 +16,25 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
 import com.iti4.retailhub.CreateDraftOrderMutation
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
+import com.iti4.retailhub.models.FavoritProduct
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
-
+    private val favoritesViewModel by viewModels<FavoritesViewModel>()
     lateinit var binding: FragmentProductDetailsBinding
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private val reviewsViewModel by viewModels<ReviewsViewModel>()
@@ -37,7 +42,14 @@ class ProductDetailsFragment : Fragment() {
     var productId = ""
     var productVariants: List<ProductDetailsQuery.Edge>? = null
     var selectedProductVariantId: String = ""
+    var selectedProductColor: String = ""
+    var selectedProductSize: String = ""
+    lateinit var allColors: List<String>
+    lateinit var allSizes: List<String>
+    lateinit var productTitle: List<String>
+    lateinit var seelectedImage: String
     var isVariantInCustomerDraftOrders = false
+    lateinit var favoritList: List<GetCustomerFavoritesQuery.Node>
 
 
     override fun onCreateView(
@@ -59,17 +71,19 @@ class ProductDetailsFragment : Fragment() {
         binding.productImages.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.productImages.adapter = produsctDetailsAdapter
+        Log.d("fav", "onViewCreated: ${productId}")
         productDetailsViewModel.getProductDetails(productId)
         lifecycleScope.launch {
             productDetailsViewModel.productDetails.collect { item ->
                 when (item) {
                     is ApiState.Success<*> -> {
+                        Log.d("fav", "onViewCreated:${item} ")
                         val data = item.data as ProductDetailsQuery.OnProduct
                         productVariants =
                             data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
 
-                        val productTitle = data.title.split("|")
+                         productTitle = data.title.split("|")
                         if (productTitle.size > 2)
                             (requireActivity() as ToolbarController).apply {
                                 setTitle(productTitle[2])
@@ -79,6 +93,7 @@ class ProductDetailsFragment : Fragment() {
                                 setTitle(productTitle[1])
                             }
                         produsctDetailsAdapter.submitList(data.images.edges)
+                        seelectedImage = data.images.edges[0].node.url.toString()
                         binding.productPrand.text = productTitle[0]
                         binding.productDescription.text = data.description
                         binding.productPrice.text =
@@ -90,10 +105,10 @@ class ProductDetailsFragment : Fragment() {
                             "In Inventory: ${productVariants!!.get(0).node.inventoryQuantity}"
                         selectedProductVariantId = productVariants!!.get(0).node.id
 
-                        val allSizes = productVariants!!
+                         allSizes = productVariants!!
                             .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
                             .distinct()
-                        val allColors = productVariants!!
+                         allColors = productVariants!!
                             .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
                             .distinct()
 
@@ -110,7 +125,7 @@ class ProductDetailsFragment : Fragment() {
                         val spinneradapter =
                             CustomSpinnerAdapter(requireContext(), allColors, images)
                         binding.spinner.adapter = spinneradapter
-
+favoritesViewModel.getFavorites()
 
                     }
 
@@ -181,6 +196,78 @@ class ProductDetailsFragment : Fragment() {
                         }
                     }
                 }
+                lifecycleScope.launch {
+                    productDetailsViewModel.customerDraftOrders.collect { item ->
+                        when (item) {
+                            is ApiState.Success<*> -> {
+                                val data = item.data as UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
+
+                                Log.d("fav", "onViewCreated:${data} ")
+                            }
+
+                            is ApiState.Error -> {
+                                Toast.makeText(
+                                    requireContext(),
+                                    item.exception.message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+
+                            is ApiState.Loading -> {
+
+                            }
+                        }
+                    }
+                }
+                lifecycleScope.launch {
+                    favoritesViewModel.savedFavortes.collect { item ->
+                        when (item) {
+                            is ApiState.Success<*> -> {
+                                val data = item.data as GetCustomerFavoritesQuery.Customer
+
+                                Log.d("fav", "onViewCreated:${data} ")
+                                favoritList=data.metafields.nodes.filter { it.key == "favorites" }
+                                binding.spinner2.onItemSelectedListener =
+                                    object : AdapterView.OnItemSelectedListener {
+                                        override fun onItemSelected(
+                                            parent: AdapterView<*>,
+                                            view: View?,
+                                            position: Int,
+                                            id: Long
+                                        ) {
+
+                                            for (favorit in favoritList) {
+                                                if (favorit.namespace.contains(selectedProductVariantId)) {
+                                                    binding.cardView3.setCardBackgroundColor(resources.getColor(R.color.holo_red_light))
+                                                    binding.cardView3.isEnabled = false
+                                                    break
+                                                }
+                                            }
+                                        }
+
+                                        override fun onNothingSelected(parent: AdapterView<*>) {
+                                            // Do something when no item is selected
+                                        }
+                                    }
+
+                            }
+
+                            is ApiState.Error -> {
+                                Toast.makeText(
+                                    requireContext(),
+                                    item.exception.message,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+
+                            is ApiState.Loading -> {
+
+                            }
+                        }
+                    }
+                }
 
 //                binding.back.setOnClickListener {
 //                    activity?.supportFragmentManager?.popBackStack()
@@ -195,6 +282,7 @@ class ProductDetailsFragment : Fragment() {
                             p2: Int,
                             p3: Long
                         ) {
+                            selectedProductColor = allColors[p2]
 //                            Toast.makeText(requireContext(), p2.toString(), Toast.LENGTH_SHORT)
 //                                .show()
                         }
@@ -212,6 +300,8 @@ class ProductDetailsFragment : Fragment() {
                             position: Int,
                             id: Long
                         ) {
+
+                            selectedProductSize = allSizes[position]
                             selectedProductVariantId = productVariants!![position].node.id
                             binding.productPrice.text =
                                 "${productVariants!![position].node.presentmentPrices.edges[0].node.price.amount} ${productVariants!![position].node.presentmentPrices.edges[0].node.price.currencyCode}"
@@ -238,6 +328,16 @@ class ProductDetailsFragment : Fragment() {
                         it.isEnabled=false
                         binding.addtocard.text = "Open In Your Cart"
                     }
+                }
+                binding.imageView5oFavorits.setOnClickListener {
+                    val favoritProduct = FavoritProduct(
+                        selectedProductVariantId,
+                        "${selectedProductColor}, ${selectedProductSize}, ${productTitle},${seelectedImage},${binding.productPrice.text}")
+                    productDetailsViewModel.saveToFavorites(
+                        selectedProductVariantId,
+                        selectedProductColor,selectedProductSize,
+                        productTitle.toString(),seelectedImage,binding.productPrice.text.toString()
+                    )
                 }
             }
         }

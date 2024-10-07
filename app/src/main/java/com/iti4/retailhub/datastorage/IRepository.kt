@@ -13,9 +13,11 @@ import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
@@ -71,4 +73,6 @@ interface IRepository {
     fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
+    fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
+    fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
 }

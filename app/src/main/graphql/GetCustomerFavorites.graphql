@@ -1,0 +1,13 @@
+query GetCustomerFavorites($input:ID!){
+    customer(id: $input) {
+        id
+        metafields(first:50){
+            nodes{
+                namespace,
+                key ,
+                value,
+                description
+            }
+        }
+    }
+}

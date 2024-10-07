@@ -65,5 +65,10 @@
         android:name="com.iti4.retailhub.features.address.AddressFragment"
         android:label="fragment_address"
         tools:layout="@layout/fragment_address" />
+    <fragment
+        android:id="@+id/favoritsFragment"
+        android:name="com.iti4.retailhub.features.favorits.view.FavoritsFragment"
+        android:label="fragment_favorits"
+        tools:layout="@layout/fragment_favorits" />
 
 </navigation>

@@ -3,17 +3,15 @@ package com.iti4.retailhub.features.productdetails.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
+import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.type.CustomerInput
+import com.iti4.retailhub.type.MetafieldInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +23,8 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
     val createDraftOrder = _createDraftOrder
     private val _customerDraftOrders = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerDraftOrders = _customerDraftOrders
+    private val _saveProductToFavortes = MutableStateFlow<ApiState>(ApiState.Loading)
+    val saveProductToFavortes = _saveProductToFavortes
     val customerId by lazy {repository.getUserShopLocalId()}
 
      fun getProductDetails(id:String) {
@@ -65,6 +65,40 @@ fun  GetDraftOrdersByCustomer(varientId: String){
                         Log.d("TAG", "addToCart:collect ${it} ")
                     }
 //            }
+        }
+    }
+
+    fun saveToFavorites(
+        variantID: String,
+        selectedProductColor: String,
+        selectedProductSize: String,
+        productTitle: String,
+        selectedImage: String,
+        price: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO){
+
+            repository.saveProductToFavotes(CustomerInput(
+                id = Optional.present(customerId),
+                metafields = Optional.present(
+                    listOf(
+                        MetafieldInput(
+                            namespace= Optional.present(variantID),
+                            key = Optional.present("favorites"),
+                            value = Optional.present(variantID),
+                            type = Optional.present("string"),
+                            description = Optional.present("${productTitle},${selectedProductColor},${selectedProductSize},${selectedImage},${price}")
+            )
+                    )
+                )))
+                .catch { e ->
+                    Log.d("fav", "saveToFavorites:${e.message} ")
+                    _saveProductToFavortes.emit(ApiState.Error(e))
+                }
+                .collect{
+                    Log.d("fav", "saveToFavorites:${it} ")
+                    _saveProductToFavortes.emit(ApiState.Success(it))
+                }
         }
     }
 }

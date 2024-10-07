@@ -14,10 +14,10 @@
         android:theme="@style/Theme.RetailHub"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".features.loginandsignup.view.LoginAuthinticationActivity"
             android:exported="false" />
         <activity
-            android:name=".loginandsignup.view.LoginAuthinticationActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

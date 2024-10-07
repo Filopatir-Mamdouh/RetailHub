@@ -1,4 +1,4 @@
-package com.iti4.retailhub.loginandsignup.view
+package com.iti4.retailhub.features.loginandsignup.view
 
 import android.app.Dialog
 import android.content.Context

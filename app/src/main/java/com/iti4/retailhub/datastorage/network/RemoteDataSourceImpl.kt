@@ -11,12 +11,14 @@ import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
@@ -127,6 +129,14 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
+    override fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer> = flow {
+        val response = apolloClient.query(GetCustomerFavoritesQuery(id)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response.data!!.customer!!)
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
 
     override fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate> =
         flow {
@@ -138,6 +148,16 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             } else {
                 throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
             }
+        }
+    override fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate> =
+        flow {
+            val response = apolloClient.mutation(UpdateCustomerFavoritesMetafieldsMutation(input)).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.customerUpdate!!)
+            } else {
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
+
         }
 
 
