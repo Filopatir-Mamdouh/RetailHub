@@ -195,8 +195,8 @@ class ProductDetailsFragment : Fragment() {
                             p2: Int,
                             p3: Long
                         ) {
-                            Toast.makeText(requireContext(), p2.toString(), Toast.LENGTH_SHORT)
-                                .show()
+//                            Toast.makeText(requireContext(), p2.toString(), Toast.LENGTH_SHORT)
+//                                .show()
                         }
 
                         override fun onNothingSelected(p0: AdapterView<*>?) {

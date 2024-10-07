@@ -17,6 +17,7 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -126,7 +127,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             price * it.itemQuantity
 
         }!!
-        binding.tvMyBagProductPrice.text = "$totalPrice EGP"
+        binding.tvMyBagProductPrice.text = "${totalPrice?.toTwoDecimalPlaces()} EGP"
     }
 
     private fun updateQuantity() {
