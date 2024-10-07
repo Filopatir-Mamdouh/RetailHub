@@ -17,20 +17,22 @@ import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
+import com.iti4.retailhub.UpdateCustomerAddressesMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
 import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
+import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
-import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.Category
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
-import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -72,6 +74,7 @@ class Repository @Inject constructor(
     override fun getProductTypesOfCollection(): Flow<List<Category>> {
         return remoteDataSource.getProductTypesOfCollection()
     }
+
     override fun getCustomerInfoById(id: String): Flow<GetCustomerByIdQuery.Customer> {
         return remoteDataSource.getCustomerInfoById(id)
     }
@@ -95,6 +98,7 @@ class Repository @Inject constructor(
     override fun createUser(input: CustomerInput): Flow<CreateCustomerMutation.CustomerCreate> {
         return remoteDataSource.createUser(input)
     }
+
     override suspend fun createUserWithEmailAndPassword(
         email: String,
         password: String
@@ -174,8 +178,16 @@ class Repository @Inject constructor(
     override fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer> {
         return remoteDataSource.getAddressesById(customerId)
     }
+
     override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
         return remoteDataSource.getDraftOrdersByCustomer(varientId)
+    }
+
+    override fun updateCustomerAddress(
+        customerId: String,
+        address: List<CustomerAddress>
+    ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate> {
+        return remoteDataSource.updateCustomerAddress(customerId, address)
     }
 
 }

@@ -3,6 +3,7 @@ package com.iti4.retailhub
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -10,6 +11,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.ActivityMainBinding
+import com.iti4.retailhub.features.address.AddressViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
@@ -17,7 +19,7 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ToolbarController {
     private lateinit var binding: ActivityMainBinding
-
+    private val sharedViewModel: AddressViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

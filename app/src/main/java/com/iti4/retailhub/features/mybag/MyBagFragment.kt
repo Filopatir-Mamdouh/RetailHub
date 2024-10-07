@@ -135,6 +135,8 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             if (it.didQuantityChanged) {
                 viewModel.updateMyBagItem(it)
             }
+
+
         }
     }
 

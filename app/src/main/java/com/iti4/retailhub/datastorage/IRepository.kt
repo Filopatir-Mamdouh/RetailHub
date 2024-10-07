@@ -16,11 +16,13 @@ import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
+import com.iti4.retailhub.UpdateCustomerAddressesMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
@@ -71,4 +73,8 @@ interface IRepository {
     fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
+    fun updateCustomerAddress(
+        customerId: String,
+        address: List<CustomerAddress>
+    ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate>
 }

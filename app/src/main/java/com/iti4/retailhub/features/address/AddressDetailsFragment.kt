@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.databinding.FragmentAddressDetailsBinding
 import com.iti4.retailhub.models.CustomerAddress
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AddressDetailsFragment : Fragment() {
-
+    private val viewModel: AddressViewModel by activityViewModels()
     private lateinit var binding: FragmentAddressDetailsBinding
     private var details: CustomerAddress? = null
     private var newAddress: Boolean = false
@@ -26,8 +28,9 @@ class AddressDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnSaveAddress.setOnClickListener{
+        binding.btnSaveAddress.setOnClickListener {
             saveAddress()
+            findNavController().navigateUp()
         }
         val reason = arguments?.getString("reason")
         when (reason) {
@@ -44,6 +47,7 @@ class AddressDetailsFragment : Fragment() {
     }
 
     private fun saveAddress() {
+
         if (details == null)
             details = CustomerAddress(
                 binding.etAddress.text.toString(),
@@ -58,6 +62,7 @@ class AddressDetailsFragment : Fragment() {
             details!!.phone = binding.etPhone.text.toString()
             details!!.newAddress = false
         }
+        viewModel.addAddress(details!!)
 
 
     }

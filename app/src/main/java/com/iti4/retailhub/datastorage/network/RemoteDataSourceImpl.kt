@@ -17,6 +17,7 @@ import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
+import com.iti4.retailhub.UpdateCustomerAddressesMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
@@ -24,6 +25,7 @@ import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.CustomerInput
@@ -268,6 +270,27 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         }
 
 
+    override fun updateCustomerAddress(
+        customerId: String,
+        address: List<CustomerAddress>
+    ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate> =
+        flow {
+            val customerInput = CustomerInput(
+                id = Optional.present(customerId),
+                addresses = Optional.present(customerAddressToMailingAddressInput(address))
+            )
+            val response =
+                apolloClient.mutation(UpdateCustomerAddressesMutation(customerInput)).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.customerUpdate!!)
+            } else {
+                throw Exception(
+                    response.errors?.get(0)?.message ?: "Something went wrong"
+                )
+            }
+        }
+
+
     private fun extractCart(item: GetDraftOrdersByCustomerQuery.DraftOrders): List<CartProduct> {
 
         return item.nodes.map {
@@ -287,6 +310,20 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
                 variantColor.value,
                 variant.price as String,
                 variantImage as String
+            )
+        }
+    }
+
+    private fun customerAddressToMailingAddressInput(address: List<CustomerAddress>): List<MailingAddressInput> {
+        return address.map {
+            val address2Data = it.address2.split(",")
+            MailingAddressInput(
+                address1 = Optional.present(it.address1),
+                address2 = Optional.present(address2Data[0]),
+                city = Optional.present(address2Data[1]),
+                country = Optional.present(address2Data[2]),
+                phone = Optional.present(it.phone),
+                firstName = Optional.present(it.name)
             )
         }
     }

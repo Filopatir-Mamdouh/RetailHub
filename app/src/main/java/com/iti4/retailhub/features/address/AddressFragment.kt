@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -25,9 +25,9 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AddressFragment : Fragment(), OnClickAddress {
-    private lateinit var addressesList: List<GetAddressesByIdQuery.Address>
+    private lateinit var addressesList: MutableList<CustomerAddress>
     private lateinit var binding: FragmentAddressBinding
-    private val viewModel by viewModels<AddressViewModel>()
+    private val viewModel: AddressViewModel by activityViewModels()
 
     private val adapter by lazy {
         AddressRecyclerViewAdapter(this)
@@ -53,7 +53,7 @@ class AddressFragment : Fragment(), OnClickAddress {
             )
         )
         listenToAddressesState()
-
+        listenToAddressesChangeState()
 
 
         binding.btnAddAddress.setOnClickListener {
@@ -75,7 +75,7 @@ class AddressFragment : Fragment(), OnClickAddress {
                     when (item) {
                         is ApiState.Success<*> -> {
                             val response = item.data as GetAddressesByIdQuery.Customer
-                            addressesList = response.addresses
+                            addressesList = QueryCustomerAddressToCustomerAddres(response.addresses)
                             adapter.submitList(addressesList)
                         }
 
@@ -88,11 +88,33 @@ class AddressFragment : Fragment(), OnClickAddress {
                 }
             }
         }
+    }
 
+    private fun listenToAddressesChangeState() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.updatedAddressState.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            val updatedOrNewAddress = item.data as CustomerAddress
+                            updateAddressList(updatedOrNewAddress)
+                            Log.i("here", "inside fragment " + CustomerAddress)
+                        }
+
+                        is ApiState.Error -> {
+                            Log.i("here", "error: ")
+                        }
+
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
     }
 
     override fun onStart() {
         super.onStart()
+        viewModel.getAddressesById()
         (requireActivity() as ToolbarController).apply {
             setVisibility(true)
             setTitle("Addresses")
@@ -105,6 +127,7 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStop() {
         super.onStop()
+        viewModel.updateMyAddresses(addressesList)
         (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
             View.VISIBLE
         (requireActivity() as ToolbarController).apply {
@@ -113,8 +136,23 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     }
 
-    override fun saveAddressDetails(address: CustomerAddress) {
-        //
+    fun updateAddressList(address: CustomerAddress) {
+        if (address.newAddress) {
+            addressesList.add(address)
+        } else {
+            val index = addressesList.indexOfFirst { it.id == address.id }
+            val address2Data = address.address2.split(",")
+            addressesList[index] = CustomerAddress(
+                address.address1,
+                address2Data[0] + "," +
+                        address2Data[1] + "," +
+                        address2Data[2],
+                address.phone,
+                address.name
+            )
+        }
+        adapter.notifyDataSetChanged()
+        adapter.submitList(addressesList)
     }
 
     override fun editDetails(address: CustomerAddress) {
@@ -123,7 +161,30 @@ class AddressFragment : Fragment(), OnClickAddress {
             putParcelable("data", address)
         }
         findNavController().navigate(R.id.addressDetails, bundle)
+    }
 
+    override fun deleteAddress(id: String) {
+        val index = addressesList.indexOfFirst {
+            it.id == id
+        }
+        addressesList.remove(addressesList[index])
+        adapter.notifyDataSetChanged()
+        adapter.submitList(addressesList)
+    }
+
+
+    private fun QueryCustomerAddressToCustomerAddres(address: List<GetAddressesByIdQuery.Address>): MutableList<CustomerAddress> {
+        return address.map {
+            CustomerAddress(
+                it.address1!!,
+                it.address2 + "," +
+                        it.city + "," +
+                        it.country,
+                it.phone!!,
+                it.name!!,
+                id=it.id
+            )
+        }.toMutableList()
     }
 
 }
