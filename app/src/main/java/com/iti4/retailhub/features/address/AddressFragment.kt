@@ -11,7 +11,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iti4.retailhub.GetAddressesByIdQuery
+import com.iti4.retailhub.MainActivity
+import com.iti4.retailhub.R
+import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +75,26 @@ class AddressFragment : Fragment() {
                     }
                 }
             }
+        }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as ToolbarController).apply {
+            setVisibility(true)
+            setTitle("Addresses")
+            collapse()
+        }
+
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.GONE
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.VISIBLE
+        (requireActivity() as ToolbarController).apply {
+            expand()
         }
 
     }

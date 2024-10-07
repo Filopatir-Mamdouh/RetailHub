@@ -45,8 +45,8 @@
                 android:fontFamily="@font/metropolis_regular"
                 android:text="3 NewBridge Court"
                 android:textColor="@color/black_variant"
-                app:layout_constraintStart_toStartOf="@+id/tvFullNameAdd"
-                app:layout_constraintTop_toBottomOf="@+id/tvFullNameAdd" />
+                app:layout_constraintStart_toStartOf="@+id/tvAddressName"
+                app:layout_constraintTop_toBottomOf="@+id/tvAddressName" />
 
             <TextView
                 android:id="@+id/tvAddress2Add"
@@ -79,6 +79,15 @@
                 android:fontFamily="@font/metropolis_regular"
                 android:text="@string/ShippingDefaultText"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tvAddress2Add"
+                app:layout_constraintTop_toBottomOf="@+id/tvAddressPhone" />
+
+            <TextView
+                android:id="@+id/tvAddressPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="+2356755477979"
                 app:layout_constraintStart_toStartOf="@+id/tvAddress2Add"
                 app:layout_constraintTop_toBottomOf="@+id/tvAddress2Add" />
 

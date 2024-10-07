@@ -77,6 +77,14 @@ class MainActivity : AppCompatActivity(), ToolbarController {
         }
     }
 
+    override fun collapse() {
+        binding.appBar.setExpanded(false, false);
+    }
+
+    override fun expand() {
+        binding.appBar.setExpanded(true, true);
+    }
+
 
     override fun onBackPressed() {
         val navController = Navigation.findNavController(this, R.id.fragmentContainerView2)

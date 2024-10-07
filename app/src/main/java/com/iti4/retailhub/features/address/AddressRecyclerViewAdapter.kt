@@ -41,8 +41,8 @@ class AddressRecyclerViewAdapter() :
         with(holder.binding) {
             tvAddressName.text = item.name
             tvAddress1Add.text = item.address1
-            tvAddress2Add.text = item.address2
-            tvAddressEdit.text = item.country
+            tvAddress2Add.text = item.address2+" "+item.city+" "+item.country
+            tvAddressPhone.text = item.phone
         }
     }
 

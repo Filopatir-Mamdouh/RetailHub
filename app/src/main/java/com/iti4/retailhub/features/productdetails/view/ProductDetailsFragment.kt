@@ -53,7 +53,7 @@ class ProductDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         productId = arguments?.getString("productid") as String
         binding.sesMoreReviews.setOnClickListener {
-            findNavController().navigate(com.iti4.retailhub.R.id.reviewsRecycleView)
+            findNavController().navigate(com.iti4.retailhub.R.id.reviewsFragment)
         }
         produsctDetailsAdapter = ProductDetailsDiffUtilAdapter(requireContext())
         binding.productImages.layoutManager =

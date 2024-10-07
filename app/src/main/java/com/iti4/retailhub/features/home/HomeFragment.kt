@@ -1,13 +1,12 @@
 package com.iti4.retailhub.features.home
 
-import android.app.Activity
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -37,51 +36,70 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){
-                viewModel.products.collect{ item ->
-                    when(item){
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.products.collect { item ->
+                    when (item) {
                         is ApiState.Success<*> -> {
                             binding.animationView.visibility = View.GONE
                             val data = item.data as List<HomeProducts>
                             displayNewItemRowData(data)
                         }
+
                         is ApiState.Error -> {
-                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                item.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         is ApiState.Loading -> {}
                     }
                 }
             }
         }
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){
-                viewModel.brands.collect{ item ->
-                    when(item){
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.brands.collect { item ->
+                    when (item) {
                         is ApiState.Success<*> -> {
                             val data = item.data as List<Brands>
                             displayBrandsRowData(data)
                         }
+
                         is ApiState.Error -> {
-                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                item.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         is ApiState.Loading -> {}
                     }
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as ToolbarController).setVisibility(false)
+        (activity as MainActivity).supportActionBar?.hide()
+
     }
 
     override fun onResume() {
         super.onResume()
         (requireActivity() as ToolbarController).setVisibility(false)
         (activity as MainActivity).supportActionBar?.hide()
-        
     }
 
-    private fun displayNewItemRowData(data: List<HomeProducts>){
+    private fun displayNewItemRowData(data: List<HomeProducts>) {
         binding.newItemRow.apply {
             title.text = getString(R.string.new_item)
             subtitle.text = getString(R.string.you_ve_never_seen_it_before)
@@ -90,12 +108,14 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
             adapter.submitList(data)
         }
     }
-    private fun displayBrandsRowData(data: List<Brands>){
+
+    private fun displayBrandsRowData(data: List<Brands>) {
         binding.brandItemRow.apply {
             title.text = getString(R.string.brands)
             subtitle.text = getString(R.string.brands_subtitle)
             val adapter = BrandAdapter()
-            recyclerView.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.HORIZONTAL, false)
+            recyclerView.layoutManager =
+                GridLayoutManager(requireContext(), 2, GridLayoutManager.HORIZONTAL, false)
             recyclerView.adapter = adapter
             adapter.submitList(data)
         }
@@ -103,7 +123,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
 
     override fun goToDetails(productId: String) {
         val bundle = Bundle()
-        bundle.putString("productid",productId)
+        bundle.putString("productid", productId)
         findNavController().navigate(R.id.productDetailsFragment, bundle)
     }
 }
