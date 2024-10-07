@@ -49,14 +49,13 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                         is ApiState.Success<*> -> {
 
                             val data = item.data as List<CartProduct>
-                            if(!data.isNullOrEmpty()){
+                            if (!data.isNullOrEmpty()) {
                                 cartProductList = data.toMutableList()
                                 updateTotalPrice()
                                 adapter.submitList(data)
-                                binding.lottibagAnimation.visibility=View.GONE
-                            }
-                            else
-                                binding.lottibagAnimation.visibility=View.VISIBLE
+                                binding.lottibagAnimation.visibility = View.GONE
+                            } else
+                                binding.lottibagAnimation.visibility = View.VISIBLE
                         }
 
                         is ApiState.Error -> {
@@ -71,9 +70,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             }
         }
         binding.btnCheckout.setOnClickListener {
-            if(!cartProductList.isNullOrEmpty()){
+            if (!cartProductList.isNullOrEmpty()) {
                 val bundle = Bundle().apply {
-                    putParcelableArrayList("data",cartProductList as ArrayList<CartProduct>)
+                    putParcelableArrayList("data", cartProductList as ArrayList<CartProduct>)
                     putDouble("totalprice", totalPrice ?: 0.0)
                 }
                 findNavController().navigate(R.id.checkoutFragment, bundle)
@@ -93,6 +92,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     override fun deleteMyBagItem(cartProduct: CartProduct) {
         viewModel.deleteMyBagItem(cartProduct.draftOrderId)
         cartProductList?.remove(cartProduct)
+        if (cartProductList.isNullOrEmpty())
+            binding.lottibagAnimation.visibility = View.VISIBLE
+
         updateTotalPrice()
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {

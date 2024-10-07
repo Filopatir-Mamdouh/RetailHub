@@ -47,7 +47,7 @@
                 android:text="Pullover"
                 android:textColor="@color/black_variant"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@+id/btnMyBagPopmenu"
+                app:layout_constraintEnd_toStartOf="@+id/btnMyBagDelete"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/ivMyBagProductImage"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -93,13 +93,13 @@
                 app:layout_constraintTop_toTopOf="@+id/textView4" />
 
             <ImageButton
-                android:id="@+id/btnMyBagPopmenu"
+                android:id="@+id/btnMyBagDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_threedots"
+                android:src="@drawable/ic_delete"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 

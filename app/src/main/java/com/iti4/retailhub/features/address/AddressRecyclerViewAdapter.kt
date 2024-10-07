@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.CustomDialog
-import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.databinding.RvAddressesItemBinding
 import com.iti4.retailhub.models.CustomerAddress
 
@@ -19,7 +18,7 @@ class DiffUtilAddresses : DiffUtil.ItemCallback<CustomerAddress>() {
     }
 
     override fun areContentsTheSame(
-        oldItem:CustomerAddress, newItem: CustomerAddress
+        oldItem: CustomerAddress, newItem: CustomerAddress
     ): Boolean {
         return oldItem == newItem
     }
@@ -45,14 +44,14 @@ class AddressRecyclerViewAdapter(val handleAction: OnClickAddress) :
             tvAddressPhone.text = item.phone
             tvAddressEdit.setOnClickListener {
                 handleAction.editDetails(
-                item
+                    item
                 )
             }
             btnDeleteAddress.setOnClickListener {
                 val dialog =
-                    CustomDialog(it.context, handleAction)
+                    CustomDialog(it.context, handleAction, null, "address")
                 dialog.show()
-                dialog.getData(item.id?:"null")
+                dialog.getData(item.id ?: "null")
 
             }
         }
