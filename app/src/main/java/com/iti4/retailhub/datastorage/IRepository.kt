@@ -66,5 +66,6 @@ interface IRepository {
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
     fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun getProductsFromCategory(query: String): Flow<List<HomeProducts>>
 
 }

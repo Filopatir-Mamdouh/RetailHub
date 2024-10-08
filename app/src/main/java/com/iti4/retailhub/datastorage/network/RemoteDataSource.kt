@@ -43,4 +43,5 @@ interface RemoteDataSource {
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
     fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun getProductsFromCategory(query: String): Flow<List<HomeProducts>>
 }

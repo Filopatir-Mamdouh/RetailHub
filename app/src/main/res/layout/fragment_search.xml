@@ -5,11 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".features.shop.ShopFragment">
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+    tools:context=".features.shop.search.SearchFragment">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -39,14 +35,14 @@
                     android:layout_height="0dp"
                     android:background="@drawable/favourite_background"
                     android:src="@drawable/ic_close"
-                    android:tint="@color/black_variant"
+                    app:tint="@color/black_variant"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView5"
                     app:layout_constraintEnd_toStartOf="@+id/guideline"
                     app:layout_constraintStart_toEndOf="@+id/textView13"
                     app:layout_constraintTop_toTopOf="@+id/imageView5" />
 
                 <ImageView
-                    android:id="@+id/imageView7"
+                    android:id="@+id/switchView"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginEnd="16dp"
@@ -130,12 +126,14 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchRV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

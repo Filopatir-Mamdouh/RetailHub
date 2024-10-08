@@ -169,4 +169,9 @@ class Repository @Inject constructor(
         return remoteDataSource.GetDraftOrdersByCustomer(varientId)
     }
 
+    override fun getProductsFromCategory(query: String): Flow<List<HomeProducts>> {
+        return remoteDataSource.getProductsFromCategory(query)
+    }
+
+
 }

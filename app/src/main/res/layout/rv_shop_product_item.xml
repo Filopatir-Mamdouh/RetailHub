@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:layout_margin="16dp"
+    app:cardBackgroundColor="@color/transparent"
+    app:cardCornerRadius="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/productImg"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@android:drawable/spinner_background" />
+
+        <TextView
+            android:id="@+id/productName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_semibold"
+            android:textColor="@color/black_variant"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/productImg"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Pullover" />
+
+        <TextView
+            android:id="@+id/productBrand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:textColor="@color/grey"
+            android:textSize="11sp"
+            app:layout_constraintStart_toStartOf="@+id/productName"
+            app:layout_constraintTop_toBottomOf="@+id/productName"
+            tools:text="Brand" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="@+id/productBrand"
+            app:layout_constraintTop_toBottomOf="@+id/productBrand" />
+
+        <TextView
+            android:id="@+id/productPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/ratingBar"
+            app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+            tools:text="$ 50" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/favBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="125dp"
+        android:layout_marginBottom="-25dp"
+        android:background="@drawable/favourite_background"
+        android:elevation="5dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/baseline_favorite_border_24" />
+</androidx.cardview.widget.CardView>

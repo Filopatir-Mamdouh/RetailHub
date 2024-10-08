@@ -11,5 +11,6 @@
     <color name="green">#2AA952</color>
     <color name="signup_black_color">#222222</color>
     <color name="rating_bar_color">#FFBA49</color>
+    <color name="white_variant">#F9F9F9</color>
 
 </resources>

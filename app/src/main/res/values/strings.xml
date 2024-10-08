@@ -57,5 +57,14 @@
     <string name="seemore">See More Reviews</string>
     <string name="addtocard">ADD TO CART</string>
     <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
+    <string name="discard">Discard</string>
+    <string name="apply">Apply</string>
+    <string name="kids">Kids</string>
+    <string name="women">Women</string>
+    <string name="men">Men</string>
+    <string name="all">All</string>
+    <string name="category">Category</string>
+    <string name="sizes">Sizes</string>
+    <string name="price_range">Price range</string>
 
 </resources>
