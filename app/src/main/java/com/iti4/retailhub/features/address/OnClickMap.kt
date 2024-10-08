@@ -4,4 +4,5 @@ import com.iti4.retailhub.modelsdata.PlaceLocation
 
 interface OnClickMap {
     fun goToAddress(location: PlaceLocation)
+    fun navigateToDetails()
 }

@@ -19,4 +19,8 @@ interface RetrofitDataSource {
     ): Flow<Response<ResponseBody>>
 
     fun getLocationSuggestions(query: String): Flow<Response<List<PlaceLocation>>>
+    fun getLocationGeocoding(
+        lat: String,
+        lon: String
+    ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>>
 }

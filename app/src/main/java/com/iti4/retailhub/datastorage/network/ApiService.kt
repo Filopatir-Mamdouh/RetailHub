@@ -36,6 +36,19 @@ interface ApiServiceForLocation {
         @Query("limit") limit: Int,
         @Query("dedupe") dedupe: Int
     ): Response<List<PlaceLocation>>
+
+}
+
+interface ApiServiceForLocationGeocoding {
+
+    //    https://us1.locationiq.com/v1/reverse?key=Your_API_Access_Token&lat=31.043541&lon=29.788351&format=json&
+    @GET("reverse")
+    suspend fun getLocationGeocoding(
+        @Query("key") apiKey: String,
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("format") format: String
+    ): Response<com.iti4.retailhub.features.address.PlaceLocation>
 }
 
 
@@ -43,6 +56,7 @@ object RetrofitHelper {
     private const val BASE_URL =
         "https://nodejs-serverless-function-express-self-eta.vercel.app/api/"
     private const val BASE_URL_LOCATION = "https://api.locationiq.com/v1/"
+    private const val BASE_URL_REVERSE_LOCATION = "https://eu1.locationiq.com/v1/"
     val retrofitInstance = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
@@ -51,6 +65,11 @@ object RetrofitHelper {
     val retrofitInstanceForLocation = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL_LOCATION)
+        .build()
+
+    val retrofitInstanceForReverseLocation = Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create())
+        .baseUrl(BASE_URL_REVERSE_LOCATION)
         .build()
 
 }

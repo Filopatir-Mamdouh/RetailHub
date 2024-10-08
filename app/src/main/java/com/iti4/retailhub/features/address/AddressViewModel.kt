@@ -1,6 +1,5 @@
 package com.iti4.retailhub.features.address
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
@@ -22,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddressViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
-
+    var selectedMapAddress : PlaceLocation?=null
 
     private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
     val addressState = _addressesState.onStart { }
@@ -37,6 +36,10 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
 
     private val _addressLookUp = MutableStateFlow<ApiState>(ApiState.Loading)
     val addressLookUp = _addressLookUp.asStateFlow()
+
+    private val _addressGeocoding = MutableStateFlow<ApiState>(ApiState.Loading)
+    val addressGeocoding = _addressGeocoding.asStateFlow()
+
 
     val customerId by lazy { repository.getUserShopLocalId() }
 
@@ -76,6 +79,22 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                         _addressLookUp.emit(ApiState.Success(it.body()))
                     } else {
                         _addressLookUp.emit(ApiState.Error(Exception("error")))
+                    }
+                }
+        }
+    }
+
+    fun getLocationGeocoding(lat: String, lon: String) {
+        viewModelScope.launch(dispatcher) {
+            repository.getLocationGeocoding(lat, lon)
+                .catch { e ->
+                    _addressGeocoding.emit(ApiState.Error(e))
+                }
+                .collect {
+                    if (it.isSuccessful && it.body() != null) {
+                        _addressGeocoding.emit(ApiState.Success(it.body()))
+                    } else {
+                        _addressGeocoding.emit(ApiState.Error(Exception("error")))
                     }
                 }
         }

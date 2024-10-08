@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 class RetrofitDataSourceImp @Inject constructor(
     private val apiService: ApiService,
-    private val apiServiceForLocation: ApiServiceForLocation
+    private val apiServiceForLocation: ApiServiceForLocation,
+    private val apiServiceForLocationGeocoding: ApiServiceForLocationGeocoding
 ) :
     RetrofitDataSource {
 
@@ -38,6 +39,20 @@ class RetrofitDataSourceImp @Inject constructor(
         query: String
     ): Flow<Response<List<PlaceLocation>>> = flow {
         emit(apiServiceForLocation.getLocationSuggestions(Location_API_KEY, query, 5, 1))
+    }
+
+    override fun getLocationGeocoding(
+        lat: String,
+        lon: String
+    ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>> = flow {
+        emit(
+            apiServiceForLocationGeocoding.getLocationGeocoding(
+                Location_API_KEY,
+                lat,
+                lon,
+                "Json"
+            )
+        )
     }
 
 

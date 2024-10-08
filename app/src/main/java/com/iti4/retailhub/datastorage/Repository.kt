@@ -77,6 +77,12 @@ class Repository @Inject constructor(
     ): Flow<Response<List<PlaceLocation>>> {
         return retrofitDataSource.getLocationSuggestions(query)
     }
+    override fun getLocationGeocoding(
+        lat: String,
+        lon: String
+    ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>> {
+        return retrofitDataSource.getLocationGeocoding(lat,lon)
+    }
 
     override fun getProductTypesOfCollection(): Flow<List<Category>> {
         return remoteDataSource.getProductTypesOfCollection()

@@ -7,13 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.MainActivity
+import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressMapBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.modelsdata.PlaceLocation
@@ -71,7 +74,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
 
 
         if (location != null) {
-            map.controller.setZoom(22.0)
+            map.controller.setZoom(15.0)
             map.controller.setCenter(GeoPoint(location.lat.toDouble(), location.lon.toDouble()))
         } else {
             map.controller.setZoom(15.0)
@@ -89,21 +92,8 @@ class AddressMapFragment : Fragment(), OnClickMap {
                     marker.position = GeoPoint(lat!!, long!!)
                     map.overlays.add(marker)
                     map.controller.setCenter(GeoPoint(lat!!, long!!))
-
-//                    if (lat != null) GlobalScope.launch(Dispatchers.IO) {
-//                        launch(Dispatchers.IO) {
-//                            getCityFromLatLong(lat!!, long!!)
-//                        }.join()
-//                        launch(Dispatchers.Main) {
-//                            val dialog = MapDialog(
-//                                this@MapActivity, isFav, this@MapActivity, this@MapActivity
-//                            )
-//                            if (city != null) {
-//                                dialog.show()
-//                                dialog.showInfoForMap(lat!!, long!!, city!!)
-//                            }
-//                        }
-//                    }
+                    viewModel.getLocationGeocoding(lat.toString(), long.toString())
+                    initAddressGeocoding()
                 }
                 return true
             }
@@ -154,9 +144,56 @@ class AddressMapFragment : Fragment(), OnClickMap {
         }
     }
 
+    private fun initAddressGeocoding() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.addressGeocoding.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            if (!(item.data is Error)) {
+                                val response =
+                                    item.data as com.iti4.retailhub.features.address.PlaceLocation
+                                if (response.display_name.isNullOrEmpty())
+                                    Toast.makeText(
+                                        this@AddressMapFragment.requireContext(),
+                                        "Location Not Found",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                else{
+                                    val dialog =
+                                        AddressGeocodingDialog(
+                                            this@AddressMapFragment.requireContext(),
+                                            this@AddressMapFragment
+                                        )
+                                    dialog.show()
+                                    dialog.getData(response)
+                                    viewModel.selectedMapAddress=response
+                                }
+                            }
+                        }
+
+                        is ApiState.Error ->
+                            Log.i("here", "initSearchListener: err")
+
+                        is ApiState.Loading -> {
+                            Log.i("here", "initSearchListener: lloading")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun goToAddress(location: PlaceLocation) {
         (activity as MainActivity).hideKeyboard()
         setupMap(location)
+    }
+
+    override fun navigateToDetails() {
+        val bundle = Bundle().apply {
+            putString("reason", "map")
+        }
+        findNavController().navigate(R.id.addressDetails, bundle)
     }
 
     override fun onResume() {

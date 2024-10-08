@@ -9,8 +9,8 @@ data class PlaceLocation(
 
 data class Address(
     val name: String,
-    val state: String?,
-    val postcode: String?,
+    val state: String?=null,
+    val postcode: String?=null,
     val country: String,
     val country_code: String? = null,
     val road: String? = null,

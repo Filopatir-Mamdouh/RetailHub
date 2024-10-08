@@ -7,6 +7,7 @@ import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.Repository
 import com.iti4.retailhub.datastorage.network.ApiService
 import com.iti4.retailhub.datastorage.network.ApiServiceForLocation
+import com.iti4.retailhub.datastorage.network.ApiServiceForLocationGeocoding
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RemoteDataSourceImpl
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
@@ -78,11 +79,24 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideApiServiceForLocationGeocoding(): ApiServiceForLocationGeocoding {
+        return RetrofitHelper.retrofitInstanceForReverseLocation.create(
+            ApiServiceForLocationGeocoding::class.java
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideRetrofitDataSource(
         apiService: ApiService,
-        apiServiceForLocation: ApiServiceForLocation
+        apiServiceForLocation: ApiServiceForLocation,
+        apiServiceForLocationGeocoding: ApiServiceForLocationGeocoding
     ): RetrofitDataSource {
-        return RetrofitDataSourceImp(apiService, apiServiceForLocation)
+        return RetrofitDataSourceImp(
+            apiService,
+            apiServiceForLocation,
+            apiServiceForLocationGeocoding
+        )
     }
 
     @Provides
