@@ -14,3 +14,5 @@ fun Double.toTwoDecimalPlaces(locale: Locale = Locale.US): String {
     val parsedNumber = numberFormat.parse(this.toString())?.toDouble() ?: throw NumberFormatException("Cannot parse: $this")
     return String.format(locale, "%.2f", parsedNumber)
 }
+
+

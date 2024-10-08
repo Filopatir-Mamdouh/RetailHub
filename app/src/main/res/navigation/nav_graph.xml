@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/addressFragment">
 
     <fragment
         android:id="@+id/myBagFragment"
@@ -68,11 +68,23 @@
         <action
             android:id="@+id/action_addressFragment_to_addressDetails"
             app:destination="@id/addressDetails" />
+        <action
+            android:id="@+id/action_addressFragment_to_addressMapFragment"
+            app:destination="@id/addressMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/addressDetails"
         android:name="com.iti4.retailhub.features.address.AddressDetailsFragment"
         android:label="fragment_address_details"
         tools:layout="@layout/fragment_address_details" />
+    <fragment
+        android:id="@+id/addressMapFragment"
+        android:name="com.iti4.retailhub.features.address.AddressMapFragment"
+        android:label="fragment_address_map"
+        tools:layout="@layout/fragment_address_map" >
+        <action
+            android:id="@+id/action_addressMapFragment_to_addressDetails"
+            app:destination="@id/addressDetails" />
+    </fragment>
 
 </navigation>

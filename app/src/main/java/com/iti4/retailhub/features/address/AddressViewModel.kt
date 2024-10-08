@@ -35,6 +35,9 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     private val _updatedAddressLeavingState = MutableStateFlow<ApiState>(ApiState.Loading)
     val updatedAddressLeavingState = _updatedAddressLeavingState.asStateFlow()
 
+    private val _addressLookUp = MutableStateFlow<ApiState>(ApiState.Loading)
+    val addressLookUp = _addressLookUp.asStateFlow()
+
     val customerId by lazy { repository.getUserShopLocalId() }
 
 
@@ -49,7 +52,6 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
 
     fun addAddress(address: CustomerAddress) {
         viewModelScope.launch(dispatcher) {
-            Log.i("here", "listenToAddressesChangeState: " + address)
             _updatedAddressState.emit(ApiState.Success(address))
         }
     }
@@ -62,5 +64,22 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                 }
         }
     }
+
+    fun getLocationSuggestions(query: String) {
+        viewModelScope.launch(dispatcher) {
+            repository.getLocationSuggestions(query)
+                .catch { e ->
+                    _addressLookUp.emit(ApiState.Error(e))
+                }
+                .collect {
+                    if (it.isSuccessful && it.body() != null) {
+                        _addressLookUp.emit(ApiState.Success(it.body()))
+                    } else {
+                        _addressLookUp.emit(ApiState.Error(Exception("error")))
+                    }
+                }
+        }
+    }
+
 
 }

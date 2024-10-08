@@ -144,6 +144,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onStart() {
         super.onStart()
+        viewModel.getMyBagProducts()
         (requireActivity() as ToolbarController).apply {
             setVisibility(true)
             setTitle("My Bag")

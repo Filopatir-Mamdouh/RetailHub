@@ -59,6 +59,9 @@ class AddressFragment : Fragment(), OnClickAddress {
         binding.btnAddAddress.setOnClickListener {
 
         }
+        binding.btnAddAddressMap.setOnClickListener {
+            findNavController().navigate(R.id.addressMapFragment)
+        }
         binding.btnAddAddressText.setOnClickListener {
             val bundle = Bundle().apply {
                 putString("reason", "new")
@@ -182,7 +185,7 @@ class AddressFragment : Fragment(), OnClickAddress {
                         it.country,
                 it.phone!!,
                 it.name!!,
-                id=it.id
+                id = it.id
             )
         }.toMutableList()
     }

@@ -29,6 +29,7 @@ android {
             properties.getProperty("ADMIN_ACCESS_TOKEN_STRING")
         )
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
+        buildConfigField("String", "Location_API_KEY", properties.getProperty("Location_API_KEY"))
     }
 
     buildFeatures {

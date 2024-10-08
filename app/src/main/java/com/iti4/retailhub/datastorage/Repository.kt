@@ -31,6 +31,7 @@ import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
+import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import kotlinx.coroutines.flow.Flow
@@ -69,6 +70,12 @@ class Repository @Inject constructor(
 
     override fun createStripePaymentIntent(paymentRequest: PaymentRequest): Flow<Response<ResponseBody>> {
         return retrofitDataSource.createStripePaymentIntent(paymentRequest)
+    }
+
+    override fun getLocationSuggestions(
+        query: String
+    ): Flow<Response<List<PlaceLocation>>> {
+        return retrofitDataSource.getLocationSuggestions(query)
     }
 
     override fun getProductTypesOfCollection(): Flow<List<Category>> {
