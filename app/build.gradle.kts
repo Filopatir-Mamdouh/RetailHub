@@ -29,6 +29,7 @@ android {
             properties.getProperty("ADMIN_ACCESS_TOKEN_STRING")
         )
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
+        buildConfigField("String", "Location_API_KEY", properties.getProperty("Location_API_KEY"))
     }
 
     buildFeatures {
@@ -83,6 +84,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.firebase.auth.ktx)
     kapt("com.github.bumptech.glide:compiler:4.15.1")
 
     // Retrofit

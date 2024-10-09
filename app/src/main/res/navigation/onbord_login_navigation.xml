@@ -6,7 +6,7 @@
     app:startDestination="@id/signUpFragment">
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.iti4.retailhub.loginandsignup.view.SignUpFragment"
+        android:name="com.iti4.retailhub.features.loginandsignup.view.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginInFragment"
-        android:name="com.iti4.retailhub.loginandsignup.view.LoginInFragment"
+        android:name="com.iti4.retailhub.features.loginandsignup.view.LoginInFragment"
         android:label="fragment_login_in"
         tools:layout="@layout/fragment_login_in" />
 </navigation>
