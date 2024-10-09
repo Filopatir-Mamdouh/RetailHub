@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.address
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
@@ -9,26 +10,25 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 
 @HiltViewModel
 class AddressViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
-    var selectedMapAddress : PlaceLocation?=null
-
+    var addressesList: MutableList<CustomerAddress> = mutableListOf()
+    var selectedMapAddress: PlaceLocation? = null
+     var runOnce = true
     private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val addressState = _addressesState.onStart { }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
+    val addressState = _addressesState.asStateFlow().onStart{ getAddressesById() }
 
-    private val _updatedAddressState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val updatedAddressState = _updatedAddressState.asStateFlow()
+    private val _editAddressState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val editAddressState = _editAddressState.asStateFlow()
 
 
     private val _updatedAddressLeavingState = MutableStateFlow<ApiState>(ApiState.Loading)
@@ -55,7 +55,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
 
     fun addAddress(address: CustomerAddress) {
         viewModelScope.launch(dispatcher) {
-            _updatedAddressState.emit(ApiState.Success(address))
+            _editAddressState.emit(ApiState.Success(address))
         }
     }
 
@@ -63,7 +63,6 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
         GlobalScope.launch(dispatcher) {
             repository.updateCustomerAddress(customerId!!, address)
                 .catch { e -> _updatedAddressLeavingState.emit(ApiState.Error(e)) }.collect {
-                    _updatedAddressLeavingState.emit(ApiState.Success(it))
                 }
         }
     }

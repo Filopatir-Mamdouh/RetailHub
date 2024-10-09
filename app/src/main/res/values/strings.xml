@@ -74,5 +74,6 @@
     <string name="No">No</string>
     <string name="DeleteTextConfirmation">Are you sure you want to delete this item ?</string>
     <string name="UseThisLocation">Use this location ?</string>
+    <string name="NoAddressesFound">No Addresses Found</string>
 
 </resources>

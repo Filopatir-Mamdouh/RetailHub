@@ -1,5 +1,6 @@
 package com.iti4.retailhub.datastorage.network
 
+import android.util.Log
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
@@ -37,6 +38,7 @@ import com.iti4.retailhub.type.OrderMarkAsPaidInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlin.math.log
 
 
 class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloClient) :
@@ -316,6 +318,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
 
     private fun customerAddressToMailingAddressInput(address: List<CustomerAddress>): List<MailingAddressInput> {
         return address.map {
+            Log.i("here", "customerAddressToMailingAddressInput: "+it.name)
             val address2Data = it.address2.split(",")
             MailingAddressInput(
                 address1 = Optional.present(it.address1),

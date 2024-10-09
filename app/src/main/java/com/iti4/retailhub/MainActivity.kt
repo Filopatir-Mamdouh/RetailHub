@@ -105,5 +105,11 @@ class MainActivity : AppCompatActivity(), ToolbarController {
             imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
     }
+    fun hideBottomNavBar(){
+        binding.navigationView.visibility = View.GONE;
+    }
+    fun showBottomNavBar(){
+        binding.navigationView.visibility = View.VISIBLE;
+    }
 
 }

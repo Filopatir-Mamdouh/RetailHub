@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -12,7 +14,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
@@ -25,13 +26,38 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AddressFragment : Fragment(), OnClickAddress {
-    private lateinit var addressesList: MutableList<CustomerAddress>
+    //animation
+    private var animationClicked = false
+    private val rotateOpen: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            this.requireContext(),
+            R.anim.rotate_open_anim
+        )
+    }
+    private val rotateClose: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            this.requireContext(),
+            R.anim.rotate_close_anim
+        )
+    }
+    private val fromButton: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            this.requireContext(),
+            R.anim.from_button_anim
+        )
+    }
+    private val toButton: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            this.requireContext(),
+            R.anim.to_button_anim
+        )
+    }
     private lateinit var binding: FragmentAddressBinding
     private val viewModel: AddressViewModel by activityViewModels()
-
     private val adapter by lazy {
         AddressRecyclerViewAdapter(this)
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,12 +78,8 @@ class AddressFragment : Fragment(), OnClickAddress {
             listOf(
             )
         )
-        listenToAddressesState()
-        listenToAddressesChangeState()
-
-
         binding.btnAddAddress.setOnClickListener {
-
+            startAnimation()
         }
         binding.btnAddAddressMap.setOnClickListener {
             findNavController().navigate(R.id.addressMapFragment)
@@ -68,40 +90,57 @@ class AddressFragment : Fragment(), OnClickAddress {
             }
             findNavController().navigate(R.id.addressDetails, bundle)
         }
+        listenToAddressesStateFromServer()
+        listenToAddressesEditState()
     }
 
 
-    private fun listenToAddressesState() {
+    private fun listenToAddressesStateFromServer() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.addressState.collect { item ->
-                    when (item) {
-                        is ApiState.Success<*> -> {
+
+            viewModel.addressState.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        if (viewModel.runOnce) {
+                            viewModel.runOnce = false
                             val response = item.data as GetAddressesByIdQuery.Customer
-                            addressesList = QueryCustomerAddressToCustomerAddres(response.addresses)
-                            adapter.submitList(addressesList)
+                            viewModel.addressesList =
+                                queryCustomerAddressToCustomerAddress(response.addresses)
+                            Log.i(
+                                "here",
+                                "new data: " + viewModel.addressesList.size + " and " + viewModel.addressesList
+                            )
+                            adapter.submitList(viewModel.addressesList)
+                            if (viewModel.addressesList.size > 0)
+                                binding.addressNotFoundGroup.visibility = View.GONE
+                            else
+                                binding.addressNotFoundGroup.visibility = View.VISIBLE
                         }
-
-                        is ApiState.Error -> {
-                            Log.i("here", "error: ")
-                        }
-
-                        is ApiState.Loading -> {}
                     }
+
+                    is ApiState.Error -> {
+                        Log.i("here", "error: ")
+                    }
+
+                    is ApiState.Loading -> {}
                 }
             }
+
         }
     }
 
-    private fun listenToAddressesChangeState() {
+    private fun listenToAddressesEditState() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.updatedAddressState.collect { item ->
+                viewModel.editAddressState.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
                             val updatedOrNewAddress = item.data as CustomerAddress
                             updateAddressList(updatedOrNewAddress)
-                            Log.i("here", "inside fragment " + CustomerAddress)
+                            Log.i(
+                                "here",
+                                "update address" + updatedOrNewAddress.newAddress + " " + updatedOrNewAddress.name
+                            )
                         }
 
                         is ApiState.Error -> {
@@ -117,45 +156,41 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getAddressesById()
         (requireActivity() as ToolbarController).apply {
             setVisibility(true)
             setTitle("Addresses")
             collapse()
         }
-
-        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
-            View.GONE
+        (activity as MainActivity).hideBottomNavBar()
     }
 
     override fun onStop() {
         super.onStop()
-        viewModel.updateMyAddresses(addressesList)
-        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
-            View.VISIBLE
+        viewModel.updateMyAddresses(viewModel.addressesList)
+        (activity as MainActivity).showBottomNavBar()
         (requireActivity() as ToolbarController).apply {
             expand()
         }
-
     }
 
-    fun updateAddressList(address: CustomerAddress) {
+    override fun onResume() {
+        super.onResume()
+        if (viewModel.addressesList.size == 0)
+            binding.addressNotFoundGroup.visibility = View.VISIBLE
+        else
+            binding.addressNotFoundGroup.visibility = View.GONE
+    }
+
+
+    private fun updateAddressList(address: CustomerAddress) {
         if (address.newAddress) {
-            addressesList.add(address)
+            viewModel.addressesList.add(address)
         } else {
-            val index = addressesList.indexOfFirst { it.id == address.id }
-            val address2Data = address.address2.split(",")
-            addressesList[index] = CustomerAddress(
-                address.address1,
-                address2Data[0] + "," +
-                        address2Data[1] + "," +
-                        address2Data[2],
-                address.phone,
-                address.name
-            )
+            val index = viewModel.addressesList.indexOfFirst { it.id == address.id }
+            viewModel.addressesList[index] = address
         }
+        adapter.submitList(viewModel.addressesList)
         adapter.notifyDataSetChanged()
-        adapter.submitList(addressesList)
     }
 
     override fun editDetails(address: CustomerAddress) {
@@ -167,16 +202,17 @@ class AddressFragment : Fragment(), OnClickAddress {
     }
 
     override fun deleteAddress(id: String) {
-        val index = addressesList.indexOfFirst {
+        val index = viewModel.addressesList.indexOfFirst {
             it.id == id
         }
-        addressesList.remove(addressesList[index])
+        viewModel.addressesList.remove(viewModel.addressesList[index])
         adapter.notifyDataSetChanged()
-        adapter.submitList(addressesList)
+        adapter.submitList(viewModel.addressesList)
+        if (viewModel.addressesList.size == 0)
+            binding.addressNotFoundGroup.visibility = View.VISIBLE
     }
 
-
-    private fun QueryCustomerAddressToCustomerAddres(address: List<GetAddressesByIdQuery.Address>): MutableList<CustomerAddress> {
+    private fun queryCustomerAddressToCustomerAddress(address: List<GetAddressesByIdQuery.Address>): MutableList<CustomerAddress> {
         return address.map {
             CustomerAddress(
                 it.address1!!,
@@ -188,6 +224,23 @@ class AddressFragment : Fragment(), OnClickAddress {
                 id = it.id
             )
         }.toMutableList()
+    }
+
+    private fun startAnimation() {
+        if (!animationClicked) {
+            binding.btnAddAddressMap.visibility = View.GONE
+            binding.btnAddAddressText.visibility = View.GONE
+            binding.btnAddAddress.startAnimation(rotateOpen)
+            binding.btnAddAddressMap.startAnimation(fromButton)
+            binding.btnAddAddressText.startAnimation(fromButton)
+        } else {
+            binding.btnAddAddressMap.visibility = View.VISIBLE
+            binding.btnAddAddressText.visibility = View.VISIBLE
+            binding.btnAddAddress.startAnimation(rotateClose)
+            binding.btnAddAddressMap.startAnimation(toButton)
+            binding.btnAddAddressText.startAnimation(toButton)
+        }
+        animationClicked = !animationClicked
     }
 
 }

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.MainActivity
@@ -21,6 +22,7 @@ import com.iti4.retailhub.databinding.FragmentAddressMapBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
@@ -30,6 +32,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import kotlin.math.log
 
 
 class AddressMapFragment : Fragment(), OnClickMap {
@@ -74,10 +77,10 @@ class AddressMapFragment : Fragment(), OnClickMap {
 
 
         if (location != null) {
-            map.controller.setZoom(15.0)
+            map.controller.setZoom(19.0)
             map.controller.setCenter(GeoPoint(location.lat.toDouble(), location.lon.toDouble()))
         } else {
-            map.controller.setZoom(15.0)
+            map.controller.setZoom(19.0)
             map.controller.setCenter(GeoPoint(31.200092, 29.918739))
         }
 
@@ -88,7 +91,6 @@ class AddressMapFragment : Fragment(), OnClickMap {
                     val long = it.longitude
                     map.overlays.remove(map.overlays.last())
                     val marker = Marker(map)
-                    map.controller.setZoom(25.0)
                     marker.position = GeoPoint(lat!!, long!!)
                     map.overlays.add(marker)
                     map.controller.setCenter(GeoPoint(lat!!, long!!))
@@ -147,7 +149,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
     private fun initAddressGeocoding() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.addressGeocoding.collect { item ->
+                viewModel.addressGeocoding.debounce(500).collect() { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
                             if (!(item.data is Error)) {
@@ -190,10 +192,13 @@ class AddressMapFragment : Fragment(), OnClickMap {
     }
 
     override fun navigateToDetails() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.addressMapFragment, true)
+            .build()
         val bundle = Bundle().apply {
             putString("reason", "map")
         }
-        findNavController().navigate(R.id.addressDetails, bundle)
+        findNavController().navigate(R.id.addressDetails, bundle,navOptions)
     }
 
     override fun onResume() {

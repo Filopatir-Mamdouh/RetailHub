@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".features.address.AddressFragment">
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/addressNotFoundGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="textView13,addressnotfound" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAddress"
         android:layout_width="match_parent"
@@ -16,6 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddAddress"
         android:layout_width="wrap_content"
@@ -24,11 +32,13 @@
         android:layout_marginBottom="10dp"
         android:backgroundTint="@color/grey"
         android:clickable="true"
+        android:padding="40dp"
         android:src="@drawable/ic_add"
         app:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/rvAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        app:useCompatPadding="false" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddAddressMap"
@@ -38,10 +48,13 @@
         android:backgroundTint="@color/grey"
         android:clickable="true"
         android:src="@drawable/ic_map"
+        android:visibility="invisible"
         app:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/btnAddAddress"
         app:layout_constraintEnd_toEndOf="@+id/btnAddAddress"
-        app:tint="@color/white" />
+        app:shapeAppearance="@style/Widget.MaterialComponents.FloatingActionButton"
+        app:tint="@color/white"
+        app:useCompatPadding="false" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddAddressText"
@@ -51,9 +64,39 @@
         android:backgroundTint="@color/grey"
         android:clickable="true"
         android:src="@drawable/ic_desc"
+        android:visibility="invisible"
         app:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/btnAddAddressMap"
         app:layout_constraintEnd_toEndOf="@+id/btnAddAddressMap"
+        app:shapeAppearance="@style/Widget.MaterialComponents.FloatingActionButton"
         app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="36dp"
+        android:ellipsize="none"
+        android:fontFamily="@font/metropolis_bold"
+        android:lines="2"
+        android:text="@string/NoAddressesFound"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/addressnotfound"
+        app:layout_constraintStart_toStartOf="@+id/addressnotfound"
+        app:layout_constraintTop_toBottomOf="@+id/addressnotfound" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/addressnotfound"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="addressanimation.json"
+        app:lottie_loop="true" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

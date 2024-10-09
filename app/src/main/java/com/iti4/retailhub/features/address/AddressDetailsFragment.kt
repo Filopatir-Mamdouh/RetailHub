@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressDetailsBinding
 import com.iti4.retailhub.models.CustomerAddress
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,7 +18,8 @@ class AddressDetailsFragment : Fragment() {
     private val viewModel: AddressViewModel by activityViewModels()
     private lateinit var binding: FragmentAddressDetailsBinding
     private var details: CustomerAddress? = null
-    private var newAddress: Boolean = false
+    private lateinit var mapAddress: PlaceLocation
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,32 +31,45 @@ class AddressDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val reason = arguments?.getString("reason")
+
         binding.btnSaveAddress.setOnClickListener {
             saveAddress()
-            findNavController().navigateUp()
+            if (reason == "map") {
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.addressFragment, true)
+                    .build()
+                findNavController().navigate(R.id.addressFragment, null, navOptions)
+            } else
+                findNavController().navigateUp()
         }
-        val reason = arguments?.getString("reason")
         when (reason) {
             "new" -> {
-                newAddress = true
+
                 // binding.tvTitle.text = "Add New Address"
             }
 
             "edit" -> {
                 details = arguments?.getParcelable<CustomerAddress>("data") as CustomerAddress
-                fillData()
+                fillDataFromEdit()
+            }
+
+            "map" -> {
+                mapAddress = viewModel.selectedMapAddress!!
+                fillDataFromMap()
             }
         }
     }
 
     private fun saveAddress() {
-
-        if (details == null)
+        if (details == null){
             details = CustomerAddress(
                 binding.etAddress.text.toString(),
                 binding.etAppartment.text.toString() + "," + binding.etCity.text.toString() + "," + binding.etCountry.text.toString(),
-                binding.etPhone.text.toString(), binding.etFullName.text.toString(), true
+                binding.etPhone.text.toString(), binding.etFullName.text.toString(), true,
             )
+            details!!.id=details.hashCode().toString()
+        }
         else {
             details!!.name = binding.etFullName.text.toString()
             details!!.address1 = binding.etAddress.text.toString()
@@ -68,7 +84,7 @@ class AddressDetailsFragment : Fragment() {
     }
 
 
-    private fun fillData() {
+    private fun fillDataFromEdit() {
         binding.apply {
             etFullName.setText(details!!.name)
             etPhone.setText(details!!.phone)
@@ -79,6 +95,17 @@ class AddressDetailsFragment : Fragment() {
                 etCity.setText(address2[1])
                 etCountry.setText(address2[2])
             }
+        }
+    }
+
+    private fun fillDataFromMap() {
+        binding.apply {
+            val address = mapAddress.address
+            val address1 =
+                ( if (address.house_number != "null") address.house_number else "") + " " +(if (address.road != "null") address.road else "")
+            etAddress.setText(address1)
+            etCity.setText(address.city)
+            etCountry.setText(address.country)
         }
     }
 

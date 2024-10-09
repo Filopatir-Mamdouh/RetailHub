@@ -41,7 +41,6 @@ interface ApiServiceForLocation {
 
 interface ApiServiceForLocationGeocoding {
 
-    //    https://us1.locationiq.com/v1/reverse?key=Your_API_Access_Token&lat=31.043541&lon=29.788351&format=json&
     @GET("reverse")
     suspend fun getLocationGeocoding(
         @Query("key") apiKey: String,
