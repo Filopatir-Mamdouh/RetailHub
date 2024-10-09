@@ -4,6 +4,7 @@ package com.iti4.retailhub.datastorage
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
+import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -33,6 +34,7 @@ import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
+import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -57,6 +59,9 @@ class Repository @Inject constructor(
 
     override fun getMyBagProducts(query: String): Flow<List<CartProduct>> {
         return remoteDataSource.getMyBagProducts(query)
+    }
+    override fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>{
+       return remoteDataSource.deleteCustomerFavoritItem(id)
     }
 
     override fun deleteMyBagItem(query: String): Flow<DeleteDraftOrderMutation.DraftOrderDelete> {

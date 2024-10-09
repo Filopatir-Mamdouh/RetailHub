@@ -77,7 +77,6 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
                 }
             }
         }
-
     }
 
 
@@ -85,6 +84,38 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         val bundle = Bundle()
         bundle.putString("productid", variantId)
         findNavController().navigate(R.id.productDetailsFragment, bundle)
+    }
+
+    override fun deleteItem(id: String) {
+        favoritesViewModel.deleteFavorites(id)
+        lifecycleScope.launch {
+            favoritesViewModel.deletedFavortes.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        favoritesViewModel.getFavorites()
+                        Toast.makeText(
+                            requireContext(),
+                           "Product Is Deleted Successfully",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                    is ApiState.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            item.exception.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                    is ApiState.Loading -> {
+
+                    }
+                }
+            }
+        }
     }
 
 }

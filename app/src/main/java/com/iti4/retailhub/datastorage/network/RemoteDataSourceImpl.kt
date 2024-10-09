@@ -7,6 +7,7 @@ import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.DeleteCustomerFavoritItemMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
@@ -33,6 +34,7 @@ import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
 import com.iti4.retailhub.type.DraftOrderLineItemInput
 import com.iti4.retailhub.type.MailingAddressInput
+import com.iti4.retailhub.type.MetafieldDeleteInput
 import com.iti4.retailhub.type.OrderMarkAsPaidInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -64,6 +66,14 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         val response = apolloClient.query(ProductDetailsQuery(id)).execute()
         if (!response.hasErrors() && response.data != null) {
             emit(response.data?.node?.onProduct)
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
+    override fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?> = flow {
+        val response = apolloClient.mutation(DeleteCustomerFavoritItemMutation(id)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response.data?.metafieldDelete?.deletedId)
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }

@@ -24,16 +24,7 @@ class FavoritsDiffUtilAdapter(private val context: Context,private val listener:
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-
-        Log.d("fav", "onBindViewHolder: ${item.description?.get(0)}")
         val description=item.description?.split(",")
-        Log.d("fav", "onBindViewHolder: ${description?.get(3)?.substringBefore("?")}")
-        Log.d("fav", "onBindViewHolder:${description?.get(4)} ")
-        Log.d("fav", "onBindViewHolder:${description?.get(0)} ")
-        Log.d("fav", "onBindViewHolder:${description?.get(0)?.get(1)} ${description?.get(0)?.get(2)} ")
-
-        Log.d("fav", "onBindViewHolder:${description?.get(2)} ")
-        Log.d("fav", "onBindViewHolder:${description?.get(1)} ")
         Glide.with(context)
             .load(description?.get(description.size-2)?.substringBefore("?"))
             .error(android.R.drawable.stat_notify_error)
@@ -48,6 +39,9 @@ class FavoritsDiffUtilAdapter(private val context: Context,private val listener:
         holder.binding.favoritsProductName2.text=description?.get(0)
 
         holder.binding.favoritsProductPrice.text=description?.get(description.size-1)
+        holder.binding.favoritdelete.setOnClickListener{
+            listener.deleteItem(item.id)
+        }
 
     }
 

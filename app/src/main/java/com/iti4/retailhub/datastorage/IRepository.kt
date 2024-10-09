@@ -3,6 +3,7 @@ package com.iti4.retailhub.datastorage
 
 import android.content.Intent
 import android.content.IntentSender
+import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -27,6 +28,7 @@ import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.type.CustomerInput
+import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -75,4 +77,5 @@ interface IRepository {
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
     fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
+    fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
 }

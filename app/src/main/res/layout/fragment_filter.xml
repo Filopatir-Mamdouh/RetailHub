@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout5"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".features.shop.search.FilterFragment">
+    tools:context=".search.view.FilterFragment">
 
     <TextView
         android:id="@+id/textView18"
@@ -39,8 +39,7 @@
         app:thumbWidth="20dp"
         app:trackColorActive="@color/red_color"
         app:trackColorInactive="@color/grey"
-        app:trackHeight="5dp"
-        app:values="@array/initial_slider_values" />
+        app:trackHeight="5dp" />
 
     <TextView
         android:id="@+id/textView19"
@@ -96,25 +95,19 @@
             android:id="@+id/menChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/men"
-            android:textColor="@drawable/chip_text_selector"
-            app:chipBackgroundColor="@drawable/chip_selector" />
+            android:text="@string/men" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/womenChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/women"
-            android:textColor="@drawable/chip_text_selector"
-            app:chipBackgroundColor="@drawable/chip_selector" />
+            android:text="@string/women" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/kidsChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/kids"
-            android:textColor="@drawable/chip_text_selector"
-            app:chipBackgroundColor="@drawable/chip_selector" />
+            android:text="@string/kids" />
     </com.google.android.material.chip.ChipGroup>
 
     <TextView
@@ -174,7 +167,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/button_background_outline"
         android:fontFamily="@font/metropolis_medium"
         android:text="@string/discard"
         android:textColor="@color/black_variant"
