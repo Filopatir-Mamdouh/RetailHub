@@ -3,7 +3,6 @@ package com.iti4.retailhub.features.home.adapter
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,11 +29,10 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails) : ListAdapter<HomeProd
             Glide.with(holder.itemView).load(item.image).into(imageView)
             textView7.text = item.brand
             textView8.text = item.title
-            textView10.text = buildString {
+            newItemPrice.text = buildString {
                 append(item.maxPrice)
                 append(" ")
                 append(item.currencyCode)
-
             }
 
             root.setOnClickListener{

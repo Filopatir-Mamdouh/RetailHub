@@ -162,9 +162,6 @@ class AddressFragment : Fragment(), OnClickAddress {
         super.onStop()
         viewModel.updateMyAddresses(viewModel.addressesList)
         (activity as MainActivity).showBottomNavBar()
-        (requireActivity() as ToolbarController).apply {
-            expand()
-        }
     }
 
     override fun onResume() {
