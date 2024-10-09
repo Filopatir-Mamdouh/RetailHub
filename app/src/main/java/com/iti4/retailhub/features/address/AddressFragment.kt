@@ -100,9 +100,11 @@ class AddressFragment : Fragment(), OnClickAddress {
             viewModel.addressState.collect { item ->
                 when (item) {
                     is ApiState.Success<*> -> {
-                        if (viewModel.runOnce) {
+
                             viewModel.runOnce = false
                             val response = item.data as GetAddressesByIdQuery.Customer
+                        Log.i("here", "response size: " + response.addresses.size+"list lisze "+viewModel.addressesList.size)
+                             if(response.addresses.size>viewModel.addressesList.size)
                             viewModel.addressesList =
                                 queryCustomerAddressToCustomerAddress(response.addresses)
                             Log.i(
@@ -114,7 +116,7 @@ class AddressFragment : Fragment(), OnClickAddress {
                                 binding.addressNotFoundGroup.visibility = View.GONE
                             else
                                 binding.addressNotFoundGroup.visibility = View.VISIBLE
-                        }
+
                     }
 
                     is ApiState.Error -> {
@@ -135,6 +137,7 @@ class AddressFragment : Fragment(), OnClickAddress {
                     when (item) {
                         is ApiState.Success<*> -> {
                             val updatedOrNewAddress = item.data as CustomerAddress
+                            if(!viewModel.addressesList.contains(updatedOrNewAddress)||updatedOrNewAddress.newAddress==false)
                             updateAddressList(updatedOrNewAddress)
                             Log.i(
                                 "here",
@@ -155,6 +158,15 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStart() {
         super.onStart()
+        viewModel.getAddressesById()
+        val reason = arguments?.getString("reason")
+//        if (reason == "changeShipping"){
+//            Log.i("here", "onStart: "+"here")
+//            viewModel.getAddressesById()
+//        }
+//        else if (reason == "addNew"){
+//            viewModel.getAddressesById()
+//        }
         (activity as MainActivity).hideBottomNavBar()
     }
 
@@ -175,6 +187,7 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     private fun updateAddressList(address: CustomerAddress) {
         if (address.newAddress) {
+            Log.i("here", "updateAddressList new ? : " + address)
             viewModel.addressesList.add(address)
         } else {
             val index = viewModel.addressesList.indexOfFirst { it.id == address.id }
@@ -185,6 +198,7 @@ class AddressFragment : Fragment(), OnClickAddress {
     }
 
     override fun editDetails(address: CustomerAddress) {
+
         val bundle = Bundle().apply {
             putString("reason", "edit")
             putParcelable("data", address)
@@ -201,6 +215,8 @@ class AddressFragment : Fragment(), OnClickAddress {
         adapter.submitList(viewModel.addressesList)
         if (viewModel.addressesList.size == 0)
             binding.addressNotFoundGroup.visibility = View.VISIBLE
+        Log.i("here", "deleteAddress: "+viewModel.addressesList.size)
+        viewModel.updateMyAddresses(viewModel.addressesList)
     }
 
     private fun queryCustomerAddressToCustomerAddress(address: List<GetAddressesByIdQuery.Address>): MutableList<CustomerAddress> {

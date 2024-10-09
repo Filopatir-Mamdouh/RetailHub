@@ -59,7 +59,10 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         listenToCustomerDataResponse()
 
         binding.btnChangeAddress.setOnClickListener {
-            findNavController().navigate(R.id.addressFragment)
+            val bundle = Bundle().apply {
+                putString("reason", "changeShipping")
+            }
+            findNavController().navigate(R.id.addressFragment,bundle)
         }
         binding.btnSubmitOrder.setOnClickListener {
             if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {

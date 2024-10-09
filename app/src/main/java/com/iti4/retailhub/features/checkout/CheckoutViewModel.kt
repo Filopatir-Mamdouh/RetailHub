@@ -40,6 +40,9 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     val paymentIntentResponse = _paymentIntentResponse.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
+    private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val addressesState = _addressesState.onStart{getAddressesById()}
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
     val customerId by lazy {(repository.getUserShopLocalId()!!)}
     fun getCustomerData() {
@@ -60,6 +63,15 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 }
         }
     }
+    fun getAddressesById() {
+        viewModelScope.launch(dispatcher) {
+            repository.getAddressesById(customerId!!)
+                .catch { e -> _addressesState.emit(ApiState.Error(e)) }.collect {
+                    _addressesState.emit(ApiState.Success(it))
+                }
+        }
+    }
+
 
     fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>, isCard: Boolean) {
         //    val customerData = CustomerInput("customer_id:6945540800554")
