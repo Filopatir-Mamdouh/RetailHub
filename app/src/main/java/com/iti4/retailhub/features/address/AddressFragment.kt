@@ -87,7 +87,7 @@ class AddressFragment : Fragment(), OnClickAddress {
             val bundle = Bundle().apply {
                 putString("reason", "new")
             }
-            findNavController().navigate(R.id.addressDetails, bundle)
+            findNavController().navigate(R.id.addressDetailsFragment, bundle)
         }
         listenToAddressesStateFromServer()
         listenToAddressesEditState()
@@ -189,7 +189,7 @@ class AddressFragment : Fragment(), OnClickAddress {
             putString("reason", "edit")
             putParcelable("data", address)
         }
-        findNavController().navigate(R.id.addressDetails, bundle)
+        findNavController().navigate(R.id.addressDetailsFragment, bundle)
     }
 
     override fun deleteAddress(id: String) {

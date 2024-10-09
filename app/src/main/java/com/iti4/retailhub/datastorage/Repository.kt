@@ -37,7 +37,6 @@ import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
-import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody

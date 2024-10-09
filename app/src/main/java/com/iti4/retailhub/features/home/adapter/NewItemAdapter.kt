@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.NewCardItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
@@ -26,7 +28,12 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails) : ListAdapter<HomeProd
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         holder.binding.apply {
-            Glide.with(holder.itemView).load(item.image).into(imageView)
+            Glide.with(holder.itemView)
+                .load(item.image).diskCacheStrategy(DiskCacheStrategy.ALL).fitCenter()
+                .apply(RequestOptions().override(150, 200))
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(imageView)
+//            Glide.with(holder.itemView).load(item.image).centerCrop().into(imageView)
             textView7.text = item.brand
             textView8.text = item.title
             newItemPrice.text = buildString {

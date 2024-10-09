@@ -20,10 +20,8 @@ import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.features.favorits.view.onFavoritItemDelete
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
@@ -89,7 +87,7 @@ class ProductDetailsFragment : Fragment() {
                         productVariants =
                             data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
-                        val productTitle = data.title.split("|")
+                        productTitle = data.title.split("|")
                         if (productTitle.size > 2)
                                 binding.productDetailsAppBar.collapsedPageName.text = productTitle[2]
                         else
