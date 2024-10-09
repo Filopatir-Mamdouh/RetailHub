@@ -8,6 +8,7 @@ query Orders($query: String!) {
             currentTotalPriceSet{
                 shopMoney{
                     amount
+                    currencyCode
                 }
             }
             currentSubtotalLineItemsQuantity

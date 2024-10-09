@@ -6,6 +6,7 @@ data class Order(
     val number: String?,
     val dateTime: String,
     val price: String,
+    val currency: String,
     val quantity: Int,
     val financialStatus: String,
     val fulfillmentStatus: String

@@ -87,4 +87,11 @@
     <string name="my_orders">My Orders</string>
     <string name="shipping_addresses">Shipping Addresses</string>
     <string name="promo_codes">Promo codes</string>
+    <string name="total">Total:</string>
+    <string name="details">Details</string>
+    <string name="quantity">Quantity:</string>
+    <string name="tracking_number">Tracking Number:</string>
+    <string name="delivered">Delivered</string>
+    <string name="processing">In Progress</string>
+    <string name="paid">Paid</string>
 </resources>

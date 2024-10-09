@@ -46,6 +46,7 @@ fun OrdersQuery.Node.toOrder(): Order {
         this.confirmationNumber,
         this.createdAt.toString().split("T")[0],
         this.currentTotalPriceSet.shopMoney.amount.toString(),
+        this.currentTotalPriceSet.shopMoney.currencyCode.toString(),
         this.currentSubtotalLineItemsQuantity,
         this.displayFinancialStatus.toString(),
         this.displayFulfillmentStatus.toString()
