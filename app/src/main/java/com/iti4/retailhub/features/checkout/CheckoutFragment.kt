@@ -12,7 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
@@ -57,12 +57,18 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         viewModel.getCustomerData()
         listenToPIChanges()
         listenToCustomerDataResponse()
-
+        listenToCustomerAddress()
+        binding.btnCheckoutAddNewAddress.setOnClickListener{
+            val bundle = Bundle().apply {
+                putString("reason", "changeShipping")
+            }
+            findNavController().navigate(R.id.addressFragment, bundle)
+        }
         binding.btnChangeAddress.setOnClickListener {
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
-            findNavController().navigate(R.id.addressFragment,bundle)
+            findNavController().navigate(R.id.addressFragment, bundle)
         }
         binding.btnSubmitOrder.setOnClickListener {
             if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
@@ -145,7 +151,40 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                 viewModel.customerResponse.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            val response = item.data as GetCustomerByIdQuery.Customer
+                            viewModel.getDefaultAddress()
+                            // show customer address
+                            //load customer discounts
+                        }
+
+                        is ApiState.Error -> {}
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun listenToCustomerAddress() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.addressesState.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            val customer = item.data as GetAddressesDefaultIdQuery.Customer
+                            var address = customer.defaultAddress
+                            if (address == null) {
+                                binding.groupNoAddress.visibility = View.VISIBLE
+                                binding.cvAddressCheckout.visibility = View.INVISIBLE
+                            } else {
+                                binding.groupNoAddress.visibility = View.INVISIBLE
+                                binding.cvAddressCheckout.visibility = View.VISIBLE
+                            }
+                            binding.tvAddressAddress.text = address?.address1 ?: " "
+                            binding.tvAddressRestOfAddress.text = address?.address2 ?: " "
+                            binding.tvAddressFullName.text = address?.name ?: " "
+                            binding.tvPhone.text = address?.phone ?: " "
+
                             binding.shimmerCheckout.stopShimmer()
                             binding.shimmerCheckout.hideShimmer()
                             // show customer address
@@ -259,7 +298,12 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
 
     override fun onStart() {
         super.onStart()
-        ToolbarSetup.setupToolbar(binding.checkoutAppbar, "Checkout",resources, findNavController())
+        ToolbarSetup.setupToolbar(
+            binding.checkoutAppbar,
+            "Checkout",
+            resources,
+            findNavController()
+        )
     }
 
 }

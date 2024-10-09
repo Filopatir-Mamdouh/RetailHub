@@ -84,4 +84,5 @@
     <string name="searchhere">Search here..</string>
     <string name="search">Search</string>
     <string name="currency">EGP</string>
+    <string name="NoAddress">No Addresses Found</string>
 </resources>

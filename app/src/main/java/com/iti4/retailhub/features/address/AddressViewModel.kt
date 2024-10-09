@@ -1,6 +1,5 @@
 package com.iti4.retailhub.features.address
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 
 @HiltViewModel
@@ -23,9 +21,9 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     private val dispatcher = Dispatchers.IO
     var addressesList: MutableList<CustomerAddress> = mutableListOf()
     var selectedMapAddress: PlaceLocation? = null
-     var runOnce = true
+    var runOnce = true
     private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val addressState = _addressesState.asStateFlow().onStart{ getAddressesById() }
+    val addressState = _addressesState.asStateFlow().onStart { getAddressesById() }
 
     private val _editAddressState = MutableStateFlow<ApiState>(ApiState.Loading)
     val editAddressState = _editAddressState.asStateFlow()
@@ -33,6 +31,11 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
 
     private val _updatedAddressLeavingState = MutableStateFlow<ApiState>(ApiState.Loading)
     val updatedAddressLeavingState = _updatedAddressLeavingState.asStateFlow()
+
+
+    private val _defaultAddressState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val defaultAddressState = _defaultAddressState.asStateFlow()
+
 
     private val _addressLookUp = MutableStateFlow<ApiState>(ApiState.Loading)
     val addressLookUp = _addressLookUp.asStateFlow()
@@ -52,8 +55,23 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                 }
         }
     }
+    fun getDefaultAddress() {
+        viewModelScope.launch(dispatcher) {
+            repository.getDefaultAddress(customerId!!)
+                .catch { e -> _defaultAddressState.emit(ApiState.Error(e)) }.collect {
+                    _defaultAddressState.emit(ApiState.Success(it))
+                }
+        }
+    }
 
     fun addAddress(address: CustomerAddress) {
+        if (address.newAddress) {
+            addressesList.add(address)
+        } else {
+            val index = addressesList.indexOfFirst { it.id == address.id }
+            addressesList[index] = address
+        }
+        updateMyAddresses(addressesList)
         viewModelScope.launch(dispatcher) {
             _editAddressState.emit(ApiState.Success(address))
         }
@@ -63,6 +81,14 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
         GlobalScope.launch(dispatcher) {
             repository.updateCustomerAddress(customerId!!, address)
                 .catch { e -> _updatedAddressLeavingState.emit(ApiState.Error(e)) }.collect {
+                }
+        }
+    }
+
+    fun updateCustomerDefaultAddress(addressId: String) {
+        GlobalScope.launch(dispatcher) {
+            repository.updateCustomerDefaultAddress(customerId!!, addressId)
+                .collect {
                 }
         }
     }

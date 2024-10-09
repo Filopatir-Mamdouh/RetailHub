@@ -209,5 +209,8 @@ class AddressMapFragment : Fragment(), OnClickMap {
         map.onPause()
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("here", "onDestroy: Map")
+    }
 }

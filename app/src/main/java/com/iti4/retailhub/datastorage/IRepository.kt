@@ -10,9 +10,11 @@ import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.CustomerUpdateDefaultAddressMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
+import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
@@ -25,6 +27,8 @@ import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
+import com.iti4.retailhub.models.CountryCodes
+import com.iti4.retailhub.models.CurrencyResponse
 import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -92,4 +96,19 @@ interface IRepository {
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
     fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
+    fun getDefaultAddress(customerId: String): Flow<GetAddressesDefaultIdQuery.Customer>
+    fun updateCustomerDefaultAddress(
+        customerId: String,
+        addressId: String
+    ): Flow<CustomerUpdateDefaultAddressMutation.Customer>
+
+    fun getCurrencyRates(): Flow<Response<CurrencyResponse>>
+    fun saveConversionRates(conversion_rates: Map<String, Double>)
+    fun getConversionRates(code: CountryCodes): Double
+    fun setCurrencyCode(currencyCode: CountryCodes)
+    fun getCurrencyCode(): CountryCodes
+    fun getFirstTime(): Boolean
+    fun setFirstTime()
+    fun setRefrechCurrency()
+    fun getShouldIRefrechCurrency(): Boolean
 }

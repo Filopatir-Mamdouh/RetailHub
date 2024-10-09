@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.address
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,16 +38,19 @@ class AddressDetailsFragment : Fragment() {
             saveAddress()
             if (reason == "map") {
                 val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.addressFragment, true)
+                    .setPopUpTo(R.id.addressDetailsFragment, true)
                     .build()
                 findNavController().navigate(R.id.addressFragment, null, navOptions)
-            } else
-                findNavController().navigateUp()
+            } else {
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.addressDetailsFragment, true)
+                    .build()
+                findNavController().navigate(R.id.addressFragment, null, navOptions)
+            }
+
         }
         when (reason) {
             "new" -> {
-
-                // binding.tvTitle.text = "Add New Address"
             }
 
             "edit" -> {
@@ -62,15 +66,14 @@ class AddressDetailsFragment : Fragment() {
     }
 
     private fun saveAddress() {
-        if (details == null){
+        if (details == null) {
             details = CustomerAddress(
                 binding.etAddress.text.toString(),
                 binding.etAppartment.text.toString() + "," + binding.etCity.text.toString() + "," + binding.etCountry.text.toString(),
                 binding.etPhone.text.toString(), binding.etFullName.text.toString(), true,
             )
-            details!!.id=details.hashCode().toString()
-        }
-        else {
+            details!!.id = details.hashCode().toString()
+        } else {
             details!!.name = binding.etFullName.text.toString()
             details!!.address1 = binding.etAddress.text.toString()
             details!!.address2 =
@@ -102,12 +105,15 @@ class AddressDetailsFragment : Fragment() {
         binding.apply {
             val address = mapAddress.address
             val address1 =
-                ( if (address.house_number != "null") address.house_number else "") + " " +(if (address.road != "null") address.road else "")
+                (if (address.house_number != "null") address.house_number else "") + " " + (if (address.road != "null") address.road else "")
             etAddress.setText(address1)
             etCity.setText(address.city)
             etCountry.setText(address.country)
         }
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("here", "onDestroy: Details")
+    }
 }

@@ -41,10 +41,13 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
     private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val addressesState = _addressesState.onStart{getAddressesById()}
+    val addressesState = _addressesState.onStart {}
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
-    val customerId by lazy {(repository.getUserShopLocalId()!!)}
+
+
+
+    val customerId by lazy { (repository.getUserShopLocalId()!!) }
     fun getCustomerData() {
         viewModelScope.launch(dispatcher) {
             repository.getCustomerInfoById(customerId)
@@ -63,9 +66,10 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 }
         }
     }
-    fun getAddressesById() {
+
+    fun getDefaultAddress() {
         viewModelScope.launch(dispatcher) {
-            repository.getAddressesById(customerId!!)
+            repository.getDefaultAddress(customerId!!)
                 .catch { e -> _addressesState.emit(ApiState.Error(e)) }.collect {
                     _addressesState.emit(ApiState.Success(it))
                 }
@@ -94,7 +98,10 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
                     repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
                         .collect { responseFromComplete ->
-                            if(isCard){repository.markOrderAsPaid(responseFromComplete.order!!.id).collect{}}
+                            if (isCard) {
+                                repository.markOrderAsPaid(responseFromComplete.order!!.id)
+                                    .collect {}
+                            }
                             repository.deleteMyBagItem(responseFromComplete.id).collect {
                                 _checkoutDraftOrderCreated.emit(ApiState.Success(it))
                             }

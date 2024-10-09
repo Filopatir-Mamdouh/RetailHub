@@ -20,6 +20,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/groupNoAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:constraint_referenced_ids="textView15,btnCheckoutAddNewAddress" />
+
             <TextView
                 android:id="@+id/textView5"
                 style="@style/MainTextViewStyle"
@@ -34,7 +41,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+                android:id="@+id/cvAddressCheckout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -78,11 +85,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:layout_marginBottom="20dp"
                         android:fontFamily="@font/metropolis_regular"
                         android:text="Chino Hills, CA 81231, United States"
                         android:textColor="@color/black_variant"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/tvAddressAddress"
                         app:layout_constraintTop_toBottomOf="@+id/tvAddressAddress" />
 
@@ -96,6 +101,20 @@
                         android:textColor="@color/red_color"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvAddressFullName" />
+
+                    <TextView
+                        android:id="@+id/tvPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:fontFamily="@font/metropolis_regular"
+                        android:text="TextView"
+                        android:textColor="@color/black_variant"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/tvAddressRestOfAddress"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAddressRestOfAddress" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
@@ -108,8 +127,8 @@
                 android:text="@string/Payment"
                 android:textColor="@color/black_variant"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/cardView"
-                app:layout_constraintTop_toBottomOf="@+id/cardView" />
+                app:layout_constraintStart_toStartOf="@+id/cvAddressCheckout"
+                app:layout_constraintTop_toBottomOf="@+id/cvAddressCheckout" />
 
 
             <TextView
@@ -284,12 +303,33 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="80dp"
                 android:text="@string/SubmitOrder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/metropolis_medium"
+                android:text="@string/NoAddress"
+                app:layout_constraintStart_toStartOf="@+id/textView5"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+            <ImageButton
+                android:id="@+id/btnCheckoutAddNewAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/circular_background_black"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@+id/textView15"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView15" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
