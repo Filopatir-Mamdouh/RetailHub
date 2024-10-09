@@ -1,18 +1,220 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".features.orders.orderdetails.OrderDetailsFragment">
     <include android:id="@+id/orderDetailsAppbar" layout="@layout/app_bar"/>
-    <TextView
-        android:id="@+id/orderNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Order Number"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <TextView
+            android:id="@+id/orderDetailsName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            tools:text="Order Number"
+            android:fontFamily="@font/metropolis_semibold"
+            android:textSize="16sp"
+            android:textColor="@color/black_variant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/orderDetailsDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/orderDetailsName"
+            tools:text="Order Date" />
+
+        <TextView
+            android:id="@+id/orderDetailsStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/green"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@+id/orderDetailsDate"
+            app:layout_constraintTop_toBottomOf="@id/orderDetailsDate"
+            tools:text="Order Status" />
+
+        <TextView
+            android:id="@+id/textView25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:text="@string/tracking_number"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsName"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailsName" />
+
+        <TextView
+            android:id="@+id/orderDetailsNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/textView25"
+            app:layout_constraintTop_toTopOf="@+id/textView25"
+            tools:text="Order Number" />
+
+        <TextView
+            android:id="@+id/orderDetailsQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/textView25"
+            app:layout_constraintTop_toBottomOf="@+id/textView25"
+            tools:text="Order Quantity" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/orderDetailsRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/orderDetailsStatus"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsQuantity"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailsQuantity" />
+
+        <TextView
+            android:id="@+id/textView26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:text="Order Information"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailsRecyclerView" />
+
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:text="@string/ShippingAddress"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/textView26"
+            app:layout_constraintTop_toBottomOf="@+id/textView26" />
+
+        <TextView
+            android:id="@+id/orderDetailsShippingAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/textView22"
+            app:layout_constraintTop_toTopOf="@+id/textView22"
+            tools:text="Order Number" />
+
+        <TextView
+            android:id="@+id/textView27"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:text="Payment Status:"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/textView22"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailsShippingAddress" />
+
+        <TextView
+            android:id="@+id/orderDetailsPaymentStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsShippingAddress"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailsShippingAddress"
+            tools:text="Order Number" />
+
+        <TextView
+            android:id="@+id/textView24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:text="@string/Discount"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/textView27"
+            app:layout_constraintTop_toBottomOf="@+id/textView27" />
+
+        <TextView
+            android:id="@+id/orderDetailsDiscount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsPaymentStatus"
+            app:layout_constraintTop_toTopOf="@+id/textView24"
+            tools:text="Discount" />
+
+        <TextView
+            android:id="@+id/textView23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/metropolis_regular"
+            android:text="@string/TotalAmount"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/textView24"
+            app:layout_constraintTop_toBottomOf="@id/orderDetailsDiscount" />
+
+        <TextView
+            android:id="@+id/orderDetailsTotalAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/metropolis_medium"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsDiscount"
+            app:layout_constraintTop_toTopOf="@+id/textView23"
+            tools:text="4547" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/orderDetailsReorderBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/button_background_outline"
+            android:fontFamily="@font/metropolis_medium"
+            android:text="@string/Reorder"
+            android:textColor="@color/black_variant"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@+id/orderDetailsRecyclerView"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsRecyclerView"
+            app:layout_constraintTop_toBottomOf="@id/orderDetailsTotalAmount" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

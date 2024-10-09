@@ -94,4 +94,5 @@
     <string name="delivered">Delivered</string>
     <string name="processing">In Progress</string>
     <string name="paid">Paid</string>
+    <string name="Reorder">Reorder</string>
 </resources>
