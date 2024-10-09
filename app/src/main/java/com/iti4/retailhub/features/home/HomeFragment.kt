@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.adapter.BrandAdapter
 import com.iti4.retailhub.features.home.adapter.NewItemAdapter
 import com.iti4.retailhub.models.Brands
+import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -82,6 +84,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                 }
             }
         }
+
     }
 
     private fun displayNewItemRowData(data: List<HomeProducts>) {

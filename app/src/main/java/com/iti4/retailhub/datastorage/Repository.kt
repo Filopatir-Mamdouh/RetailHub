@@ -17,6 +17,7 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
@@ -34,6 +35,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencyResponse
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
@@ -280,6 +282,10 @@ class Repository @Inject constructor(
 
     override fun setRefrechCurrency() {
         UserLocalProfileData.setRefrechCurrency()
+    }
+
+    override fun getDiscounts(): Flow<List<Discount>>{
+        return remoteDataSource.getDiscounts()
     }
 
 

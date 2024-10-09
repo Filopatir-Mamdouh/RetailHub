@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CountryCodes
+import com.iti4.retailhub.models.Discount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
     private val _currencyState = MutableStateFlow<ApiState>(ApiState.Loading)
     val currencyState = _currencyState.asStateFlow()
     private val dispatcher = Dispatchers.IO
-
+    var discountList: MutableList<Discount>? = null
     fun getCurrencyRates() {
         viewModelScope.launch(dispatcher) {
             repository.getCurrencyRates()
@@ -50,10 +51,21 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
         repository.saveConversionRates(conversion_rates)
     }
 
-    fun getConversionRates(currencyCode: CountryCodes) {
-        Log.i("here", "getConversionRates: " + repository.getConversionRates(currencyCode))
-
+    fun getConversionRates(currencyCode: CountryCodes): Double {
+        return repository.getConversionRates(currencyCode)
+    }
+    fun getCurrencyCode(): CountryCodes{
+        return repository.getCurrencyCode()
     }
 
+    fun getDiscount() {
+        viewModelScope.launch(dispatcher) {
+            repository.getDiscounts().catch { e ->
+                Log.i("here", "getDiscount: No Discounts ")
+            }.collect {
+                discountList = it.toMutableList()
+            }
+        }
+    }
 
 }

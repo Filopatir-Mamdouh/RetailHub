@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.checkout
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -8,16 +9,19 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
+import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.logic.ToolbarSetup
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -26,16 +30,19 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CheckoutFragment : Fragment(), OnClickBottomSheet {
+    private val currencyCode by lazy { mainActivityViewModel.getCurrencyCode() }
     private lateinit var binding: FragmentCheckoutBinding
     private lateinit var cartProducts: List<CartProduct>
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
     private lateinit var paymentSheet: PaymentSheet
     private lateinit var appearance: PaymentSheet.Appearance
+    private var conversionRate: Double? = null
     private var totalPrice: Double? = null
     private var totalPriceInCents: Int? = null
     private val viewModel by viewModels<CheckoutViewModel>()
-
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
+    private lateinit var requiredView: View
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,19 +53,23 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        conversionRate = mainActivityViewModel.getConversionRates(currencyCode)
+        requiredView = view
         cartProducts =
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
+        totalPrice = totalPrice!! * conversionRate!!
         totalPriceInCents = totalPrice!!.times(100).toInt()
-        binding.tvOrderPrice.text = totalPrice.toString() + " EGP"
-        binding.tvSummary.text = totalPrice.toString() + " EGP"
+        binding.tvDiscountPrice.text="0 ${currencyCode.name}"
+        binding.tvOrderPrice.text = totalPrice!!.toTwoDecimalPlaces().toString() + " ${currencyCode.name}"
+        binding.tvSummary.text = totalPrice.toString() + " ${currencyCode.name}"
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         viewModel.getCustomerData()
         listenToPIChanges()
         listenToCustomerDataResponse()
         listenToCustomerAddress()
-        binding.btnCheckoutAddNewAddress.setOnClickListener{
+        binding.btnCheckoutAddNewAddress.setOnClickListener {
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
@@ -70,24 +81,18 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             }
             findNavController().navigate(R.id.addressFragment, bundle)
         }
+        Log.i("here", "found discounts: " + mainActivityViewModel.discountList)
         binding.btnSubmitOrder.setOnClickListener {
-            if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
-                when (view.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
-                    getString(R.string.CashOnDelivery) -> {
-                        binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
-                        binding.btnSubmitOrder.isEnabled = false
-                        binding.btnSubmitOrder.text = ""
-                        viewModel.createCheckoutDraftOrder(cartProducts, false)
-                        listenToCreateCheckoutDraftOrder()
-                    }
-
-                    getString(R.string.PayWithCard) -> {
-                        binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
-                        binding.btnSubmitOrder.isEnabled = false
-                        binding.btnSubmitOrder.text = ""
-                        viewModel.createPaymentIntent(totalPriceInCents!!)
-
-                    }
+            val discountCode = binding.promocodeEdittext.etPromoCode.text.toString()
+            if (discountCode.isNullOrEmpty()) {
+                binding.tvInvalidDiscount.visibility = View.INVISIBLE
+                proceedWithCheckout()
+            } else {
+                if (checkDiscount(discountCode)) {
+                    binding.tvInvalidDiscount.visibility = View.INVISIBLE
+                    proceedWithCheckout()
+                } else {
+                    binding.tvInvalidDiscount.visibility = View.VISIBLE
                 }
             }
         }
@@ -118,6 +123,13 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         binding.promocodeEdittext.btnInsertCode.visibility = View.GONE
         binding.promocodeEdittext.btnDeleteCode.visibility = View.VISIBLE
         binding.promocodeEdittext.etPromoCode.setText(data)
+        if (checkDiscount(data)) {
+            val discountRate = viewModel.selectedDiscount!!.getDiscountAsDouble()/100
+            val discountAmount = totalPrice!! * discountRate
+            val totalSummary = totalPrice!! - discountAmount
+            binding.tvDiscountPrice.text ="- "+ discountAmount.toTwoDecimalPlaces().toString()+ " ${currencyCode.name}"
+            binding.tvSummary.text = "- "+ totalSummary.toTwoDecimalPlaces().toString()+ " ${currencyCode.name}"
+        }
     }
 
     private fun listenToPIChanges() {
@@ -306,4 +318,43 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         )
     }
 
+    private fun checkDiscount(discountCode: String): Boolean {
+        if (!mainActivityViewModel.discountList.isNullOrEmpty()) {
+            val foundDiscount = mainActivityViewModel.discountList!!.filter {
+                it.title == discountCode
+            }
+            if (foundDiscount.isNotEmpty()) {
+                "discount found"
+                viewModel.selectedDiscount = foundDiscount[0]
+                return true
+            } else {
+                "no discount avaialbe"
+                return false
+            }
+
+        } else {
+            return false
+        }
+    }
+
+    private fun proceedWithCheckout() {
+        if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
+            when (requiredView.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
+                getString(R.string.CashOnDelivery) -> {
+                    binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
+                    binding.btnSubmitOrder.isEnabled = false
+                    binding.btnSubmitOrder.text = ""
+                    viewModel.createCheckoutDraftOrder(cartProducts, false)
+                    listenToCreateCheckoutDraftOrder()
+                }
+
+                getString(R.string.PayWithCard) -> {
+                    binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
+                    binding.btnSubmitOrder.isEnabled = false
+                    binding.btnSubmitOrder.text = ""
+                    viewModel.createPaymentIntent(totalPriceInCents!!)
+                }
+            }
+        }
+    }
 }

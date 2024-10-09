@@ -3,7 +3,6 @@ package com.iti4.retailhub.datastorage
 
 import android.content.Intent
 import android.content.IntentSender
-import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -17,6 +16,7 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
@@ -30,6 +30,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencyResponse
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Review
@@ -93,6 +94,7 @@ interface IRepository {
         lat: String,
         lon: String
     ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>>
+
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
     fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
@@ -111,4 +113,5 @@ interface IRepository {
     fun setFirstTime()
     fun setRefrechCurrency()
     fun getShouldIRefrechCurrency(): Boolean
+    fun getDiscounts():Flow<List<Discount>>
 }

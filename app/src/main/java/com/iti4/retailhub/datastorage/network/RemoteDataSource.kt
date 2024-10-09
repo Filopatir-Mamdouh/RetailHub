@@ -12,6 +12,7 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.OrdersQuery
@@ -23,6 +24,7 @@ import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.CustomerInput
@@ -63,4 +65,6 @@ interface RemoteDataSource {
         customerId: String,
         addressId: String
     ): Flow<CustomerUpdateDefaultAddressMutation.Customer>
+
+    fun getDiscounts(): Flow<List<Discount>>
 }

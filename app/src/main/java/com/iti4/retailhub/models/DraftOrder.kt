@@ -19,7 +19,6 @@ data class AddressInputModel(
 
 // Discount input
 data class DiscountInput(
-    val description: String,
     val value: Double,
     val valueType: String // Can be "percentage" or "fixedAmount"
 )

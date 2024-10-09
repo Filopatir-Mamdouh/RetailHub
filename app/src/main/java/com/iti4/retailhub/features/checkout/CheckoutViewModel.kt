@@ -9,6 +9,8 @@ import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.AddressInputModel
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CustomerInputModel
+import com.iti4.retailhub.models.Discount
+import com.iti4.retailhub.models.DiscountInput
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.toLineItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     private val dispatcher = Dispatchers.IO
     private lateinit var customerEmail: String
     private lateinit var customerName: String
+    var selectedDiscount: Discount? = null
 
     private val _customerDataResponse = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerResponse = _customerDataResponse.onStart { }
@@ -44,10 +47,9 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     val addressesState = _addressesState.onStart {}
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
-
-
-
     val customerId by lazy { (repository.getUserShopLocalId()!!) }
+
+
     fun getCustomerData() {
         viewModelScope.launch(dispatcher) {
             repository.getCustomerInfoById(customerId)
@@ -81,14 +83,20 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         //    val customerData = CustomerInput("customer_id:6945540800554")
         viewModelScope.launch(dispatcher) {
             val lineItems = listOfCartProduct.map { it.toLineItem() }
-            val customerId = "gid://shopify/Customer/6945540800554"
             val customerInputModel =
                 CustomerInputModel(customerId, customerName, customerName, customerEmail)
+            var discount: DiscountInput? = null
+            if (selectedDiscount != null) {
+                discount = DiscountInput(
+                    selectedDiscount!!.getDiscountAsDouble(), selectedDiscount!!.title
+                )
+            }
             val addressInputModel =
-                AddressInputModel("3 NewBridge Court", "Chino Hills", "CA", "91709", "USA")
+                AddressInputModel("3 NewBridge Court", "Chino,Hills,sfdASD", "CA", "91709", "USA")
             val draftOrderInputModel = DraftOrderInputModel(
-                lineItems, customerInputModel, addressInputModel, customerEmail, null, false
+                lineItems, customerInputModel, addressInputModel, customerEmail, discount, false
             )
+
             listOfCartProduct.forEach {
                 repository.deleteMyBagItem(it.draftOrderId).collect {}
             }

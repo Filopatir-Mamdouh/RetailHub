@@ -16,6 +16,7 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.MarkAsPaidMutation
@@ -27,14 +28,18 @@ import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
+import com.iti4.retailhub.logic.toDiscountList
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.CustomerInput
+import com.iti4.retailhub.type.DraftOrderAppliedDiscountInput
+import com.iti4.retailhub.type.DraftOrderAppliedDiscountType
 import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
 import com.iti4.retailhub.type.DraftOrderLineItemInput
@@ -345,12 +350,13 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
 
     override fun updateCustomerDefaultAddress(
         customerId: String,
-        addressId:String
+        addressId: String
     ): Flow<CustomerUpdateDefaultAddressMutation.Customer> =
         flow {
 
             val response =
-                apolloClient.mutation(CustomerUpdateDefaultAddressMutation(addressId,customerId)).execute()
+                apolloClient.mutation(CustomerUpdateDefaultAddressMutation(addressId, customerId))
+                    .execute()
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.customerUpdateDefaultAddress!!.customer!!)
             } else {
@@ -360,6 +366,15 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             }
         }
 
+
+    override fun getDiscounts(): Flow<List<Discount>> = flow {
+        val response = apolloClient.query(GetDiscountsQuery()).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response.data!!.codeDiscountNodes.toDiscountList())
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
 
     private fun extractCart(item: GetDraftOrdersByCustomerQuery.DraftOrders): List<CartProduct> {
 
@@ -400,6 +415,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
     }
 
     private fun toGraphQLDraftOrderInput(draftOrderInputModel: DraftOrderInputModel): DraftOrderInput {
+        Log.i("here", "toGraphQLDraftOrderInput: ${draftOrderInputModel.appliedDiscount!!.value}")
         return DraftOrderInput(
             lineItems = Optional.present(draftOrderInputModel.lineItems.map { lineItem ->
                 DraftOrderLineItemInput(
@@ -407,6 +423,12 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
                     quantity = lineItem.quantity
                 )
             }),
+            appliedDiscount = if (draftOrderInputModel.appliedDiscount != null) Optional.present(
+                DraftOrderAppliedDiscountInput(
+                    value = draftOrderInputModel.appliedDiscount!!.value,
+                    valueType = DraftOrderAppliedDiscountType.PERCENTAGE,
+                )
+            ) else Optional.absent(),
             customerId = Optional.present(draftOrderInputModel.customer!!.id),
             shippingAddress = draftOrderInputModel.shippingAddress!!.let {
                 Optional.present(
@@ -419,6 +441,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
                 )
             },
             email = Optional.present(draftOrderInputModel.customer!!.email),
+            taxExempt = Optional.present(true)
         )
     }
 
