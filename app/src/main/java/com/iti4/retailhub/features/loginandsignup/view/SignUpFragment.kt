@@ -1,4 +1,4 @@
-package com.iti4.retailhub.loginandsignup.view
+package com.iti4.retailhub.features.loginandsignup.view
 
 import android.app.Activity
 import android.content.Intent
@@ -17,7 +17,7 @@ import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
 import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -26,8 +26,8 @@ class SignUpFragment : Fragment() {
     private var isLaunched = false
     lateinit var signUpBinding: FragmentSignUpBinding
     val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
-    lateinit var customMesssageDialog :CustomMessageDialog
-    lateinit var customLoadingDialog :CustomLoadingDialog
+    lateinit var customMesssageDialog : CustomMessageDialog
+    lateinit var customLoadingDialog : CustomLoadingDialog
     val EMAIL_REGEX: String = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

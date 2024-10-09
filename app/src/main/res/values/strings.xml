@@ -58,7 +58,6 @@
     <string name="color">Color:</string>
     <string name="reviews">Reviews</string>
     <string name="seemore">See More Reviews</string>
-    <string name="addtocard">ADD TO CART</string>
     <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
     <string name="Edit">Edit</string>
     <string name="ShippingDefaultText">Use as the shipping address</string>
@@ -76,4 +75,13 @@
     <string name="UseThisLocation">Use this location ?</string>
     <string name="NoAddressesFound">No Addresses Found</string>
     <string name="my_bag">My Bag</string>
+    <string name="discard">Discard</string>
+    <string name="apply">Apply</string>
+    <string name="all">All</string>
+    <string name="category">Category</string>
+    <string name="sizes">Sizes</string>
+    <string name="price_range">Price range</string>
+    <string name="searchhere">Search here..</string>
+    <string name="search">Search</string>
+    <string name="currency">EGP</string>
 </resources>

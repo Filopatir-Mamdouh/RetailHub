@@ -1,4 +1,4 @@
-package com.iti4.retailhub.loginandsignup.viewmodel
+package com.iti4.retailhub.features.loginandsignup.viewmodel
 
 import android.content.Intent
 import android.util.Log

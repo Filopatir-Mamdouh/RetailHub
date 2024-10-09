@@ -8,10 +8,12 @@ import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.CustomerEmailSearchQuery
+import com.iti4.retailhub.DeleteCustomerFavoritItemMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.MarkAsPaidMutation
@@ -19,6 +21,7 @@ import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateCustomerAddressesMutation
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
@@ -34,6 +37,7 @@ import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
 import com.iti4.retailhub.type.DraftOrderLineItemInput
 import com.iti4.retailhub.type.MailingAddressInput
+import com.iti4.retailhub.type.MetafieldDeleteInput
 import com.iti4.retailhub.type.OrderMarkAsPaidInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -66,6 +70,14 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         val response = apolloClient.query(ProductDetailsQuery(id)).execute()
         if (!response.hasErrors() && response.data != null) {
             emit(response.data?.node?.onProduct)
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
+    override fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?> = flow {
+        val response = apolloClient.mutation(DeleteCustomerFavoritItemMutation(id)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response.data?.metafieldDelete?.deletedId)
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
@@ -131,6 +143,14 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
+    override fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer> = flow {
+        val response = apolloClient.query(GetCustomerFavoritesQuery(id)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response.data!!.customer!!)
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
 
     override fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate> =
         flow {
@@ -142,6 +162,16 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             } else {
                 throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
             }
+        }
+    override fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate> =
+        flow {
+            val response = apolloClient.mutation(UpdateCustomerFavoritesMetafieldsMutation(input)).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.customerUpdate!!)
+            } else {
+                throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+            }
+
         }
 
 

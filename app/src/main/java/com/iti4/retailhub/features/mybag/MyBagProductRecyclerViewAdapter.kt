@@ -41,7 +41,7 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
         with(holder.binding) {
             Glide.with(context!!)
                 .load(item.itemImage)
-                .into(ivMyBagProductImage)
+                .into(favoritimage)
             val quantity = item.itemQuantity
             val inventoryQuantity = item.inventoryQuantity
 

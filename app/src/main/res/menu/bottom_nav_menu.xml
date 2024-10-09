@@ -15,6 +15,7 @@
             android:icon="@drawable/bag_selector"
             android:title="@string/bag" />
         <item
+            android:id="@+id/favoritsFragment"
             android:icon="@drawable/fav_selector"
             android:title="@string/favorites" />
         <item
