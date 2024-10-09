@@ -58,24 +58,24 @@
                 app:layout_constraintStart_toStartOf="parent" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-            tools:layout_editor_absoluteX="0dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <include android:id="@+id/newItemRow" layout="@layout/home_row_item"/>
-                <include android:id="@+id/brandItemRow" layout="@layout/home_row_item"/>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/newItemRow"
+                layout="@layout/home_row_item" />
+
+            <include
+                android:id="@+id/brandItemRow"
+                layout="@layout/home_row_item" />
+        </LinearLayout>
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:lottie_rawRes="@raw/loading"
+        app:lottie_fileName="home_loading_animation.json"
         android:background="@color/background_color"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"

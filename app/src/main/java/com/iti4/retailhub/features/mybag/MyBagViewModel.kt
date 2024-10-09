@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.extractNumbersFromString
 import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class MyBagViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
     private val _myBagProducts = MutableStateFlow<ApiState>(ApiState.Loading)
-    val products = _myBagProducts.onStart { getMyBagProducts() }
+    val products = _myBagProducts.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
     private val _myBagProductsRemove = MutableStateFlow<ApiState>(ApiState.Loading)
@@ -30,10 +31,12 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     private val _myBagProductsUpdate = MutableStateFlow<ApiState>(ApiState.Loading)
     val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
 
-    private fun getMyBagProducts() {
-        //6966019850282
+    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
+
+
+     fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {
-            repository.getMyBagProducts("customer_id:6966019850282")
+            repository.getMyBagProducts("customer_id:$customerId")
                 .catch { e -> _myBagProducts.emit(ApiState.Error(e)) }.collect {
                     _myBagProducts.emit(ApiState.Success(it))
                 }

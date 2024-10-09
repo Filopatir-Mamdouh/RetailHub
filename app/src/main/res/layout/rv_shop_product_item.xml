@@ -27,9 +27,11 @@
             android:id="@+id/productName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:textAlignment="textStart"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="36dp"
             android:fontFamily="@font/metropolis_semibold"
+            android:lineSpacingMultiplier="1.3"
             android:textColor="@color/black_variant"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@+id/productImg"
@@ -40,46 +42,42 @@
             android:id="@+id/productBrand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/metropolis_regular"
             android:textColor="@color/grey"
             android:textSize="11sp"
+            android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="@+id/productName"
             app:layout_constraintTop_toBottomOf="@+id/productName"
             tools:text="Brand" />
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="?android:attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="@+id/productBrand"
-            app:layout_constraintTop_toBottomOf="@+id/productBrand" />
 
         <TextView
             android:id="@+id/productPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="17dp"
             android:fontFamily="@font/metropolis_medium"
             android:textColor="@color/black_variant"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/ratingBar"
-            app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="@+id/productBrand"
+            app:layout_constraintTop_toBottomOf="@+id/productBrand"
             tools:text="$ 50" />
+
+        <ImageView
+            android:id="@+id/favBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="100dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/favourite_background"
+            android:elevation="5dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/baseline_favorite_border_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
-        android:id="@+id/favBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="125dp"
-        android:layout_marginBottom="-25dp"
-        android:background="@drawable/favourite_background"
-        android:elevation="5dp"
-        android:importantForAccessibility="no"
-        android:src="@drawable/baseline_favorite_border_24" />
 </androidx.cardview.widget.CardView>

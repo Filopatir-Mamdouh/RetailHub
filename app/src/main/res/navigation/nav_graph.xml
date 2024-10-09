@@ -9,12 +9,23 @@
         android:id="@+id/myBagFragment"
         android:name="com.iti4.retailhub.features.mybag.MyBagFragment"
         android:label="fragment_my_bag"
-        tools:layout="@layout/fragment_my_bag" />
+        tools:layout="@layout/fragment_my_bag" >
+        <action
+            android:id="@+id/action_myBagFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
     <fragment
         android:id="@+id/checkoutFragment"
         android:name="com.iti4.retailhub.features.checkout.CheckoutFragment"
         android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" />
+        tools:layout="@layout/fragment_checkout" >
+        <action
+            android:id="@+id/action_checkoutFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment" />
+        <action
+            android:id="@+id/action_checkoutFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+    </fragment>
 
 
     <fragment
@@ -42,7 +53,7 @@
         tools:layout="@layout/fragment_reviews" />
     <fragment
         android:id="@+id/productDetailsFragment"
-        android:name="com.iti4.retailhub.productdetails.view.ProductDetailsFragment"
+        android:name="com.iti4.retailhub.features.productdetails.view.ProductDetailsFragment"
         android:label="fragment_product_details"
         tools:layout="@layout/fragment_product_details" >
         <action
@@ -50,8 +61,18 @@
             app:destination="@id/reviewsFragment" />
     </fragment>
     <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.iti4.retailhub.features.address.AddressFragment"
+        android:label="fragment_address"
+        tools:layout="@layout/fragment_address" />
+    <fragment
+        android:id="@+id/favoritsFragment"
+        android:name="com.iti4.retailhub.features.favorits.view.FavoritsFragment"
+        android:label="fragment_favorits"
+        tools:layout="@layout/fragment_favorits" />
+    <fragment
         android:id="@+id/searchFragment"
-        android:name="com.iti4.retailhub.features.shop.search.SearchFragment"
+        android:name="com.iti4.retailhub.search.view.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" >
         <action
@@ -60,12 +81,40 @@
     </fragment>
     <fragment
         android:id="@+id/filterFragment"
-        android:name="com.iti4.retailhub.features.shop.search.FilterFragment"
+        android:name="com.iti4.retailhub.search.view.FilterFragment"
         android:label="fragment_filter"
         tools:layout="@layout/fragment_filter" >
         <action
             android:id="@+id/action_filterFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/addressMapFragment"
+        android:name="com.iti4.retailhub.features.address.AddressMapFragment"
+        android:label="AddressMapFragment" />
+    <fragment
+        android:id="@+id/addressDetailsFragment"
+        android:name="com.iti4.retailhub.features.address.AddressDetailsFragment"
+        android:label="fragment_address_details"
+        tools:layout="@layout/fragment_address_details" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.iti4.retailhub.features.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_ordersFragment"
+            app:destination="@id/ordersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.iti4.retailhub.features.orders.OrdersFragment"
+        android:label="fragment_orders"
+        tools:layout="@layout/fragment_orders" />
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.iti4.retailhub.features.orders.orderdetails.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details" />
 
 </navigation>
