@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
@@ -145,9 +144,13 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     override fun onStart() {
         super.onStart()
         viewModel.getMyBagProducts()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("My Bag")
+        binding.mybagAppbar.apply {
+            appBar.setExpanded(false)
+            collapsedPageName.visibility = View.GONE
+            pageName.text = requireContext().getString(R.string.my_bag)
+            backButton.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 

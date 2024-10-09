@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CustomerAddress
@@ -156,11 +155,6 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("Addresses")
-            collapse()
-        }
         (activity as MainActivity).hideBottomNavBar()
     }
 
@@ -242,5 +236,4 @@ class AddressFragment : Fragment(), OnClickAddress {
         }
         animationClicked = !animationClicked
     }
-
 }

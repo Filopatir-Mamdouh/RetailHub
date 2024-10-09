@@ -7,10 +7,14 @@
     android:layout_height="wrap_content"
     app:shimmer_auto_start="true"
     tools:context=".features.checkout.CheckoutFragment">
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+    <include android:id="@+id/checkoutAppbar" layout="@layout/app_bar"/>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -291,4 +295,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>
