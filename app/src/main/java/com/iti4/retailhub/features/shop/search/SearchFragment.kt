@@ -29,10 +29,11 @@ import kotlinx.coroutines.launch
 class SearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var binding: FragmentSearchBinding
-    private val currentList = emptyList<HomeProducts>()
+    private var currentList = emptyList<HomeProducts>()
     private var isListView = true
     private val listViewAdapter by lazy { ListViewAdapter(this) }
     private val gridViewAdapter by lazy { GridViewAdapter(this) }
+    private val query = mutableMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,10 +51,6 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         super.onViewCreated(view, savedInstanceState)
 
         setupDataListener()
-        
-        if (arguments != null)
-            viewModel.search(arguments?.getString("query").toString())
-
 
         onSwitchViewClicked()
     }
@@ -78,8 +75,10 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     private fun handleDataResult(data: List<HomeProducts>){
         if (isListView) {
+            currentList = data
             listViewAdapter.submitList(data)
         } else {
+            currentList = data
             gridViewAdapter.submitList(data)
         }
     }
