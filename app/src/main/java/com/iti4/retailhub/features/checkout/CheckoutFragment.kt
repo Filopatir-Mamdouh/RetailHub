@@ -58,7 +58,9 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         listenToPIChanges()
         listenToCustomerDataResponse()
 
-
+        binding.btnChangeAddress.setOnClickListener {
+            findNavController().navigate(R.id.addressFragment)
+        }
         binding.btnSubmitOrder.setOnClickListener {
             if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
                 when (view.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
