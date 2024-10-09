@@ -24,6 +24,7 @@ import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Order
+import com.iti4.retailhub.models.OrderDetails
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
@@ -57,4 +58,5 @@ interface RemoteDataSource {
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
     fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
+    fun getOrderDetails(orderId: String): Flow<OrderDetails>
 }

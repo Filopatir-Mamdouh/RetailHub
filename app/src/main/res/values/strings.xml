@@ -95,4 +95,6 @@
     <string name="processing">In Progress</string>
     <string name="paid">Paid</string>
     <string name="Reorder">Reorder</string>
+    <string name="payment_status">Payment Status:</string>
+    <string name="order_information">Order Information</string>
 </resources>

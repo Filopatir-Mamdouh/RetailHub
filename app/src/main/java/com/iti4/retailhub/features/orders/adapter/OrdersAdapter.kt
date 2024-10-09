@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.orders.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ class OrdersAdapter : ListAdapter<Order, OrdersAdapter.OrderViewHolder>(OrderDif
 
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val item = getItem(position)
+        Log.d("Filo", "onBindViewHolder: ${item.id}")
         holder.binding.apply {
             OrderName.text = buildString {
                 append("Order ")
@@ -55,7 +57,7 @@ class OrdersAdapter : ListAdapter<Order, OrdersAdapter.OrderViewHolder>(OrderDif
                 append(item.currency)
             }
             details.setOnClickListener { Navigation.findNavController(it).navigate(R.id.orderDetailsFragment,
-                bundleOf("id" to item.id)
+                bundleOf("orderID" to item.id)
             ) }
         }
     }

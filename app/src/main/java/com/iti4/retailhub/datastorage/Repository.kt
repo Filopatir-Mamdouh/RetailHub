@@ -33,6 +33,7 @@ import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Order
+import com.iti4.retailhub.models.OrderDetails
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
@@ -220,4 +221,7 @@ class Repository @Inject constructor(
         return remoteDataSource.getOrders(query)
     }
 
+    override fun getOrderDetails(id: String) : Flow<OrderDetails>{
+        return remoteDataSource.getOrderDetails(id)
+    }
 }

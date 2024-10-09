@@ -17,6 +17,7 @@ import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.MarkAsPaidMutation
+import com.iti4.retailhub.OrderDetailsQuery
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.ProductsQuery
@@ -26,6 +27,7 @@ import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
 import com.iti4.retailhub.logic.toOrder
+import com.iti4.retailhub.logic.toOrderDetails
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
@@ -34,6 +36,7 @@ import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Order
+import com.iti4.retailhub.models.OrderDetails
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
@@ -406,6 +409,18 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             customerId = Optional.present(customerId)
         )
     }
+
+    override fun getOrderDetails(orderId: String): Flow<OrderDetails> =
+        flow {
+            val response = apolloClient.query(OrderDetailsQuery(orderId)).execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.order!!.toOrderDetails())
+            } else {
+                throw Exception(
+                    response.errors?.get(0)?.message ?: "Something went wrong"
+                )
+            }
+        }
 
 }
 
