@@ -64,27 +64,38 @@
         android:id="@+id/addressFragment"
         android:name="com.iti4.retailhub.features.address.AddressFragment"
         android:label="fragment_address"
-        tools:layout="@layout/fragment_address" >
+        tools:layout="@layout/fragment_address" />
+    <fragment
+        android:id="@+id/favoritsFragment"
+        android:name="com.iti4.retailhub.features.favorits.view.FavoritsFragment"
+        android:label="fragment_favorits"
+        tools:layout="@layout/fragment_favorits" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.iti4.retailhub.search.view.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
         <action
-            android:id="@+id/action_addressFragment_to_addressDetails"
-            app:destination="@id/addressDetails" />
-        <action
-            android:id="@+id/action_addressFragment_to_addressMapFragment"
-            app:destination="@id/addressMapFragment" />
+            android:id="@+id/action_searchFragment_to_filterFragment"
+            app:destination="@id/filterFragment" />
     </fragment>
     <fragment
-        android:id="@+id/addressDetails"
-        android:name="com.iti4.retailhub.features.address.AddressDetailsFragment"
-        android:label="fragment_address_details"
-        tools:layout="@layout/fragment_address_details" />
+        android:id="@+id/filterFragment"
+        android:name="com.iti4.retailhub.search.view.FilterFragment"
+        android:label="fragment_filter"
+        tools:layout="@layout/fragment_filter" >
+        <action
+            android:id="@+id/action_filterFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addressMapFragment"
         android:name="com.iti4.retailhub.features.address.AddressMapFragment"
-        android:label="fragment_address_map"
-        tools:layout="@layout/fragment_address_map" >
-        <action
-            android:id="@+id/action_addressMapFragment_to_addressDetails"
-            app:destination="@id/addressDetails" />
-    </fragment>
+        android:label="AddressMapFragment" />
+    <fragment
+        android:id="@+id/addressDetailsFragment"
+        android:name="com.iti4.retailhub.features.address.AddressDetailsFragment"
+        android:label="fragment_address_details"
+        tools:layout="@layout/fragment_address_details" />
 
 </navigation>

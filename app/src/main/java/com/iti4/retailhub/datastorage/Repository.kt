@@ -4,6 +4,7 @@ package com.iti4.retailhub.datastorage
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
+import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -14,10 +15,12 @@ import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.UpdateCustomerAddressesMutation
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
@@ -34,6 +37,7 @@ import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
+import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -58,6 +62,9 @@ class Repository @Inject constructor(
 
     override fun getMyBagProducts(query: String): Flow<List<CartProduct>> {
         return remoteDataSource.getMyBagProducts(query)
+    }
+    override fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>{
+       return remoteDataSource.deleteCustomerFavoritItem(id)
     }
 
     override fun deleteMyBagItem(query: String): Flow<DeleteDraftOrderMutation.DraftOrderDelete> {
@@ -194,6 +201,12 @@ class Repository @Inject constructor(
 
     override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
         return remoteDataSource.getDraftOrdersByCustomer(varientId)
+    }
+    override fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>{
+        return remoteDataSource.saveProductToFavotes(input)
+    }
+    override fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>{
+        return remoteDataSource.getCustomerFavoritesoById(id)
     }
 
     override fun updateCustomerAddress(

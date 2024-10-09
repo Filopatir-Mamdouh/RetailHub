@@ -22,7 +22,6 @@ import com.iti4.retailhub.databinding.FragmentAddressMapBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
@@ -32,7 +31,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
-import kotlin.math.log
 
 
 class AddressMapFragment : Fragment(), OnClickMap {
@@ -198,7 +196,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
         val bundle = Bundle().apply {
             putString("reason", "map")
         }
-        findNavController().navigate(R.id.addressDetails, bundle,navOptions)
+        findNavController().navigate(R.id.addressDetailsFragment, bundle,navOptions)
     }
 
     override fun onResume() {

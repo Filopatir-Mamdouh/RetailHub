@@ -1,5 +1,6 @@
 package com.iti4.retailhub.datastorage.network
 
+import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
@@ -8,11 +9,13 @@ import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.UpdateCustomerAddressesMutation
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
@@ -21,6 +24,7 @@ import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.type.CustomerInput
+import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
 
 
@@ -49,4 +53,7 @@ interface RemoteDataSource {
         customerId: String,
         address: List<CustomerAddress>
     ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate>
+    fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
+    fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
+    fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
 }
