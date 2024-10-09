@@ -2,11 +2,12 @@ package com.iti4.retailhub.logic
 
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
+import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.HomeProducts
-import java.util.stream.Collectors.toList
+import com.iti4.retailhub.models.Order
 
 fun ProductsQuery.Products.toProductsList(): List<HomeProducts> {
     val list = ArrayList<HomeProducts>()
@@ -36,4 +37,17 @@ fun CollectionsQuery.Collections.toBrandsList(): List<Brands> {
 
 fun GetProductTypesOfCollectionQuery.Node.toCategory() : Category{
     return Category(this.id, this.title, this.products.nodes.distinct().map { it.productType })
+}
+
+fun OrdersQuery.Node.toOrder(): Order {
+    return Order(
+        this.id,
+        this.name,
+        this.confirmationNumber,
+        this.createdAt.toString().split("T")[0],
+        this.currentTotalPriceSet.shopMoney.amount.toString(),
+        this.currentSubtotalLineItemsQuantity,
+        this.displayFinancialStatus.toString(),
+        this.displayFulfillmentStatus.toString()
+    )
 }

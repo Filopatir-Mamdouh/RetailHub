@@ -4,7 +4,6 @@ package com.iti4.retailhub.datastorage
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
-import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -33,11 +32,12 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
-import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import com.iti4.retailhub.type.MetafieldDeleteInput
+import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -214,6 +214,10 @@ class Repository @Inject constructor(
         address: List<CustomerAddress>
     ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate> {
         return remoteDataSource.updateCustomerAddress(customerId, address)
+    }
+
+    override fun getOrders(query: String) : Flow<List<Order>> {
+        return remoteDataSource.getOrders(query)
     }
 
 }

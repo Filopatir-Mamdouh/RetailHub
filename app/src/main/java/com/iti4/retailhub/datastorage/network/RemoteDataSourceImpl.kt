@@ -25,6 +25,7 @@ import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
+import com.iti4.retailhub.logic.toOrder
 import com.iti4.retailhub.logic.toProductsList
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
@@ -32,6 +33,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.DraftOrderDeleteInput
 import com.iti4.retailhub.type.DraftOrderInput
@@ -42,7 +44,6 @@ import com.iti4.retailhub.type.OrderMarkAsPaidInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import kotlin.math.log
 
 
 class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloClient) :
@@ -118,10 +119,15 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         }
     }
 
-    override fun getOrders(query: String): Flow<OrdersQuery.Orders> = flow {
+    override fun getOrders(query: String): Flow<List<Order>> = flow {
         val response = apolloClient.query(OrdersQuery(query)).execute()
         if (!response.hasErrors() && response.data != null) {
-            emit(response.data!!.orders)
+            emit(response.data!!.orders.nodes.map {
+                it.toOrder()
+            })
+        }
+        else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
 
@@ -400,5 +406,6 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             customerId = Optional.present(customerId)
         )
     }
+
 }
 

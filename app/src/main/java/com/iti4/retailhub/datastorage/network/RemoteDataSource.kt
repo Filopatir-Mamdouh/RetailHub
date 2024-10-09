@@ -23,6 +23,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.MetafieldDeleteInput
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +46,7 @@ interface RemoteDataSource {
     fun markOrderAsPaid(orderId: String): Flow<MarkAsPaidMutation.OrderMarkAsPaid>
     fun createUser(input: CustomerInput): Flow<CreateCustomerMutation.CustomerCreate>
     fun getCustomerIdByEmail(email: String): Flow<CustomerEmailSearchQuery.Customers>
-    fun getOrders(query: String): Flow<OrdersQuery.Orders>
+    fun getOrders(query: String): Flow<List<Order>>
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>

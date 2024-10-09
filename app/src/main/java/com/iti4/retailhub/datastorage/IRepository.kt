@@ -28,6 +28,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
@@ -92,4 +93,5 @@ interface IRepository {
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
     fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
+    fun getOrders(query: String): Flow<List<Order>>
 }
