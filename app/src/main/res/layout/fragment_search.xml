@@ -60,15 +60,17 @@
 
                     <EditText
                         android:id="@+id/editTextText"
-                        android:layout_width="300dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:alpha="0"
                         android:ems="10"
                         android:inputType="text"
-                        android:textAlignment="center"
+                        android:paddingStart="40dp"
+                        android:paddingEnd="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/searchBtn"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="AAAAAAA" />
 
                     <ImageButton
                         android:id="@+id/searchBtn"
