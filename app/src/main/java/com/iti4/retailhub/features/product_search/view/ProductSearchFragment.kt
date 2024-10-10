@@ -17,7 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
-import com.iti4.retailhub.databinding.FragmentSearchBinding
+import com.iti4.retailhub.databinding.FragmentProductSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.features.shop.adapter.ProductSearchListViewAdapter
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: SearchViewModel by viewModels()
-    private lateinit var binding: FragmentSearchBinding
+    private lateinit var binding: FragmentProductSearchBinding
     private var currentList = emptyList<HomeProducts>()
 //    private var isListView = true
     var isratingbarevisible=false
@@ -46,7 +46,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        binding = FragmentProductSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
