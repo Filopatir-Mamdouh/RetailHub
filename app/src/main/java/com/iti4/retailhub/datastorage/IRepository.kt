@@ -72,10 +72,12 @@ interface IRepository {
         varientId: String,
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-    fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
-    fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
+    fun getCustomerFavoritesoById(id: String,namespace: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
+    abstract fun setLoginStatus(loginStatus: String)
+    fun getLoginStatus(): String?
 }

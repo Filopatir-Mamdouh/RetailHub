@@ -44,7 +44,7 @@
                     android:layout_gravity="center"
                     android:padding="8dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/fav_ico" />
+                    android:src="@drawable/baseline_favorite_border_24" />
             </androidx.cardview.widget.CardView>
 
 
@@ -205,7 +205,6 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/red_signup_rectangle"
             android:padding="13dp"
-            android:text="@string/AddToCart"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="14sp"

@@ -7,13 +7,15 @@ import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.NewCardItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.models.HomeProducts
 
-class NewItemAdapter(val handleAction:OnClickGoToDetails) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewItemUtils()) {
+class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewItemUtils()) {
     lateinit var context: Context
+    var isAddToFavoritesFirstClick=true
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = NewCardItemBinding.bind(itemView)
@@ -26,6 +28,26 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails) : ListAdapter<HomeProd
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
+
+        val isFavorite = favoritList.any { it.value == item.id }
+        if (isFavorite) {
+            holder.binding.favBtn.setImageResource(R.drawable.fav_filled)
+
+        }
+            holder.binding.favBtn.setOnClickListener{
+                if(isAddToFavoritesFirstClick) {
+                    handleAction.saveToFavorites(
+                        "", item.id!!,
+                        "", "",
+                        item.title!!, item.image,
+                        buildString {
+                            append(item.maxPrice)
+                            append(" ")
+                            append(item.currencyCode)
+                        }
+                    )
+            }
+        }
         holder.binding.apply {
             Glide.with(holder.itemView).load(item.image).into(imageView)
             textView7.text = item.brand

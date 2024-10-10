@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.loginandsignup.view
+package com.iti4.retailhub.features.login_and_signup.view
 
 import android.app.Activity
 import android.content.Intent
@@ -15,11 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.databinding.FragmentLoginInBinding
-import com.iti4.retailhub.features.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginInFragment : Fragment() {
@@ -43,6 +42,8 @@ class LoginInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         customLoadingDialog = CustomLoadingDialog(requireContext())
         customMesssageDialog = CustomMessageDialog(requireContext())
+
+
         loginUpBinding.sigInBtn.setOnClickListener {
             loginUpBinding.emailTextInput.error = null // Clear error message
             loginUpBinding.passowrdTex.error = null // Clear error message
@@ -69,7 +70,11 @@ class LoginInFragment : Fragment() {
             Log.d("signingoog", "onViewCreated: googleCard")
             userAuthViewModel.signInWithGoogle()
         }
-
+        loginUpBinding.guest.setOnClickListener {
+            userAuthViewModel.setLoginStatus("guest")
+            val intent= Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             userAuthViewModel.authState.collect { authResultState ->
                 when (authResultState) {
@@ -78,6 +83,7 @@ class LoginInFragment : Fragment() {
                     }
                     is AuthState.Success -> {
                         customLoadingDialog.dismiss()
+                        userAuthViewModel.setLoginStatus("login")
                         val intent= Intent(requireContext(), MainActivity::class.java)
                         startActivity(intent)
                     }
@@ -101,6 +107,7 @@ class LoginInFragment : Fragment() {
                         }
                     }
                     is AuthState.SignInIntent -> {
+
                         customLoadingDialog.dismiss()
                         val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
                         signInResultLauncher.launch(request)

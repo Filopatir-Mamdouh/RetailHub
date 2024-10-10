@@ -1,4 +1,4 @@
-package com.iti4.retailhub.search.view
+package com.iti4.retailhub.features.product_search.view
 
 import android.os.Bundle
 import android.util.Log
@@ -181,5 +181,21 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun goToDetails(productId: String) {
         findNavController().navigate(R.id.productDetailsFragment, bundleOf("productid" to productId))
+    }
+
+    override fun saveToFavorites(
+        variantID: String,
+        productId: String,
+        selectedProductColor: String,
+        selectedProductSize: String,
+        productTitle: String,
+        selectedImage: String,
+        price: String
+    ) {
+
+    }
+
+    override fun deleteFromFavorites(id: String?) {
+        TODO("Not yet implemented")
     }
 }

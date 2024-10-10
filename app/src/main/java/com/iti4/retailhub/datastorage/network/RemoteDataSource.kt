@@ -46,8 +46,8 @@ interface RemoteDataSource {
     fun getOrders(query: String): Flow<OrdersQuery.Orders>
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
-    fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun getDraftOrdersByCustomer(customerID: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
-    fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
+    fun getCustomerFavoritesoById(id: String,namespace: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
 }

@@ -87,6 +87,7 @@
         android:background="@color/background_color"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
+        android:visibility="gone"
         android:id="@+id/animationView"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

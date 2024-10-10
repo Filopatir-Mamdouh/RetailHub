@@ -64,6 +64,13 @@ class Repository @Inject constructor(
        return remoteDataSource.deleteCustomerFavoritItem(id)
     }
 
+    override fun setLoginStatus(loginStatus: String) {
+        UserLocalProfileData.setLoginStatus(loginStatus)
+    }
+    override fun getLoginStatus(): String?{
+       return UserLocalProfileData.getLoginStatus()
+    }
+
     override fun deleteMyBagItem(query: String): Flow<DeleteDraftOrderMutation.DraftOrderDelete> {
         return remoteDataSource.deleteMyBagItem(query)
     }
@@ -181,14 +188,14 @@ class Repository @Inject constructor(
     override fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer> {
         return remoteDataSource.getAddressesById(customerId)
     }
-    override fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
-        return remoteDataSource.getDraftOrdersByCustomer(varientId)
+    override fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
+        return remoteDataSource.getDraftOrdersByCustomer(customerId)
     }
     override fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>{
         return remoteDataSource.saveProductToFavotes(input)
     }
-    override fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>{
-        return remoteDataSource.getCustomerFavoritesoById(id)
+    override fun getCustomerFavoritesoById(id: String,namespace: String): Flow<GetCustomerFavoritesQuery.Customer>{
+        return remoteDataSource.getCustomerFavoritesoById(id,namespace)
     }
 
 }
