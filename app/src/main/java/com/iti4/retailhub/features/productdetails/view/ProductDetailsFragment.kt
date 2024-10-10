@@ -63,7 +63,7 @@ class ProductDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.productDetailsAppBar.apply{
-            appBar.setExpanded(false)
+            collapsingToolbar.visibility = View.GONE
             backButton.setOnClickListener {
                 findNavController().navigateUp()
             }

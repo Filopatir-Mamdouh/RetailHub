@@ -25,9 +25,13 @@ class BrandsBottomSheetAdapter : ListAdapter<Brands, BrandsBottomSheetAdapter.Br
                 brand.isChecked = isChecked
                 notifyItemChanged(position)
             }
-            if (checkBox.isChecked){
+            if (brand.isChecked){
                 brandName.setTextColor(holder.itemView.context.resources.getColor(R.color.red_color, null))
             }
+            else{
+                brandName.setTextColor(holder.itemView.context.resources.getColor(R.color.black_variant, null))
+            }
+                checkBox.isChecked = brand.isChecked
         }
     }
 

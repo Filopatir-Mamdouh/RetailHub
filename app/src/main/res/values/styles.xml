@@ -75,4 +75,6 @@
         <item name="buttonTint">@color/red_color</item>
         <item name="buttonIconTint">@color/white</item>
     </style>
+
+
 </resources>

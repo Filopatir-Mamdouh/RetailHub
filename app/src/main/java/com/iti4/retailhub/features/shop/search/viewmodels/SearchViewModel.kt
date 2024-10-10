@@ -1,6 +1,5 @@
-package com.iti4.retailhub.features.shop.viewmodels
+package com.iti4.retailhub.features.shop.search.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
@@ -19,15 +18,9 @@ class SearchViewModel @Inject constructor(private val repository: IRepository) :
     private val dispatcher = Dispatchers.IO
     private val _searchList = MutableStateFlow<ApiState>(ApiState.Loading)
     val searchList = _searchList.stateIn(viewModelScope, SharingStarted.Lazily, ApiState.Loading)
-    fun search(query: String) {
-        Log.d("search", "search: start")
+    fun searchProducts(query: String) {
         viewModelScope.launch(dispatcher){
-            Log.d("search", "viewModelScope: start")
-            repository.getProducts(query).catch {
-                e ->Log.d("search", "viewModelScope error: ${e.message}")
-                _searchList.emit(ApiState.Error(e))
-            }.collect{
-                Log.d("search", "viewModelScope collect: ${it}")
+            repository.getProducts(query).catch { e -> _searchList.emit(ApiState.Error(e)) }.collect{
                 _searchList.emit(ApiState.Success(it))
             }
         }

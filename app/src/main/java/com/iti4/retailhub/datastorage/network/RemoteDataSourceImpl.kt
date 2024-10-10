@@ -78,6 +78,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
+
     override fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?> = flow {
         val response = apolloClient.mutation(DeleteCustomerFavoritItemMutation(id)).execute()
         if (!response.hasErrors() && response.data != null) {

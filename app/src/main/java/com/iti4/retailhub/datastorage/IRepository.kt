@@ -3,7 +3,6 @@ package com.iti4.retailhub.datastorage
 
 import android.content.Intent
 import android.content.IntentSender
-import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -77,10 +76,7 @@ interface IRepository {
         varientId: String,
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-
     fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
-    fun getProductsFromCategory(query: String): Flow<List<HomeProducts>>
-
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun updateCustomerAddress(
         customerId: String,

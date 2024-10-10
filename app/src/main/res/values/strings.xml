@@ -59,9 +59,6 @@
     <string name="reviews">Reviews</string>
     <string name="seemore">See More Reviews</string>
     <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
-    <string name="kids">Kids</string>
-    <string name="women">Women</string>
-    <string name="men">Men</string>
     <string name="Edit">Edit</string>
     <string name="ShippingDefaultText">Use as the shipping address</string>
     <string name="AddToCart">Add To Cart</string>
@@ -100,4 +97,7 @@
     <string name="Reorder">Reorder</string>
     <string name="payment_status">Payment Status:</string>
     <string name="order_information">Order Information</string>
+    <string name="filter">Filters</string>
+    <string name="accessories">Accessories</string>
+    <string name="t_shirts">T-Shirts</string>
 </resources>

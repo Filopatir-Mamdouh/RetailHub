@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.shop.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +19,9 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
-import com.iti4.retailhub.features.shop.adapter.GridViewAdapter
-import com.iti4.retailhub.features.shop.adapter.ListViewAdapter
-import com.iti4.retailhub.features.shop.viewmodels.SearchViewModel
+import com.iti4.retailhub.features.shop.search.adapter.GridViewAdapter
+import com.iti4.retailhub.features.shop.search.adapter.ListViewAdapter
+import com.iti4.retailhub.features.shop.search.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,11 +30,11 @@ import kotlinx.coroutines.launch
 class SearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var binding: FragmentSearchBinding
-    private var currentList = emptyList<HomeProducts>()
     private var isListView = true
     private val listViewAdapter by lazy { ListViewAdapter(this) }
     private val gridViewAdapter by lazy { GridViewAdapter(this) }
-    private val query = mutableMapOf<String, String>()
+    private var filterQuery : String? = null
+    private var query : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +50,14 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupDataListener()
-
+        filterQuery = arguments?.getString("query")
+        binding.filterGroup.setOnClickListener { findNavController().navigate(R.id.filterFragment) }
         onSwitchViewClicked()
+        setupDataListener()
+        if (filterQuery != null){
+            Log.d("Filo", "onViewCreated: $filterQuery")
+            viewModel.searchProducts(filterQuery.toString())
+        }
     }
 
     private fun setupDataListener(){
@@ -75,11 +80,17 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     private fun handleDataResult(data: List<HomeProducts>){
         if (isListView) {
-            currentList = data
-            listViewAdapter.submitList(data)
+            binding.searchRV.apply {
+                adapter = listViewAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+                listViewAdapter.submitList(data)
+            }
         } else {
-            currentList = data
-            gridViewAdapter.submitList(data)
+            binding.searchRV.apply {
+                adapter = gridViewAdapter
+                layoutManager = GridLayoutManager(requireContext(), 2)
+                gridViewAdapter.submitList(data)
+            }
         }
     }
 
@@ -90,22 +101,28 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                 binding.searchRV.apply {
                     adapter = listViewAdapter
                     layoutManager = LinearLayoutManager(requireContext())
-
-                }
-                binding.switchView.setImageResource(R.drawable.view_by_list)
-                listViewAdapter.submitList(currentList)
-            } else {
-                binding.searchRV.apply {
-                    adapter = listViewAdapter
-                    layoutManager = GridLayoutManager(requireContext(), 2)
+                    listViewAdapter.submitList(gridViewAdapter.currentList)
                 }
                 binding.switchView.setImageResource(R.drawable.view_by_grid)
-                gridViewAdapter.submitList(currentList)
+            } else {
+                binding.searchRV.apply {
+                    adapter = gridViewAdapter
+                    layoutManager = GridLayoutManager(requireContext(), 2)
+                    gridViewAdapter.submitList(listViewAdapter.currentList)
+                }
+                binding.switchView.setImageResource(R.drawable.view_by_list)
             }
         }
     }
 
     override fun goToDetails(productId: String) {
         findNavController().navigate(R.id.productDetailsFragment, bundleOf("productid" to productId))
+    }
+    private fun search(){
+        if (this.filterQuery != null){
+            this.filterQuery = StringBuilder().append(this.filterQuery).append(" ").append(query).toString()
+        }
+        else this.filterQuery = query
+        viewModel.searchProducts(this.filterQuery.toString())
     }
 }

@@ -7,17 +7,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iti4.retailhub.databinding.FragmentBrandsBottomSheetBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.shop.search.filter.FilterBrandsCommunicator
 import com.iti4.retailhub.features.shop.search.filter.bottomsheet.adapter.BrandsBottomSheetAdapter
 import com.iti4.retailhub.models.Brands
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BrandsBottomSheetFragment : BottomSheetDialogFragment() {
+class BrandsBottomSheetFragment(private val listener : FilterBrandsCommunicator) : BottomSheetDialogFragment() {
     lateinit var binding: FragmentBrandsBottomSheetBinding
 
     private val viewModel: BrandsBottomSheetViewModel by viewModels()
@@ -49,17 +51,21 @@ class BrandsBottomSheetFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-
-
+        binding.applyBrandsFilterBtn.setOnClickListener {
+            listener.setBrands(adapter.getSelectedBrands())
+            dismiss()
+        }
     }
 
     override fun onStart() {
         super.onStart()
-
-        binding.root.let {
+        val bottomSheet =
+            dialog?.findViewById<View>(R.id.design_bottom_sheet)
+        bottomSheet?.let {
             val behavior = BottomSheetBehavior.from(it)
             behavior.isFitToContents = true
             behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            behavior.isDraggable = false
         }
     }
 }

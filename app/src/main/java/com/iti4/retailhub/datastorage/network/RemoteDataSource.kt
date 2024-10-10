@@ -1,6 +1,5 @@
 package com.iti4.retailhub.datastorage.network
 
-import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
@@ -12,7 +11,6 @@ import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
-import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.UpdateCustomerAddressesMutation
 import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
@@ -49,7 +47,6 @@ interface RemoteDataSource {
     fun getCustomerIdByEmail(email: String): Flow<CustomerEmailSearchQuery.Customers>
     fun getOrders(query: String): Flow<List<Order>>
     fun getProductDetails(id: String): Flow<ProductDetailsQuery.OnProduct?>
-    fun getProductsFromCategory(query: String): Flow<List<HomeProducts>>
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
     fun updateCustomerAddress(
