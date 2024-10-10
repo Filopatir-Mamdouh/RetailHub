@@ -2,23 +2,21 @@ package com.iti4.retailhub.features.shop
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
-import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentShopBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.shop.adapter.ShopAdapter
+import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.Category
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -40,14 +38,6 @@ class ShopFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentShopBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        (activity as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("Categories")
-        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,5 +64,10 @@ class ShopFragment : Fragment() {
         TabLayoutMediator(binding.tablayout, binding.viewPager) {
             tab, position -> tab.text = tabTitles[position]
         }.attach()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ToolbarSetup.setupToolbar(binding.appBarLayout, "Categories", resources, findNavController())
     }
 }

@@ -14,10 +14,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
+import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.CartProduct
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CheckoutFragment : Fragment(), Communicator {
+class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private lateinit var binding: FragmentCheckoutBinding
     private lateinit var cartProducts: List<CartProduct>
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
@@ -58,7 +58,9 @@ class CheckoutFragment : Fragment(), Communicator {
         listenToPIChanges()
         listenToCustomerDataResponse()
 
-
+        binding.btnChangeAddress.setOnClickListener {
+            findNavController().navigate(R.id.addressFragment)
+        }
         binding.btnSubmitOrder.setOnClickListener {
             if (binding.radioGroupPaymentMethod.checkedRadioButtonId != -1) {
                 when (view.findViewById<RadioButton>(binding.radioGroupPaymentMethod.checkedRadioButtonId).text.toString()) {
@@ -166,6 +168,7 @@ class CheckoutFragment : Fragment(), Communicator {
                             binding.lottieAnimSubmitOrder.pauseAnimation()
                             binding.btnSubmitOrder.isEnabled = true
                             binding.btnSubmitOrder.text = "CONTINUE"
+                            findNavController().clearBackStack(R.id.homeFragment)
                             findNavController().navigate(R.id.summaryFragment)
                             Toast.makeText(
                                 this@CheckoutFragment.requireActivity(),
@@ -253,11 +256,7 @@ class CheckoutFragment : Fragment(), Communicator {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("Checkout")
-        }
+        ToolbarSetup.setupToolbar(binding.checkoutAppbar, "Checkout",resources, findNavController())
     }
-
 
 }

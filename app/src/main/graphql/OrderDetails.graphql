@@ -1,0 +1,51 @@
+query OrderDetails($id: ID!) {
+    order(id: $id) {
+        id
+        name
+        createdAt
+        confirmationNumber
+        displayFulfillmentStatus
+        currentSubtotalLineItemsQuantity
+        lineItems(first:10){
+            nodes{
+                id
+                currentQuantity
+                variantTitle
+                originalUnitPriceSet{
+                    shopMoney{
+                        amount
+                        currencyCode
+                    }
+                }
+                product{
+                    id
+                    title
+                    vendor
+                    media(first: 1) {
+                        nodes {
+                            ... on MediaImage {
+                                image {
+                                    url
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        shippingAddress{
+            formatted
+        }
+        displayFinancialStatus
+        currentTotalDiscountsSet{
+            shopMoney{
+                amount
+            }
+        }
+        currentTotalPriceSet{
+            shopMoney{
+                amount
+            }
+        }
+    }
+}

@@ -1,0 +1,18 @@
+mutation UpdateCustomerFavoritesMetafields($input: CustomerInput!) {
+    customerUpdate(input: $input) {
+        customer {
+            id
+            metafields(first: 1) {
+                edges {
+                    node {
+                        id
+                    }
+                }
+            }
+        }
+        userErrors {
+            message
+            field
+        }
+    }
+}
