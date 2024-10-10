@@ -18,13 +18,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
-
     private val dispatcher = Dispatchers.IO
     var addressesList: MutableList<CustomerAddress> = mutableListOf()
     var selectedMapAddress: PlaceLocation? = null
     var runOnce = true
-    private val _remoteAddressesState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val remoteAddressesState = _remoteAddressesState.asStateFlow().onStart { getAddressesById() }
+    private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val addressState = _addressesState.asStateFlow().onStart { getAddressesById() }
 
     private val _editAddressState = MutableStateFlow<ApiState>(ApiState.Loading)
     val editAddressState = _editAddressState.asStateFlow()
@@ -51,8 +50,8 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     fun getAddressesById() {
         viewModelScope.launch(dispatcher) {
             repository.getAddressesById(customerId!!)
-                .catch { e -> _remoteAddressesState.emit(ApiState.Error(e)) }.collect {
-                    _remoteAddressesState.emit(ApiState.Success(it))
+                .catch { e -> _addressesState.emit(ApiState.Error(e)) }.collect {
+                    _addressesState.emit(ApiState.Success(it))
                 }
         }
     }

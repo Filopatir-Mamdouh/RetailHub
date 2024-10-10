@@ -56,11 +56,9 @@ class AddressFragment : Fragment(), OnClickAddress {
     }
 
     private lateinit var binding: FragmentAddressBinding
-    // Shared viewModels
     private val viewModel: AddressViewModel by activityViewModels()
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val adapter by lazy {
-        // addressList is An Empty List initially
         AddressRecyclerViewAdapter(this, viewModel.addressesList)
     }
 
@@ -76,14 +74,10 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        binding.rvAddress.apply {
-            val manager = LinearLayoutManager(requireContext())
-            manager.setOrientation(RecyclerView.VERTICAL)
-            layoutManager = manager
-            adapter = adapter
-        }
-
+        val manager = LinearLayoutManager(requireContext())
+        manager.setOrientation(RecyclerView.VERTICAL)
+        binding.rvAddress.layoutManager = manager
+        binding.rvAddress.adapter = adapter
         binding.btnAddAddress.setOnClickListener {
             startAnimation()
         }
@@ -96,8 +90,7 @@ class AddressFragment : Fragment(), OnClickAddress {
             }
             findNavController().navigate(R.id.addressDetailsFragment, bundle)
         }
-        // get list of saved addresses from graph
-        initCoroutineForRemoteAddressList()
+        listenToAddressesStateFromServer()
         listenToAddressesEditState()
         listenToDefaultAddress()
     }
@@ -107,19 +100,28 @@ class AddressFragment : Fragment(), OnClickAddress {
         Log.i("here", "onDestroy: Address")
     }
 
-    private fun initCoroutineForRemoteAddressList() {
+    private fun listenToAddressesStateFromServer() {
         lifecycleScope.launch {
-            viewModel.remoteAddressesState.collect { item ->
+            viewModel.addressState.collect { item ->
                 when (item) {
                     is ApiState.Success<*> -> {
                         viewModel.runOnce = false
                         val response = item.data as GetAddressesByIdQuery.Customer
+                        Log.i(
+                            "here",
+                            "response size: " + response.addresses.size + "list lisze " + viewModel.addressesList.size
+                        )
                         if (response.addresses.size > viewModel.addressesList.size)
-                            viewModel.addressesList = queryCustomerAddressToCustomerAddress(response.addresses)
-
+                            viewModel.addressesList =
+                                queryCustomerAddressToCustomerAddress(response.addresses)
+                        Log.i(
+                            "here",
+                            "new data: " + viewModel.addressesList.size + " and " + viewModel.addressesList
+                        )
                         viewModel.getDefaultAddress()
 
                     }
+
                     is ApiState.Error -> {
                         Log.i("here", "error: ")
                     }
