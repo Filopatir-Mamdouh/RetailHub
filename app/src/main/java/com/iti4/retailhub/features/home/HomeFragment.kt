@@ -12,12 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.iti4.retailhub.R
 import com.iti4.retailhub.GetCustomerFavoritesQuery
-import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentHomeBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
@@ -123,7 +120,6 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         data: List<HomeProducts>,
         favoritList: List<GetCustomerFavoritesQuery.Node>
     ) {
-
         binding.newItemRow.apply {
             title.text = getString(R.string.new_item)
             subtitle.text = getString(R.string.you_ve_never_seen_it_before)

@@ -14,7 +14,7 @@ import com.iti4.retailhub.databinding.NewCardItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.models.HomeProducts
 
-class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewItemUtils()) {
+class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
     var isAddToFavoritesFirstClick=true
 

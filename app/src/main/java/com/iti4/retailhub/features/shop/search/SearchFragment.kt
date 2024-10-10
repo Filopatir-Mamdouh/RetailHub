@@ -124,6 +124,19 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     override fun goToDetails(productId: String) {
         findNavController().navigate(R.id.productDetailsFragment, bundleOf("productid" to productId))
     }
+
+    override fun saveToFavorites(
+        variantID: String,
+        productId: String,
+        selectedProductColor: String,
+        selectedProductSize: String,
+        productTitle: String,
+        selectedImage: String,
+        price: String
+    ) {
+        //TODO("Not yet implemented")
+    }
+
     private fun search(){
         val finalQuery = StringBuilder().append(filterQuery).append(" $query").append(" AND $typeQuery").toString()
         viewModel.searchProducts(finalQuery)
@@ -155,7 +168,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                 }.start()
             }
             editTextText.setOnKeyListener{
-                _,key,_ -> if (key == KeyEvent.KEYCODE_ENTER){
+                    _,key,_ -> if (key == KeyEvent.KEYCODE_ENTER){
                 query = "title: ${editTextText.text}"
                 search()
                 searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
