@@ -29,18 +29,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chipGroup3" />
 
-    <TextView
-        android:id="@+id/filterBrandsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:fontFamily="@font/metropolis_regular"
-        android:textColor="@color/grey"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="@+id/filterBrandsBtn"
-        app:layout_constraintStart_toStartOf="@+id/filterBrandsBtn"
-        tools:text="Currency, Language" />
-
 
     <TextView
         android:id="@+id/textView18"

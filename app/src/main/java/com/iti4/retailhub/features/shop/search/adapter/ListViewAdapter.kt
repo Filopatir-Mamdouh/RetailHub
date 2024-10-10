@@ -22,7 +22,7 @@ class ListViewAdapter(val handleAction: OnClickGoToDetails): ListAdapter<HomePro
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val item = getItem(position)
         holder.binding.apply {
-            productName.text = item.title?.split("|")?.last()
+            productName.text = item.title?.split("|")?.get(1)
             productPrice.text = item.maxPrice
             productBrand.text = item.brand
             Glide.with(productImg).load(item.image)

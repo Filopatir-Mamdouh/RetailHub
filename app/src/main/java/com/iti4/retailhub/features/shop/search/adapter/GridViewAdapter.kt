@@ -26,7 +26,7 @@ class GridViewAdapter(private val handleAction: OnClickGoToDetails) :  ListAdapt
             Glide.with(holder.itemView).load(item.image)
                 .into(imageView)
             textView7.text = item.brand
-            textView8.text = item.title?.split("|")?.last()
+            textView8.text = item.title?.split("|")?.get(1)
             newItemPrice.text = buildString {
                 append(item.maxPrice)
                 append(" ")

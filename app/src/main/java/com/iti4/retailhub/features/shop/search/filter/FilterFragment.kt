@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class FilterFragment : Fragment(), FilterBrandsCommunicator {
     private val viewModel by viewModels<FilterViewModel>()
     private lateinit var binding: FragmentFilterBinding
-    private val query = Bundle()
+    private var query : String = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,11 +40,12 @@ class FilterFragment : Fragment(), FilterBrandsCommunicator {
         }
         binding.applyBtn.setOnClickListener {
             binding.apply {
-                query.putFloatArray("price", floatArrayOf(rangeSlider.values[0], rangeSlider.values[1]))
-                query.putString("category", if (chipGroup3.checkedChipId == View.NO_ID) null else view.findViewById<Chip>(chipGroup3.checkedChipId).text.toString())
+                query+= " price:>=${rangeSlider.values[0].toInt()} price:<=${rangeSlider.values[1].toInt()}"
+                query += if (chipGroup3.checkedChipId == View.NO_ID) "" else view.findViewById<Chip>(chipGroup3.checkedChipId).text.toString()
             }
             findNavController().navigate(R.id.action_filterFragment_to_searchFragment, bundleOf("query" to query))
         }
+        binding.discardBtn.setOnClickListener { findNavController().navigateUp() }
     }
 
     private fun setupToolbar() {
@@ -56,6 +57,12 @@ class FilterFragment : Fragment(), FilterBrandsCommunicator {
     }
 
     override fun setBrands(brands: List<Brands>) {
-        query.putParcelableArrayList("brands", brands as ArrayList<Brands>)
+        val allBrands = brands as ArrayList
+        query += " AND ( ${allBrands[0].title}"
+        allBrands.removeFirst()
+        allBrands.forEach {
+            query += " OR ${it.title}"
+        }
+        query += " )"
     }
 }

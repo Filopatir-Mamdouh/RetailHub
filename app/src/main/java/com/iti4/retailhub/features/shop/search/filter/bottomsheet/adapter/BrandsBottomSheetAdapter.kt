@@ -23,7 +23,7 @@ class BrandsBottomSheetAdapter : ListAdapter<Brands, BrandsBottomSheetAdapter.Br
             checkBox.setOnCheckedChangeListener{
                 _, isChecked ->
                 brand.isChecked = isChecked
-                notifyItemChanged(position)
+                submitList(currentList)
             }
             if (brand.isChecked){
                 brandName.setTextColor(holder.itemView.context.resources.getColor(R.color.red_color, null))

@@ -100,4 +100,5 @@
     <string name="filter">Filters</string>
     <string name="accessories">Accessories</string>
     <string name="t_shirts">T-Shirts</string>
+    <string name="price_lowest_to_high">Price: lowest to high</string>
 </resources>
