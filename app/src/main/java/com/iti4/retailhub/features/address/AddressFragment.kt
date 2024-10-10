@@ -193,9 +193,9 @@ class AddressFragment : Fragment(), OnClickAddress {
         viewModel.getAddressesById()
         val reason = arguments?.getString("reason")
         if (reason == "changeShipping") {
-            Log.i("here", "onStart: " + "here")
+            Log.i("here", "onStart:  change " + "here")
         } else if (reason == "addNew") {
-
+            Log.i("here", "onStart:  add " + "here")
         }
         (activity as MainActivity).hideBottomNavBar()
     }
@@ -255,18 +255,15 @@ class AddressFragment : Fragment(), OnClickAddress {
 //        viewModel.updateCustomerDefaultAddress(address.id!!)
         var index = 0
         viewModel.addressesList.forEach {
-            if (it.isDefault) {
-                viewModel.addressesList[index].isDefault=false
-            }
-            index++
+            viewModel.addressesList[index].isDefault=false
+            index +=1
         }
         viewModel.addressesList[position].isDefault = true
         viewModel.addressesList.forEach {
             Log.i("here", "each item: "+it.name+it.isDefault)
         }
+        adapter.updateData(viewModel.addressesList)
 
-        adapter.listData=(viewModel.addressesList)
-//        adapter.notifyDataSetChanged()
 //        viewModel.getDefaultAddress()
         // findNavController().navigateUp()
     }

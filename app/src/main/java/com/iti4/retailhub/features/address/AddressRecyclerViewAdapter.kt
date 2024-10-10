@@ -8,6 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.CustomDialog
 import com.iti4.retailhub.databinding.RvAddressesItemBinding
 import com.iti4.retailhub.models.CustomerAddress
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class AddressRecyclerViewAdapter(
@@ -59,6 +64,14 @@ class AddressRecyclerViewAdapter(
         }
     }
 
+    fun updateData(addressesList: MutableList<CustomerAddress>){
+        GlobalScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                listData=addressesList
+                notifyDataSetChanged()
+            }
+        }
+    }
 
     inner class ViewHolder(val binding: RvAddressesItemBinding) :
         RecyclerView.ViewHolder(binding.root)

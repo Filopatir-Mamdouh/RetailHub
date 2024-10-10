@@ -29,11 +29,12 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     private var conversionRate: Double? = null
     private val currencyCode by lazy {
         mainActivityViewModel.setCurrencyCode()
-        mainActivityViewModel.getCurrencyCode() }
+        mainActivityViewModel.getCurrencyCode()
+    }
     private lateinit var binding: FragmentMyBagBinding
     private val viewModel by viewModels<MyBagViewModel>()
     private val adapter by lazy {
-        MyBagProductRecyclerViewAdapter(this)
+        MyBagProductRecyclerViewAdapter(this,currencyCode,conversionRate!!)
     }
     private var totalPrice: Double? = null
     private var cartProductList: MutableList<CartProduct>? = null
@@ -47,7 +48,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        currencyCode.name
+        conversionRate = mainActivityViewModel.getConversionRates(currencyCode)
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.collect { item ->
@@ -133,10 +134,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
         totalPrice = cartProductList?.sumOf {
             val price = it.itemPrice?.toDoubleOrNull() ?: 0.0
             price * it.itemQuantity
-
         }!!
-
-        binding.tvMyBagProductPrice.text = "${totalPrice?.toTwoDecimalPlaces()} EGP"
+        totalPrice = totalPrice!! * conversionRate!!
+        binding.tvMyBagProductPrice.text = "${totalPrice?.toTwoDecimalPlaces()} $currencyCode"
     }
 
     private fun updateQuantity() {

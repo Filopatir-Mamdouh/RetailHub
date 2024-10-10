@@ -71,12 +71,14 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         listenToCustomerDataResponse()
         listenToCustomerAddress()
         binding.btnCheckoutAddNewAddress.setOnClickListener {
+            Log.i("here", "add addr: ")
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
             findNavController().navigate(R.id.addressFragment, bundle)
         }
         binding.btnChangeAddress.setOnClickListener {
+            Log.i("here", "change addr: ")
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
