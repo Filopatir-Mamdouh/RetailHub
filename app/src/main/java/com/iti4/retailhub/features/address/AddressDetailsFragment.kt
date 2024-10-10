@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressDetailsBinding
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.modelsdata.countries
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,19 +36,20 @@ class AddressDetailsFragment : Fragment() {
         val reason = arguments?.getString("reason")
 
         binding.btnSaveAddress.setOnClickListener {
-            saveAddress()
-            if (reason == "map") {
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.addressDetailsFragment, true)
-                    .build()
-                findNavController().navigate(R.id.addressFragment, null, navOptions)
-            } else {
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.addressDetailsFragment, true)
-                    .build()
-                findNavController().navigate(R.id.addressFragment, null, navOptions)
+            if (checkIfValidAddress()) {
+                saveAddress()
+                if (reason == "map") {
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.addressDetailsFragment, true)
+                        .build()
+                    findNavController().navigate(R.id.addressFragment, null, navOptions)
+                } else {
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.addressDetailsFragment, true)
+                        .build()
+                    findNavController().navigate(R.id.addressFragment, null, navOptions)
+                }
             }
-
         }
         when (reason) {
             "new" -> {
@@ -82,8 +84,43 @@ class AddressDetailsFragment : Fragment() {
             details!!.newAddress = false
         }
         viewModel.addAddress(details!!)
+    }
 
-
+    private fun checkIfValidAddress(): Boolean {
+        var validAddress = true
+        binding.apply {
+            if (etFullName.text.isEmpty()) {
+                validAddress = false
+                etFullName.error = resources.getString(R.string.ErrorName)
+            }
+            if (etAddress.text.isEmpty()) {
+                validAddress = false
+                etAddress.error = resources.getString(R.string.ErrorAddress)
+            }
+            if (etAppartment.text.isEmpty()) {
+                validAddress = false
+                etAppartment.error = resources.getString(R.string.ErrorApartment)
+            }
+            if (etCity.text.isEmpty()) {
+                validAddress = false
+                etCity.error = resources.getString(R.string.ErrorCity)
+            }
+            if (etCountry.text.isEmpty()) {
+                validAddress = false
+                etCountry.error = resources.getString(R.string.ErrorCountry)
+            } else if (countries.none { it.equals(etCountry.text.toString(), true) }) {
+                validAddress = false
+                etCountry.error = resources.getString(R.string.ErrorCountry)
+            }
+            if (etPhone.text.isEmpty() || etPhone.text.length < 5) {
+                validAddress = false
+                etPhone.error = resources.getString(R.string.ErrorPhone)
+            } else if (!etPhone.text.toString().all { it.isDigit() }) {
+                validAddress = false
+                etPhone.error = resources.getString(R.string.ErrorPhone)
+            }
+        }
+        return validAddress
     }
 
 

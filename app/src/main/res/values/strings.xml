@@ -87,4 +87,12 @@
     <string name="NoAddress">No Addresses Found</string>
     <string name="DiscountInvalid">Invalid Discount !!</string>
     <string name="DiscountUsed">Code has been redeemed</string>
+    <string name="ErrorName">Please enter a name</string>
+    <string name="ErrorAddress">Please enter a detailed address</string>
+    <string name="ErrorApartment">Please enter a detailed address</string>
+    <string name="ErrorCity">Please enter a valid city</string>
+    <string name="ErrorCountry">Please enter a valid country</string>
+    <string name="PleaseAddAnAddress">Please add an address to submit your order</string>
+    <string name="ErrorPhone">Please enter a valid number</string>
+
 </resources>

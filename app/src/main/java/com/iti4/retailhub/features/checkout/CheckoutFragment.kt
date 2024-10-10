@@ -14,15 +14,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.logic.ToolbarSetup
+import com.iti4.retailhub.logic.toCustomerAddress
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.CustomerAddress
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +36,7 @@ import kotlinx.coroutines.launch
 class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private val currencyCode by lazy { mainActivityViewModel.getCurrencyCode() }
     private lateinit var binding: FragmentCheckoutBinding
+    private var checkoutAddress: CustomerAddress? = null
     private lateinit var cartProducts: List<CartProduct>
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
@@ -58,7 +63,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         cartProducts =
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
-        totalPrice = totalPrice!! * conversionRate!!
+        totalPrice = totalPrice!!
         totalPriceInCents = totalPrice!!.times(100).toInt()
         binding.tvDiscountPrice.text = "0 ${currencyCode.name}"
         binding.tvOrderPrice.text = totalPrice!!.toTwoDecimalPlaces() + " ${currencyCode.name}"
@@ -86,17 +91,22 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         }
         Log.i("here", "found discounts: " + mainActivityViewModel.discountList)
         binding.btnSubmitOrder.setOnClickListener {
-            val discountCode = binding.promocodeEdittext.etPromoCode.text.toString()
-            if (discountCode.isNullOrEmpty()) {
-                binding.tvInvalidDiscount.visibility = View.INVISIBLE
-                proceedWithCheckout()
-            } else {
-                if (checkDiscount(discountCode)) {
+            if (checkoutAddress != null) {
+                binding.tvNoAddressAtCheckout.visibility = View.INVISIBLE
+                val discountCode = binding.promocodeEdittext.etPromoCode.text.toString()
+                if (discountCode.isNullOrEmpty()) {
                     binding.tvInvalidDiscount.visibility = View.INVISIBLE
                     proceedWithCheckout()
                 } else {
-                    binding.tvInvalidDiscount.visibility = View.VISIBLE
+                    if (checkDiscount(discountCode)) {
+                        binding.tvInvalidDiscount.visibility = View.INVISIBLE
+                        proceedWithCheckout()
+                    } else {
+                        binding.tvInvalidDiscount.visibility = View.VISIBLE
+                    }
                 }
+            } else {
+                binding.tvNoAddressAtCheckout.visibility = View.VISIBLE
             }
         }
         binding.promocodeEdittext.btnInsertCode.setOnClickListener {
@@ -190,24 +200,45 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                 viewModel.addressesState.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            val customer = item.data as GetAddressesDefaultIdQuery.Customer
-                            var address = customer.defaultAddress
-                            if (address == null) {
-                                binding.groupNoAddress.visibility = View.VISIBLE
-                                binding.cvAddressCheckout.visibility = View.INVISIBLE
+                            if (!mainActivityViewModel.customerChoseAnAddressNotDefault) {
+                                val customer = item.data as GetAddressesDefaultIdQuery.Customer
+                                var address = customer.defaultAddress
+                                if (address == null) {
+                                    binding.groupNoAddress.visibility = View.VISIBLE
+                                    binding.cvAddressCheckout.visibility = View.INVISIBLE
+                                } else {
+                                    binding.groupNoAddress.visibility = View.INVISIBLE
+                                    binding.cvAddressCheckout.visibility = View.VISIBLE
+                                    checkoutAddress = address.toCustomerAddress()
+                                }
+                                binding.tvAddressAddress.text = address?.address1 ?: " "
+                                binding.tvAddressRestOfAddress.text = address?.address2 ?: " "
+                                binding.tvAddressFullName.text = address?.name ?: " "
+                                binding.tvPhone.text = address?.phone ?: " "
+
+                                binding.shimmerCheckout.stopShimmer()
+                                binding.shimmerCheckout.hideShimmer()
+
+
+                                // show customer address
+                                //load customer discounts
                             } else {
+                                var address = mainActivityViewModel.customerChosenAddress
                                 binding.groupNoAddress.visibility = View.INVISIBLE
                                 binding.cvAddressCheckout.visibility = View.VISIBLE
-                            }
-                            binding.tvAddressAddress.text = address?.address1 ?: " "
-                            binding.tvAddressRestOfAddress.text = address?.address2 ?: " "
-                            binding.tvAddressFullName.text = address?.name ?: " "
-                            binding.tvPhone.text = address?.phone ?: " "
+                                binding.tvAddressAddress.text = address?.address1 ?: " "
+                                binding.tvAddressRestOfAddress.text = address?.address2 ?: " "
+                                binding.tvAddressFullName.text = address?.name ?: " "
+                                binding.tvPhone.text = address?.phone ?: " "
 
-                            binding.shimmerCheckout.stopShimmer()
-                            binding.shimmerCheckout.hideShimmer()
-                            // show customer address
-                            //load customer discounts
+                                binding.shimmerCheckout.stopShimmer()
+                                binding.shimmerCheckout.hideShimmer()
+
+                                checkoutAddress = address
+                                // show customer address
+                                //load customer discounts
+                            }
+
                         }
 
                         is ApiState.Error -> {}
@@ -229,7 +260,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                             binding.lottieAnimSubmitOrder.pauseAnimation()
                             binding.btnSubmitOrder.isEnabled = true
                             binding.btnSubmitOrder.text = "CONTINUE"
-                            findNavController().clearBackStack(R.id.homeFragment)
+                            findNavController().clearBackStack(R.id.myBagFragment)
                             findNavController().navigate(R.id.summaryFragment)
                             Toast.makeText(
                                 this@CheckoutFragment.requireActivity(),
@@ -244,7 +275,6 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                 }
             }
         }
-
     }
 
     private fun presentPaymentSheet() {
@@ -315,8 +345,17 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
+            View.VISIBLE
+    }
+
     override fun onStart() {
         super.onStart()
+        (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
+            View.GONE
+
         ToolbarSetup.setupToolbar(
             binding.checkoutAppbar,
             "Checkout",

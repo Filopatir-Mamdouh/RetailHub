@@ -52,6 +52,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
+                    android:visibility="visible"
                     app:cardCornerRadius="15dp"
                     app:cardElevation="3dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -348,6 +349,17 @@
                     app:layout_constraintEnd_toEndOf="@+id/promocode_edittext"
                     app:layout_constraintStart_toStartOf="@+id/promocode_edittext"
                     app:layout_constraintTop_toBottomOf="@+id/promocode_edittext" />
+
+                <TextView
+                    android:id="@+id/tvNoAddressAtCheckout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="invisible"
+                    android:text="@string/PleaseAddAnAddress"
+                    android:textColor="@color/red_color"
+                    app:layout_constraintStart_toStartOf="@+id/textView15"
+                    app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

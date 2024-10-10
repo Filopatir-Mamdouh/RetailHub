@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.MainActivity
+import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
@@ -55,6 +56,7 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     private lateinit var binding: FragmentAddressBinding
     private val viewModel: AddressViewModel by activityViewModels()
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val adapter by lazy {
         AddressRecyclerViewAdapter(this,viewModel.addressesList)
     }
@@ -89,7 +91,7 @@ class AddressFragment : Fragment(), OnClickAddress {
         }
         listenToAddressesStateFromServer()
         listenToAddressesEditState()
-        lisitenToDefaultAddress()
+        listenToDefaultAddress()
     }
 
     override fun onDestroy() {
@@ -130,7 +132,7 @@ class AddressFragment : Fragment(), OnClickAddress {
         }
     }
 
-    private fun lisitenToDefaultAddress() {
+    private fun listenToDefaultAddress() {
         lifecycleScope.launch {
             viewModel.defaultAddressState.collect { item ->
                 when (item) {
@@ -171,16 +173,12 @@ class AddressFragment : Fragment(), OnClickAddress {
                         is ApiState.Success<*> -> {
                             val updatedOrNewAddress = item.data as CustomerAddress
                             updateAddressList(updatedOrNewAddress)
-                            Log.i(
-                                "here",
-                                "update address" + updatedOrNewAddress.newAddress + " " + updatedOrNewAddress.name
+                            Log.i("here", "update address" + updatedOrNewAddress.newAddress + " " + updatedOrNewAddress.name
                             )
                         }
-
                         is ApiState.Error -> {
                             Log.i("here", "error: ")
                         }
-
                         is ApiState.Loading -> {}
                     }
                 }
@@ -204,11 +202,7 @@ class AddressFragment : Fragment(), OnClickAddress {
         super.onStop()
         Log.i("here", "onStop: " + viewModel.addressesList.size)
         viewModel.updateMyAddresses(viewModel.addressesList)
-        viewModel.addressesList.forEach {
-            if (it.isDefault) {
-                viewModel.updateCustomerDefaultAddress(it.id!!)
-            }
-        }
+
         // viewModel.updateCustomerDefaultAddress()
         (activity as MainActivity).showBottomNavBar()
     }
@@ -242,7 +236,6 @@ class AddressFragment : Fragment(), OnClickAddress {
             it.id == id
         }
         viewModel.addressesList.remove(viewModel.addressesList[index])
-
         adapter.listData=(viewModel.addressesList)
         adapter.notifyDataSetChanged()
         if (viewModel.addressesList.size == 0)
@@ -266,6 +259,12 @@ class AddressFragment : Fragment(), OnClickAddress {
 
 //        viewModel.getDefaultAddress()
         // findNavController().navigateUp()
+    }
+
+    override fun checkoutClickedAnAddress(address: CustomerAddress) {
+        mainActivityViewModel.customerChoseAnAddressNotDefault=true
+        mainActivityViewModel.customerChosenAddress=address
+        findNavController().navigateUp()
     }
 
     private fun queryCustomerAddressToCustomerAddress(address: List<GetAddressesByIdQuery.Address>): MutableList<CustomerAddress> {

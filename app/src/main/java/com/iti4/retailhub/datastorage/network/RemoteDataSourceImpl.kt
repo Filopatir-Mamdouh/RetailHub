@@ -363,6 +363,8 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             val response =
                 apolloClient.mutation(CustomerUpdateDefaultAddressMutation(addressId, customerId))
                     .execute()
+            Log.i("here", "updateCustomerDefaultAddress:  updated"+addressId)
+            Log.i("here", "updateCustomerDefaultAddress:  updated"+response.errors)
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.customerUpdateDefaultAddress!!.customer!!)
             } else {

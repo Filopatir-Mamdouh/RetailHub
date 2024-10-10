@@ -1,11 +1,13 @@
 package com.iti4.retailhub.logic
 
 import com.iti4.retailhub.CollectionsQuery
+import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.Category
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
 
@@ -54,4 +56,19 @@ fun GetDiscountsQuery.CodeDiscountNodes.toDiscountList(): List<Discount> {
         )
     }
     return list
+}
+/*data class CustomerAddress(
+    var address1: String, var address2: String,
+    var phone: String, var name: String,
+    var newAddress: Boolean = false, var id:String?=null, var isDefault :Boolean = false
+) */
+
+fun GetAddressesDefaultIdQuery.DefaultAddress.toCustomerAddress(): CustomerAddress {
+    return CustomerAddress(
+        this.address1 ?: " ",
+        this.address2 ?: " ",
+        this.phone ?: " ",
+        this.name ?: " ",
+        id = this.id
+    )
 }

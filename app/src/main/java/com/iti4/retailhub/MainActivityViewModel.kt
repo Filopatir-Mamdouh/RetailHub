@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CountryCodes
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.Discount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
+    var customerChoseAnAddressNotDefault = false
+    lateinit var customerChosenAddress: CustomerAddress
     private val _currencyState = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerId by lazy { (repository.getUserShopLocalId()!!) }
     val currencyState = _currencyState.asStateFlow()
@@ -36,6 +39,7 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
     fun getFirstTime(): Boolean {
         return repository.getFirstTime()
     }
+
     fun setCurrencyCode() {
         repository.setCurrencyCode(CountryCodes.USD)
     }

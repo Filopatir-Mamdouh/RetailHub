@@ -55,6 +55,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                 }
         }
     }
+
     fun getDefaultAddress() {
         viewModelScope.launch(dispatcher) {
             repository.getDefaultAddress(customerId!!)
@@ -80,7 +81,15 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     fun updateMyAddresses(address: List<CustomerAddress>) {
         GlobalScope.launch(dispatcher) {
             repository.updateCustomerAddress(customerId!!, address)
-                .catch { e -> _updatedAddressLeavingState.emit(ApiState.Error(e)) }.collect {
+                .catch { e -> _updatedAddressLeavingState.emit(ApiState.Error(e)) }
+                .collect { data ->
+                    addressesList.forEach {
+                        if (it.isDefault) {
+                            val addresss =
+                                data.customer!!.addresses.filter { insideData -> it.address1 == insideData.address1 }
+                            updateCustomerDefaultAddress(addresss[0].id)
+                        }
+                    }
                 }
         }
     }
@@ -89,6 +98,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
         GlobalScope.launch(dispatcher) {
             repository.updateCustomerDefaultAddress(customerId!!, addressId)
                 .collect {
+
                 }
         }
     }

@@ -59,7 +59,7 @@ class AddressRecyclerViewAdapter(
 
             }
             root.setOnClickListener {
-                handleAction.setDefaultAddress(position)
+                handleAction.checkoutClickedAnAddress(item)
             }
         }
     }
