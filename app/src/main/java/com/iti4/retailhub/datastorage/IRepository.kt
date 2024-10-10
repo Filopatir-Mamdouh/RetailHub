@@ -31,6 +31,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencyResponse
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -87,7 +88,7 @@ interface IRepository {
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun updateCustomerAddress(
         customerId: String,
-        address: List<CustomerAddress>
+        address: List<CustomerAddressV2>
     ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate>
 
     fun getLocationSuggestions(query: String): Flow<Response<List<PlaceLocation>>>

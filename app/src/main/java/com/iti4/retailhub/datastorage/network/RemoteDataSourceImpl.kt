@@ -28,6 +28,7 @@ import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.UpdateCustomerAddressesMutation
 import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
+import com.iti4.retailhub.logic.customerAddressV2ToMailingAddressInput
 import com.iti4.retailhub.logic.toBrandsList
 import com.iti4.retailhub.logic.toCategory
 import com.iti4.retailhub.logic.toDiscountList
@@ -36,6 +37,7 @@ import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -335,12 +337,12 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
 
     override fun updateCustomerAddress(
         customerId: String,
-        address: List<CustomerAddress>
+        address: List<CustomerAddressV2>
     ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate> =
         flow {
             val customerInput = CustomerInput(
                 id = Optional.present(customerId),
-                addresses = Optional.present(customerAddressToMailingAddressInput(address))
+                addresses = Optional.present(address.customerAddressV2ToMailingAddressInput(address))
             )
             val response =
                 apolloClient.mutation(UpdateCustomerAddressesMutation(customerInput)).execute()
@@ -432,20 +434,6 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         }
     }
 
-    private fun customerAddressToMailingAddressInput(address: List<CustomerAddress>): List<MailingAddressInput> {
-        return address.map {
-            Log.i("here", "customerAddressToMailingAddressInput: " + it.name)
-            val address2Data = it.address2.split(",")
-            MailingAddressInput(
-                address1 = Optional.present(it.address1),
-                address2 = Optional.present(address2Data[0]),
-                city = Optional.present(address2Data[1]),
-                country = Optional.present(address2Data[2]),
-                phone = Optional.present(it.phone),
-                firstName = Optional.present(it.name)
-            )
-        }
-    }
 
     private fun toGraphQLDraftOrderInput(draftOrderInputModel: DraftOrderInputModel): DraftOrderInput {
         return DraftOrderInput(

@@ -8,10 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavOptions
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressDetailsBinding
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.modelsdata.countries
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,8 +21,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class AddressDetailsFragment : Fragment() {
     private val viewModel: AddressViewModel by activityViewModels()
     private lateinit var binding: FragmentAddressDetailsBinding
-    private var details: CustomerAddress? = null
     private lateinit var mapAddress: PlaceLocation
+
+    // if remains null i am adding a new item
+    // if not null i am editing an old item
+    private lateinit var details: CustomerAddressV2
+    private lateinit var reason: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +39,7 @@ class AddressDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val reason = arguments?.getString("reason")
+        reason = arguments?.getString("reason")!!
 
         binding.btnSaveAddress.setOnClickListener {
             if (checkIfValidAddress()) {
@@ -43,6 +49,9 @@ class AddressDetailsFragment : Fragment() {
                         .setPopUpTo(R.id.addressDetailsFragment, true)
                         .build()
                     findNavController().navigate(R.id.addressFragment, null, navOptions)
+                }
+                if (reason == "new") {
+                    requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
                 } else {
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.addressDetailsFragment, true)
@@ -52,9 +61,6 @@ class AddressDetailsFragment : Fragment() {
             }
         }
         when (reason) {
-            "new" -> {
-            }
-
             "edit" -> {
                 details = arguments?.getParcelable<CustomerAddress>("data") as CustomerAddress
                 fillDataFromEdit()
@@ -64,24 +70,32 @@ class AddressDetailsFragment : Fragment() {
                 mapAddress = viewModel.selectedMapAddress!!
                 fillDataFromMap()
             }
+
+            else -> {}
         }
     }
 
     private fun saveAddress() {
-        if (details == null) {
-            details = CustomerAddress(
+        if (reason == "new") {
+            details = CustomerAddressV2(
                 binding.etAddress.text.toString(),
-                binding.etAppartment.text.toString() + "," + binding.etCity.text.toString() + "," + binding.etCountry.text.toString(),
-                binding.etPhone.text.toString(), binding.etFullName.text.toString(), true,
+                binding.etAppartment.text.toString(),
+                binding.etCity.text.toString(),
+                binding.etCountry.text.toString(),
+                binding.etPhone.text.toString(),
+                binding.etFullName.text.toString(),
+                true,
             )
-            details!!.id = details.hashCode().toString()
+            details.id = details.hashCode().toString()
         } else {
-            details!!.name = binding.etFullName.text.toString()
-            details!!.address1 = binding.etAddress.text.toString()
-            details!!.address2 =
-                binding.etAppartment.text.toString() + "," + binding.etCity.text.toString() + "," + binding.etCountry.text.toString()
-            details!!.phone = binding.etPhone.text.toString()
-            details!!.newAddress = false
+            details = viewModel.editCustomerAddress!!
+            details.name = binding.etFullName.text.toString()
+            details.address1 = binding.etAddress.text.toString()
+            details.address2 = binding.etAppartment.text.toString()
+            details.city = binding.etCity.text.toString()
+            details.country = binding.etCountry.text.toString()
+            details.phone = binding.etPhone.text.toString()
+            details.newAddress = false
         }
         viewModel.addAddress(details!!)
     }
@@ -122,7 +136,6 @@ class AddressDetailsFragment : Fragment() {
         }
         return validAddress
     }
-
 
     private fun fillDataFromEdit() {
         binding.apply {

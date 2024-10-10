@@ -1,6 +1,9 @@
 package com.iti4.retailhub.logic
 
+import android.util.Log
+import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
+import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
@@ -8,8 +11,10 @@ import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.type.MailingAddressInput
 
 fun ProductsQuery.Products.toProductsList(): List<HomeProducts> {
     val list = ArrayList<HomeProducts>()
@@ -71,4 +76,32 @@ fun GetAddressesDefaultIdQuery.DefaultAddress.toCustomerAddress(): CustomerAddre
         this.name ?: " ",
         id = this.id
     )
+}
+
+fun GetAddressesByIdQuery.Customer.toCustomerAddressList(): MutableList<CustomerAddressV2> {
+    val list = this.addresses
+    return list.map {
+        CustomerAddressV2(
+            it.address1!!,
+            it.address2,
+            it.city,
+            it.country,
+            it.phone!!,
+            it.name!!,
+            id = it.id
+        )
+    }.toMutableList()
+}
+
+ fun List<CustomerAddressV2>.customerAddressV2ToMailingAddressInput(address: List<CustomerAddressV2>): List<MailingAddressInput> {
+    return address.map {
+        MailingAddressInput(
+            address1 = Optional.present(it.address1),
+            address2 = Optional.present(it.address2),
+            city = Optional.present(it.city),
+            country = Optional.present(it.country),
+            phone = Optional.present(it.phone),
+            firstName = Optional.present(it.name)
+        )
+    }
 }

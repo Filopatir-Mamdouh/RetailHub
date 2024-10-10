@@ -35,6 +35,7 @@ import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencyResponse
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -224,7 +225,7 @@ class Repository @Inject constructor(
 
     override fun updateCustomerAddress(
         customerId: String,
-        address: List<CustomerAddress>
+        address: List<CustomerAddressV2>
     ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate> {
         return remoteDataSource.updateCustomerAddress(customerId, address)
     }

@@ -25,6 +25,7 @@ import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
@@ -56,7 +57,7 @@ interface RemoteDataSource {
     fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
     fun updateCustomerAddress(
         customerId: String,
-        address: List<CustomerAddress>
+        address: List<CustomerAddressV2>
     ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate>
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
     fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
