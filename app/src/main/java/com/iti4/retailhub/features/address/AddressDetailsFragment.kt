@@ -1,7 +1,6 @@
 package com.iti4.retailhub.features.address
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressDetailsBinding
-import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.modelsdata.countries
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,7 +60,7 @@ class AddressDetailsFragment : Fragment() {
         }
         when (reason) {
             "edit" -> {
-                details = arguments?.getParcelable<CustomerAddress>("data") as CustomerAddress
+                details = viewModel.editCustomerAddress!!
                 fillDataFromEdit()
             }
 
@@ -87,6 +85,17 @@ class AddressDetailsFragment : Fragment() {
                 true,
             )
             details.id = details.hashCode().toString()
+        } else if (reason == "map") {
+            details = CustomerAddressV2(
+                binding.etAddress.text.toString(),
+                binding.etAppartment.text.toString(),
+                binding.etCity.text.toString(),
+                binding.etCountry.text.toString(),
+                binding.etPhone.text.toString(),
+                binding.etFullName.text.toString(),
+                true,
+            )
+            details.id = details.hashCode().toString()
         } else {
             details = viewModel.editCustomerAddress!!
             details.name = binding.etFullName.text.toString()
@@ -95,7 +104,7 @@ class AddressDetailsFragment : Fragment() {
             details.city = binding.etCity.text.toString()
             details.country = binding.etCountry.text.toString()
             details.phone = binding.etPhone.text.toString()
-            details.newAddress = false
+            details.isNew = false
         }
         viewModel.addAddress(details!!)
     }
@@ -139,15 +148,13 @@ class AddressDetailsFragment : Fragment() {
 
     private fun fillDataFromEdit() {
         binding.apply {
-            etFullName.setText(details!!.name)
-            etPhone.setText(details!!.phone)
-            etAddress.setText(details!!.address1)
-            if (details!!.address2 != "empty") {
-                val address2 = details!!.address2.split(",")
-                etAppartment.setText(address2[0])
-                etCity.setText(address2[1])
-                etCountry.setText(address2[2])
-            }
+            etFullName.setText(details.name)
+            etPhone.setText(details.phone)
+            etAddress.setText(details.address1)
+            etAppartment.setText(details.address2)
+            etCity.setText(details.city)
+            etCountry.setText(details.country)
+
         }
     }
 
@@ -162,8 +169,4 @@ class AddressDetailsFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i("here", "onDestroy: Details")
-    }
 }

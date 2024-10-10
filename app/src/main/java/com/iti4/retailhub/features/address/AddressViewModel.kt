@@ -73,14 +73,12 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     }
 
     fun addAddress(address: CustomerAddressV2) {
-        if (address.newAddress) {
+        if (address.isNew) {
             addressesList.add(address)
         } else {
             val index = addressesList.indexOfFirst { it.id == address.id }
             addressesList[index] = address
         }
-        updateMyAddresses(addressesList)
-
     }
 
     fun updateMyAddresses(address: List<CustomerAddressV2>) {

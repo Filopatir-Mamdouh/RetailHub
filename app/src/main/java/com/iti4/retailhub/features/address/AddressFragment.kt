@@ -10,7 +10,6 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +21,7 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -102,15 +102,15 @@ class AddressFragment : Fragment(), OnClickAddress {
                                 if (it.id == defaultAddress.id)
                                     it.isDefault = true
                             }
-
-//                            adapter.listData = (viewModel.addressesList)
-//                            adapter.notifyDataSetChanged()
+                            adapter.listData = (viewModel.addressesList)
+                            adapter.notifyDataSetChanged()
 //
                             if (viewModel.addressesList.size > 0)
                                 binding.addressNotFoundGroup.visibility = View.GONE
                             else
                                 binding.addressNotFoundGroup.visibility = View.VISIBLE
                         }
+                        Log.i(TAG, "listenToDefaultAddress: "+viewModel.addressesList)
                     }
 
                     is ApiState.Error -> {
@@ -129,6 +129,7 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStart() {
         super.onStart()
+
 //        viewModel.getAddressesById()
 //        val reason = arguments?.getString("reason")
 //        if (reason == "changeShipping") {
@@ -141,31 +142,37 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStop() {
         super.onStop()
-        Log.i("here", "onStop: " + viewModel.addressesList.size)
-        viewModel.updateMyAddresses(viewModel.addressesList)
+        //Log.i("here", "onStop: " + viewModel.addressesList.size)
+       // viewModel.updateMyAddresses(viewModel.addressesList)
 
         // viewModel.updateCustomerDefaultAddress()
         (activity as MainActivity).showBottomNavBar()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.updateMyAddresses(viewModel.addressesList)
+      //  viewModel.updateCustomerDefaultAddress()
+
     }
 
     override fun onResume() {
         super.onResume()
         adapter.listData = (viewModel.addressesList)
         adapter.notifyDataSetChanged()
-
         if (viewModel.addressesList.size == 0)
             binding.addressNotFoundGroup.visibility = View.VISIBLE
         else
             binding.addressNotFoundGroup.visibility = View.GONE
     }
 
-
-    override fun editDetails(address: CustomerAddress) {
-
+    // call back when i click on edit
+    override fun editDetails(address: CustomerAddressV2) {
         val bundle = Bundle().apply {
             putString("reason", "edit")
-            putParcelable("data", address)
         }
+        address.isNew=false
+        viewModel.editCustomerAddress=address
         findNavController().navigate(R.id.addressDetailsFragment, bundle)
     }
 
@@ -179,22 +186,17 @@ class AddressFragment : Fragment(), OnClickAddress {
         adapter.notifyDataSetChanged()
         if (viewModel.addressesList.size == 0)
             binding.addressNotFoundGroup.visibility = View.VISIBLE
-        Log.i("here", "deleteAddress: " + viewModel.addressesList.size)
-        viewModel.updateMyAddresses(viewModel.addressesList)
     }
 
     // callback when click on the checkbox
     override fun setDefaultAddress(position: Int) {
 //        viewModel.updateCustomerDefaultAddress(address.id!!)
         var index = 0
-        viewModel.addressesList.forEach {
+        viewModel.addressesList.forEach { _ ->
             viewModel.addressesList[index].isDefault = false
             index += 1
         }
         viewModel.addressesList[position].isDefault = true
-        viewModel.addressesList.forEach {
-            Log.i("here", "each item: " + it.name + it.isDefault)
-        }
         adapter.updateData(viewModel.addressesList)
 
 //        viewModel.getDefaultAddress()
@@ -202,10 +204,10 @@ class AddressFragment : Fragment(), OnClickAddress {
     }
 
     //callback when click on the cardView
-    override fun checkoutClickedAnAddress(address: CustomerAddress) {
-        mainActivityViewModel.customerChoseAnAddressNotDefault = true
-        mainActivityViewModel.customerChosenAddress = address
-        requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
+    override fun checkoutClickedAnAddress(address: CustomerAddressV2) {
+//        mainActivityViewModel.customerChoseAnAddressNotDefault = true
+//        mainActivityViewModel.customerChosenAddress = address
+//        requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
     }
 
 

@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.address
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,7 @@ class AddressRecyclerViewAdapter(
     private val handleAction: OnClickAddress, var listData: MutableList<CustomerAddressV2>
 ) :
     RecyclerView.Adapter<AddressRecyclerViewAdapter.ViewHolder>() {
-
+    private val TAG :String = "AddressRecyclerViewAdapter"
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RvAddressesItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,8 +29,11 @@ class AddressRecyclerViewAdapter(
     override fun getItemCount(): Int = listData.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = listData.get(position)
+
+        val item = listData[position]
+        Log.i(TAG, "onBindViewHolder: $item")
         with(holder.binding) {
+
             if (item.isDefault) {
                 btnDeleteAddress.visibility = View.INVISIBLE
                 cbAddressDefault.visibility = View.VISIBLE
@@ -63,7 +67,7 @@ class AddressRecyclerViewAdapter(
         }
     }
 
-    fun updateData(addressesList: MutableList<CustomerAddress>) {
+    fun updateData(addressesList: MutableList<CustomerAddressV2>) {
         GlobalScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
                 listData = addressesList

@@ -60,9 +60,10 @@ class AddressMapFragment : Fragment(), OnClickMap {
         )
         map = binding.mapView
         setupMap(null)
-        initSearchListener()
+
         binding.rvSearch.layoutManager = LinearLayoutManager(this.requireContext())
         binding.rvSearch.adapter = adapter
+        initSearchListener()
         initAddressGeocoding()
     }
 
@@ -206,8 +207,4 @@ class AddressMapFragment : Fragment(), OnClickMap {
         map.onPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i("here", "onDestroy: Map")
-    }
 }
