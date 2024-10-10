@@ -12,7 +12,7 @@ import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.features.home.adapter.HomeProductsDiffUtils
 import com.iti4.retailhub.models.HomeProducts
 
-class ListViewAdapter(val handleAction: OnClickGoToDetails): ListAdapter<HomeProducts, ListViewAdapter.ListViewHolder>(HomeProductsDiffUtils()) {
+class ProductSearchListViewAdapter(val handleAction: OnClickGoToDetails): ListAdapter<HomeProducts, ProductSearchListViewAdapter.ListViewHolder>(HomeProductsDiffUtils()) {
     class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = RvShopProductItemBinding.bind(itemView)
     }

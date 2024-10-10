@@ -20,22 +20,20 @@ import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
-import com.iti4.retailhub.features.shop.adapter.GridViewAdapter
-import com.iti4.retailhub.features.shop.adapter.ListViewAdapter
+import com.iti4.retailhub.features.shop.adapter.ProductSearchListViewAdapter
 import com.iti4.retailhub.features.shop.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SearchFragment : Fragment(), OnClickGoToDetails {
+class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: SearchViewModel by viewModels()
     private lateinit var binding: FragmentSearchBinding
     private var currentList = emptyList<HomeProducts>()
 //    private var isListView = true
     var isratingbarevisible=false
-    private val listViewAdapter by lazy { ListViewAdapter(this) }
-    private val gridViewAdapter by lazy { GridViewAdapter(this) }
+    private val productSearchListViewAdapter by lazy { ProductSearchListViewAdapter(this) }
 
     override fun onStart() {
         super.onStart()
@@ -73,7 +71,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
             }else{
                 binding.searchView.setQuery("",true)
                 binding.rangeSlider.visibility = View.VISIBLE
-                listViewAdapter.submitList(emptyList())
+                productSearchListViewAdapter.submitList(emptyList())
                 isratingbarevisible=true
             }
         }
@@ -85,10 +83,10 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     private fun setupRecycleViewWithAdapter() {
         binding.searchRV.apply {
-            adapter = listViewAdapter
+            adapter = productSearchListViewAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-        listViewAdapter.submitList(currentList)
+        productSearchListViewAdapter.submitList(currentList)
 //        binding.switchView.setImageResource(R.drawable.view_by_list)
 //        isListView=!isListView
     }
@@ -107,7 +105,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
                     if (newText.isEmpty()){
-                        listViewAdapter.submitList(emptyList())
+                        productSearchListViewAdapter.submitList(emptyList())
                     }else{
                         binding.rangeSlider.visibility = View.GONE
                         isratingbarevisible=false
@@ -133,7 +131,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                             Log.d("search", "setupDataListener:${it} ")
 //                            currentList=it.data as List<HomeProducts>
 //                            handleDataResult(currentList)
-                            listViewAdapter.submitList(it.data as List<HomeProducts>)
+                            productSearchListViewAdapter.submitList(it.data as List<HomeProducts>)
                         }
                         is ApiState.Error -> {
                             Toast.makeText(requireContext(), it.exception.message, Toast.LENGTH_SHORT).show()
