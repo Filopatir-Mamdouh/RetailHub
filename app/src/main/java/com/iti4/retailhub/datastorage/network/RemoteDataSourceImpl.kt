@@ -153,8 +153,8 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
-    override fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer> = flow {
-        val response = apolloClient.query(GetCustomerFavoritesQuery(id)).execute()
+    override fun getCustomerFavoritesoById(id: String,namespace: String): Flow<GetCustomerFavoritesQuery.Customer> = flow {
+        val response = apolloClient.query(GetCustomerFavoritesQuery(id,namespace)).execute()
         if (!response.hasErrors() && response.data != null) {
             emit(response.data!!.customer!!)
         } else {
@@ -223,10 +223,10 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             }
         }
 
-    override fun getDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
+    override fun getDraftOrdersByCustomer(query: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> =
         flow {
             val response =
-                apolloClient.query(GetDraftOrdersByCustomerQuery(varientId))
+                apolloClient.query(GetDraftOrdersByCustomerQuery(query))
                     .execute()
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.draftOrders)

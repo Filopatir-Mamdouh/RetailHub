@@ -12,6 +12,9 @@ class UserLocalProfileData (context: Context): UserLocalProfileDataInterface {
     private val userShopID: SharedPreferences = context.getSharedPreferences("UserShopID", Context.MODE_PRIVATE)
     private val userShopIDEditor: SharedPreferences.Editor = userShopID.edit()
 
+    private val loginStatus: SharedPreferences = context.getSharedPreferences("loginStatus", Context.MODE_PRIVATE)
+    private val loginStatusEditor: SharedPreferences.Editor = loginStatus.edit()
+
 override fun addUserName(name:String):Int {
     if (name.isEmpty()) {
         return 0
@@ -28,6 +31,15 @@ override fun addUserName(name:String):Int {
     override fun getUserShopLocalId(): String? {
         return profileData.getString("ID", null)
     }
+
+    override fun setLoginStatus(loginStatus: String) {
+        loginStatusEditor.putString("LoginStatus", loginStatus)
+        loginStatusEditor.apply()
+    }
+    override fun getLoginStatus(): String? {
+        return loginStatus.getString("LoginStatus",null)
+    }
+
     override fun addUserData(userID: String):Int {
             profileDataEditor.putString("UserID", userID)
             profileDataEditor.apply()

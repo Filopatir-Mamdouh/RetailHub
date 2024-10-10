@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.loginandsignup.view
+package com.iti4.retailhub.features.login_and_signup.view
 
 import android.app.Activity
 import android.content.Intent
@@ -16,8 +16,7 @@ import androidx.navigation.Navigation.findNavController
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
-import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.features.loginandsignup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -75,6 +74,12 @@ class SignUpFragment : Fragment() {
         }
         signUpBinding.googleCard.setOnClickListener {
             userAuthViewModel.signInWithGoogle()
+        }
+
+        signUpBinding.guest.setOnClickListener {
+            userAuthViewModel.setLoginStatus("guest")
+            val intent= Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
         }
         if (!isLaunched) {
             isLaunched = true

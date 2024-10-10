@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.loginandsignup.viewmodel
+package com.iti4.retailhub.features.login_and_signup.viewmodel
 
 import android.content.Intent
 import android.util.Log
@@ -153,6 +153,7 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                                 Log.d("shopify", "catch: ${e.message}")
                             }.collect {
                                 Log.d("shopify", "onViewCreated: ${it}")
+                                reposatory.setLoginStatus("login")
                                 reposatory.addUserShopLocalId(it.customer?.id)
                                 _authState.value = AuthState.Success(user.user)
                             }
@@ -188,4 +189,17 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
             }
         }
     }
+
+        fun setLoginStatus(loginStatus: String) {
+            reposatory.setLoginStatus(loginStatus)
+        }
+
+    fun isUserLoggedIn(): Boolean {
+       if( reposatory.getLoginStatus()==null){
+           return true
+       }else{
+           return false
+       }
+    }
+
 }

@@ -31,8 +31,8 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     private val _myBagProductsUpdate = MutableStateFlow<ApiState>(ApiState.Loading)
     val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
 
-    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
-
+//    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
+val customerId ="6945540800554"
 
      fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {

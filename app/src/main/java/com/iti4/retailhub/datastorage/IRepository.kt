@@ -76,7 +76,8 @@ interface IRepository {
         varientId: String,
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-    fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun updateCustomerAddress(
         customerId: String,
@@ -89,8 +90,10 @@ interface IRepository {
         lon: String
     ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>>
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
-    fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
+    fun getCustomerFavoritesoById(id: String,namespace: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
     fun getOrders(query: String): Flow<List<Order>>
     fun getOrderDetails(id: String): Flow<OrderDetails>
+    abstract fun setLoginStatus(loginStatus: String)
+    fun getLoginStatus(): String?
 }

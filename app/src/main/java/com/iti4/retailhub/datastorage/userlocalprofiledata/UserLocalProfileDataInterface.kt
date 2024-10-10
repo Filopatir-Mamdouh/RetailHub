@@ -7,4 +7,6 @@ interface UserLocalProfileDataInterface {
     fun deleteUserData()
      fun addUserShopLocalId(id: String?)
     fun getUserShopLocalId(): String?
+     fun setLoginStatus(loginStatus: String)
+    fun getLoginStatus(): String?
 }
