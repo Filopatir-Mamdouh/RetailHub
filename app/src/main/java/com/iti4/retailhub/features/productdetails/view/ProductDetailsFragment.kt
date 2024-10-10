@@ -66,6 +66,9 @@ class ProductDetailsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         productId = arguments?.getString("productid") as String
     }
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -108,7 +111,10 @@ class ProductDetailsFragment : Fragment() {
 
                         //set product details
                          productTitle = data.title
+
+                        //get favorites
                         searchInCustomerFavorites()
+
                         searcheInBag()
 
                         val productTitleList = productTitle.split("|")
@@ -361,6 +367,7 @@ class ProductDetailsFragment : Fragment() {
                 when (item) {
                     is ApiState.Success<*> -> {
                         val data = item.data as GetCustomerFavoritesQuery.Customer
+                        searchInCustomerFavorites()
                         Toast.makeText(
                             requireContext(),
                            "Add to your favorites",

@@ -195,7 +195,4 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     }
 
-    override fun deleteFromFavorites(id: String?) {
-        TODO("Not yet implemented")
-    }
 }
