@@ -63,7 +63,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
         initSearchListener()
         binding.rvSearch.layoutManager = LinearLayoutManager(this.requireContext())
         binding.rvSearch.adapter = adapter
-
+        initAddressGeocoding()
     }
 
 
@@ -87,13 +87,11 @@ class AddressMapFragment : Fragment(), OnClickMap {
                 point?.let {
                     val lat = it.latitude
                     val long = it.longitude
-                    map.overlays.remove(map.overlays.last())
                     val marker = Marker(map)
                     marker.position = GeoPoint(lat!!, long!!)
                     map.overlays.add(marker)
                     map.controller.setCenter(GeoPoint(lat!!, long!!))
                     viewModel.getLocationGeocoding(lat.toString(), long.toString())
-                    initAddressGeocoding()
                 }
                 return true
             }
@@ -146,41 +144,40 @@ class AddressMapFragment : Fragment(), OnClickMap {
 
     private fun initAddressGeocoding() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.addressGeocoding.debounce(500).collect() { item ->
-                    when (item) {
-                        is ApiState.Success<*> -> {
-                            if (!(item.data is Error)) {
-                                val response =
-                                    item.data as com.iti4.retailhub.features.address.PlaceLocation
-                                if (response.display_name.isNullOrEmpty())
-                                    Toast.makeText(
+            viewModel.addressGeocoding.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        if (!(item.data is Error)) {
+                            val response =
+                                item.data as com.iti4.retailhub.features.address.PlaceLocation
+                            if (response.display_name.isNullOrEmpty())
+                                Toast.makeText(
+                                    this@AddressMapFragment.requireContext(),
+                                    "Location Not Found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            else {
+                                val dialog =
+                                    AddressGeocodingDialog(
                                         this@AddressMapFragment.requireContext(),
-                                        "Location Not Found",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                else{
-                                    val dialog =
-                                        AddressGeocodingDialog(
-                                            this@AddressMapFragment.requireContext(),
-                                            this@AddressMapFragment
-                                        )
-                                    dialog.show()
-                                    dialog.getData(response)
-                                    viewModel.selectedMapAddress=response
-                                }
+                                        this@AddressMapFragment
+                                    )
+                                dialog.show()
+                                dialog.getData(response)
+                                viewModel.selectedMapAddress = response
                             }
                         }
+                    }
 
-                        is ApiState.Error ->
-                            Log.i("here", "initSearchListener: err")
+                    is ApiState.Error ->
+                        Log.i("here", "initSearchListener: err")
 
-                        is ApiState.Loading -> {
-                            Log.i("here", "initSearchListener: lloading")
-                        }
+                    is ApiState.Loading -> {
+                        Log.i("here", "initSearchListener: lloading")
                     }
                 }
             }
+
         }
     }
 
@@ -196,7 +193,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
         val bundle = Bundle().apply {
             putString("reason", "map")
         }
-        findNavController().navigate(R.id.addressDetailsFragment, bundle,navOptions)
+        findNavController().navigate(R.id.addressDetailsFragment, bundle, navOptions)
     }
 
     override fun onResume() {

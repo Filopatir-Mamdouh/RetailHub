@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val navController = Navigation.findNavController(this, R.id.fragmentContainerView2)
         if (navController.previousBackStackEntry != null) {
+
             navController.navigateUp()
         } else {
             super.onBackPressed()

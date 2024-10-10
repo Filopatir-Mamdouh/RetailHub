@@ -3,12 +3,14 @@ package com.iti4.retailhub.features.checkout
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.AddressInputModel
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.CustomerInputModel
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DiscountInput
@@ -80,22 +82,52 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     }
 
 
-    fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>, isCard: Boolean) {
+    fun createCheckoutDraftOrder(
+        listOfCartProduct: List<CartProduct>,
+        isCard: Boolean,
+        checkoutAddress: CustomerAddress?,
+        checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
+    ) {
         //    val customerData = CustomerInput("customer_id:6945540800554")
         Log.i("here", "simple call: ")
         viewModelScope.launch(dispatcher) {
             Log.i("here", "createCheckoutDraftOrder: ")
             val lineItems = listOfCartProduct.map { it.toLineItem() }
-            val customerInputModel =
-                CustomerInputModel(customerId, customerName, customerName, customerEmail)
             var discount: DiscountInput? = null
             if (selectedDiscount != null) {
                 discount = DiscountInput(
                     selectedDiscount!!.getDiscountAsDouble(), selectedDiscount!!.title
                 )
             }
-            val addressInputModel =
-                AddressInputModel("3 NewBridge Court", "Chino,Hills,sfdASD", "CA", "91709", "USA")
+            val customerInputModel =
+                CustomerInputModel(
+                    customerId,
+                    customerEmail
+                )
+
+
+            val addressInputModel = if (checkoutAddress != null) {
+                customerInputModel.firstName = checkoutAddress.name
+                customerInputModel.phone = checkoutAddress.phone
+                val splitAddress = checkoutAddress.address2.split(",")
+                AddressInputModel(
+                    checkoutAddress.address1,
+                    splitAddress[0],
+                    splitAddress[1],
+                    splitAddress[2],
+                    ""
+                )
+            } else {
+                customerInputModel.firstName = checkoutDefaultAddress!!.name
+                customerInputModel.phone = checkoutDefaultAddress!!.phone
+                AddressInputModel(
+                    checkoutDefaultAddress!!.address1!!,
+                    checkoutDefaultAddress!!.address2!!,
+                    checkoutDefaultAddress!!.city!!,
+                    checkoutDefaultAddress!!.country!!,
+                    ""
+                )
+            }
             val draftOrderInputModel = DraftOrderInputModel(
                 lineItems, customerInputModel, addressInputModel, customerEmail, discount, false
             )

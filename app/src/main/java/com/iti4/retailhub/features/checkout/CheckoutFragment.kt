@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
@@ -23,7 +24,6 @@ import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.logic.ToolbarSetup
-import com.iti4.retailhub.logic.toCustomerAddress
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CustomerAddress
@@ -37,6 +37,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private val currencyCode by lazy { mainActivityViewModel.getCurrencyCode() }
     private lateinit var binding: FragmentCheckoutBinding
     private var checkoutAddress: CustomerAddress? = null
+    private var checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress? = null
     private lateinit var cartProducts: List<CartProduct>
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
@@ -80,18 +81,20 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
-            findNavController().navigate(R.id.addressFragment, bundle)
+            requireActivity().findNavController(R.id.fragmentContainerView2)
+                .navigate(R.id.addressFragment, bundle)
         }
         binding.btnChangeAddress.setOnClickListener {
             Log.i("here", "change addr: ")
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
-            findNavController().navigate(R.id.addressFragment, bundle)
+            requireActivity().findNavController(R.id.fragmentContainerView2)
+                .navigate(R.id.addressFragment, bundle)
         }
         Log.i("here", "found discounts: " + mainActivityViewModel.discountList)
         binding.btnSubmitOrder.setOnClickListener {
-            if (checkoutAddress != null) {
+            if (checkoutAddress != null || checkoutDefaultAddress != null) {
                 binding.tvNoAddressAtCheckout.visibility = View.INVISIBLE
                 val discountCode = binding.promocodeEdittext.etPromoCode.text.toString()
                 if (discountCode.isNullOrEmpty()) {
@@ -209,7 +212,8 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                                 } else {
                                     binding.groupNoAddress.visibility = View.INVISIBLE
                                     binding.cvAddressCheckout.visibility = View.VISIBLE
-                                    checkoutAddress = address.toCustomerAddress()
+                                    checkoutAddress = null
+                                    checkoutDefaultAddress = address
                                 }
                                 binding.tvAddressAddress.text = address?.address1 ?: " "
                                 binding.tvAddressRestOfAddress.text = address?.address2 ?: " "
@@ -260,8 +264,9 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                             binding.lottieAnimSubmitOrder.pauseAnimation()
                             binding.btnSubmitOrder.isEnabled = true
                             binding.btnSubmitOrder.text = "CONTINUE"
-                            findNavController().clearBackStack(R.id.myBagFragment)
-                            findNavController().navigate(R.id.summaryFragment)
+                            requireActivity().findNavController(R.id.fragmentContainerView2)
+                                .navigate(R.id.summaryFragment)
+
                             Toast.makeText(
                                 this@CheckoutFragment.requireActivity(),
                                 "Order Submitted",
@@ -322,7 +327,12 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
         when (paymentSheetResult) {
             is PaymentSheetResult.Completed -> {
-                viewModel.createCheckoutDraftOrder(cartProducts, true)
+                viewModel.createCheckoutDraftOrder(
+                    cartProducts,
+                    true,
+                    checkoutAddress,
+                    checkoutDefaultAddress
+                )
                 listenToCreateCheckoutDraftOrder()
             }
 
@@ -398,7 +408,12 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                     binding.lottieAnimSubmitOrder.visibility = View.VISIBLE
                     binding.btnSubmitOrder.isEnabled = false
                     binding.btnSubmitOrder.text = ""
-                    viewModel.createCheckoutDraftOrder(cartProducts, false)
+                    viewModel.createCheckoutDraftOrder(
+                        cartProducts,
+                        false,
+                        checkoutAddress,
+                        checkoutDefaultAddress
+                    )
                     listenToCreateCheckoutDraftOrder()
                 }
 

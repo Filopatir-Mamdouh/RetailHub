@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -82,7 +83,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                     putParcelableArrayList("data", cartProductList as ArrayList<CartProduct>)
                     putDouble("totalprice", totalPrice ?: 0.0)
                 }
-                findNavController().navigate(R.id.checkoutFragment, bundle)
+                requireActivity().findNavController(R.id.fragmentContainerView2).navigate(R.id.checkoutFragment,bundle)
             }
         }
 
@@ -157,7 +158,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             collapsedPageName.visibility = View.GONE
             pageName.text = requireContext().getString(R.string.my_bag)
             backButton.setOnClickListener {
-                findNavController().navigateUp()
+                requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
             }
         }
     }

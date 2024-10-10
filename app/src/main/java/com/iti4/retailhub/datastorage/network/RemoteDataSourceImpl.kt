@@ -165,10 +165,8 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
 
     override fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate> =
         flow {
-                Log.i("here", "remote: "+draftOrderInputModel)
-                val draftOrderInput = toGraphQLDraftOrderInput(draftOrderInputModel)
-
-
+            Log.i("here", "remote: " + draftOrderInputModel)
+            val draftOrderInput = toGraphQLDraftOrderInput(draftOrderInputModel)
 
             val response =
                 apolloClient.mutation(CreateDraftOrderMutation(draftOrderInput)).execute()
@@ -363,8 +361,8 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             val response =
                 apolloClient.mutation(CustomerUpdateDefaultAddressMutation(addressId, customerId))
                     .execute()
-            Log.i("here", "updateCustomerDefaultAddress:  updated"+addressId)
-            Log.i("here", "updateCustomerDefaultAddress:  updated"+response.errors)
+            Log.i("here", "updateCustomerDefaultAddress:  updated" + addressId)
+            Log.i("here", "updateCustomerDefaultAddress:  updated" + response.errors)
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.customerUpdateDefaultAddress!!.customer!!)
             } else {
@@ -467,9 +465,12 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             shippingAddress = draftOrderInputModel.shippingAddress!!.let {
                 Optional.present(
                     MailingAddressInput(
+                        firstName = Optional.present(draftOrderInputModel.customer.firstName),
                         address1 = Optional.present(it.address1),
+                        address2 = Optional.present(it.address2),
                         city = Optional.present(it.city),
                         country = Optional.present(it.country),
+                        phone = Optional.present(draftOrderInputModel.customer.phone),
                         zip = Optional.present(it.zip)
                     )
                 )
