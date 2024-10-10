@@ -1,6 +1,7 @@
 package com.iti4.retailhub.datastorage.network
 
 import com.apollographql.apollo.api.Optional
+import com.iti4.retailhub.AddTagsMutation
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
@@ -67,4 +68,10 @@ interface RemoteDataSource {
     ): Flow<CustomerUpdateDefaultAddressMutation.Customer>
 
     fun getDiscounts(): Flow<List<Discount>>
+    fun setCustomerUsedDiscounts(
+        customerId: String,
+        discountCode: String
+    ): Flow<AddTagsMutation.Node>
+
+    fun getCustomerUsedDiscounts(customerId: String): Flow<List<String>>
 }

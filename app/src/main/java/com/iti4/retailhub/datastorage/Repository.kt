@@ -6,6 +6,7 @@ import android.content.IntentSender
 import android.util.Log
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import com.iti4.retailhub.AddTagsMutation
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
@@ -17,7 +18,6 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
-import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
@@ -284,9 +284,19 @@ class Repository @Inject constructor(
         UserLocalProfileData.setRefrechCurrency()
     }
 
-    override fun getDiscounts(): Flow<List<Discount>>{
+    override fun getDiscounts(): Flow<List<Discount>> {
         return remoteDataSource.getDiscounts()
     }
 
+    override fun setCustomerUsedDiscounts(
+        customerId: String,
+        discountCode: String
+    ): Flow<AddTagsMutation.Node> {
+        return remoteDataSource.setCustomerUsedDiscounts(customerId, discountCode)
+    }
+
+    override fun getCustomerUsedDiscounts(customerId: String): Flow<List<String>> {
+        return remoteDataSource.getCustomerUsedDiscounts(customerId)
+    }
 
 }

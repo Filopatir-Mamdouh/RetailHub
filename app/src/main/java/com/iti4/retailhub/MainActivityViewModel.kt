@@ -19,9 +19,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val _currencyState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val customerId by lazy { (repository.getUserShopLocalId()!!) }
     val currencyState = _currencyState.asStateFlow()
     private val dispatcher = Dispatchers.IO
     var discountList: MutableList<Discount>? = null
+    var usedDiscountCodesList: List<String> = listOf()
     fun getCurrencyRates() {
         viewModelScope.launch(dispatcher) {
             repository.getCurrencyRates()
@@ -33,6 +35,9 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
 
     fun getFirstTime(): Boolean {
         return repository.getFirstTime()
+    }
+    fun setCurrencyCode() {
+        repository.setCurrencyCode(CountryCodes.USD)
     }
 
     fun setFirstTime() {
@@ -54,7 +59,8 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
     fun getConversionRates(currencyCode: CountryCodes): Double {
         return repository.getConversionRates(currencyCode)
     }
-    fun getCurrencyCode(): CountryCodes{
+
+    fun getCurrencyCode(): CountryCodes {
         return repository.getCurrencyCode()
     }
 
@@ -64,6 +70,16 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
                 Log.i("here", "getDiscount: No Discounts ")
             }.collect {
                 discountList = it.toMutableList()
+            }
+        }
+    }
+
+    fun getUsedDiscounts() {
+        viewModelScope.launch(dispatcher) {
+            repository.getCustomerUsedDiscounts(customerId).catch { e ->
+                Log.i("here", "getDiscount: No Discounts ")
+            }.collect {
+                usedDiscountCodesList = it
             }
         }
     }

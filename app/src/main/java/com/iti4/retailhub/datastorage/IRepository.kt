@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentSender
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import com.iti4.retailhub.AddTagsMutation
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
@@ -114,4 +115,10 @@ interface IRepository {
     fun setRefrechCurrency()
     fun getShouldIRefrechCurrency(): Boolean
     fun getDiscounts():Flow<List<Discount>>
+    fun setCustomerUsedDiscounts(
+        customerId: String,
+        discountCode: String
+    ): Flow<AddTagsMutation.Node>
+
+    fun getCustomerUsedDiscounts(customerId: String): Flow<List<String>>
 }

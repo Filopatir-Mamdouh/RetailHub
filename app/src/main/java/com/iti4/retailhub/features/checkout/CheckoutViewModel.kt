@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.checkout
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
@@ -81,7 +82,9 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
 
     fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>, isCard: Boolean) {
         //    val customerData = CustomerInput("customer_id:6945540800554")
+        Log.i("here", "simple call: ")
         viewModelScope.launch(dispatcher) {
+            Log.i("here", "createCheckoutDraftOrder: ")
             val lineItems = listOfCartProduct.map { it.toLineItem() }
             val customerInputModel =
                 CustomerInputModel(customerId, customerName, customerName, customerEmail)
@@ -96,26 +99,46 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
             val draftOrderInputModel = DraftOrderInputModel(
                 lineItems, customerInputModel, addressInputModel, customerEmail, discount, false
             )
-
             listOfCartProduct.forEach {
-                repository.deleteMyBagItem(it.draftOrderId).collect {}
-            }
-            repository.createCheckoutDraftOrder(draftOrderInputModel).catch { e ->
-                _checkoutDraftOrderCreated.emit(ApiState.Error(e))
-            }.collect { draftId ->
-                repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
-                    repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
-                        .collect { responseFromComplete ->
-                            if (isCard) {
-                                repository.markOrderAsPaid(responseFromComplete.order!!.id)
-                                    .collect {}
-                            }
-                            repository.deleteMyBagItem(responseFromComplete.id).collect {
-                                _checkoutDraftOrderCreated.emit(ApiState.Success(it))
-                            }
-                        }
+                repository.deleteMyBagItem(it.draftOrderId).catch {
+                    Log.i("here", "deleteMyBagItem: " + it.message)
+                }.collect {
+                    Log.i("here", "deleteMyBagItem: " + it.deletedId)
                 }
             }
+            repository.createCheckoutDraftOrder(draftOrderInputModel)
+                .catch { e ->
+                    Log.i("here", "he big one:: " + e)
+                    _checkoutDraftOrderCreated.emit(ApiState.Error(e))
+                }.collect { draftId ->
+                    Log.i("here", "the big one: " + draftId)
+                    repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
+                        Log.i("here", "emailCheckoutDraftOrder: " + it.id)
+                        repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
+                            .collect { responseFromComplete ->
+                                Log.i("here", "completeCheckoutDraftOrder: ")
+                                if (discount != null) {
+                                    repository.setCustomerUsedDiscounts(
+                                        customerId,
+                                        discount.valueType
+                                    )
+                                        .collect {
+                                            Log.i("here", "setCustomerUsedDiscounts: ")
+                                        }
+                                }
+                                if (isCard) {
+                                    repository.markOrderAsPaid(responseFromComplete.order!!.id)
+                                        .collect {
+                                            Log.i("here", "markOrderAsPaid: ")
+                                        }
+                                }
+                                repository.deleteMyBagItem(responseFromComplete.id).collect {
+                                    Log.i("here", "deleteMyBagItem: ")
+                                    _checkoutDraftOrderCreated.emit(ApiState.Success(it))
+                                }
+                            }
+                    }
+                }
 
         }
     }
@@ -124,7 +147,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         viewModelScope.launch(dispatcher) {
             repository.createStripePaymentIntent(
                 PaymentRequest(
-                    customerEmail, customerName, orderPrice, "Egp"
+                    customerEmail, customerName, orderPrice, repository.getCurrencyCode().toString()
                 )
             ).collect {
                 val response = it

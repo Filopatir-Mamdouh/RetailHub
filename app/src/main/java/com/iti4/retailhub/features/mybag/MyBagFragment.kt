@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
@@ -23,6 +25,11 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyBagFragment : Fragment(), OnClickMyBag {
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
+    private var conversionRate: Double? = null
+    private val currencyCode by lazy {
+        mainActivityViewModel.setCurrencyCode()
+        mainActivityViewModel.getCurrencyCode() }
     private lateinit var binding: FragmentMyBagBinding
     private val viewModel by viewModels<MyBagViewModel>()
     private val adapter by lazy {
@@ -40,7 +47,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        currencyCode.name
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.collect { item ->
@@ -128,6 +135,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             price * it.itemQuantity
 
         }!!
+
         binding.tvMyBagProductPrice.text = "${totalPrice?.toTwoDecimalPlaces()} EGP"
     }
 

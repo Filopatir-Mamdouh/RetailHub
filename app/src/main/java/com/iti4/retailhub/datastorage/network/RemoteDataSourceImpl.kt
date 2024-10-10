@@ -3,6 +3,7 @@ package com.iti4.retailhub.datastorage.network
 import android.util.Log
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.iti4.retailhub.AddTagsMutation
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
@@ -16,6 +17,7 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.GetCustomerUsedDiscountsQuery
 import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
@@ -163,9 +165,14 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
 
     override fun createCheckoutDraftOrder(draftOrderInputModel: DraftOrderInputModel): Flow<CreateDraftOrderMutation.DraftOrderCreate> =
         flow {
-            val draftOrderInput = toGraphQLDraftOrderInput(draftOrderInputModel)
+                Log.i("here", "remote: "+draftOrderInputModel)
+                val draftOrderInput = toGraphQLDraftOrderInput(draftOrderInputModel)
+
+
+
             val response =
                 apolloClient.mutation(CreateDraftOrderMutation(draftOrderInput)).execute()
+
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.draftOrderCreate!!)
             } else {
@@ -353,12 +360,28 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         addressId: String
     ): Flow<CustomerUpdateDefaultAddressMutation.Customer> =
         flow {
-
             val response =
                 apolloClient.mutation(CustomerUpdateDefaultAddressMutation(addressId, customerId))
                     .execute()
             if (!response.hasErrors() && response.data != null) {
                 emit(response.data!!.customerUpdateDefaultAddress!!.customer!!)
+            } else {
+                throw Exception(
+                    response.errors?.get(0)?.message ?: "Something went wrong"
+                )
+            }
+        }
+
+    override fun setCustomerUsedDiscounts(
+        customerId: String,
+        discountCode: String
+    ): Flow<AddTagsMutation.Node> =
+        flow {
+            val response =
+                apolloClient.mutation(AddTagsMutation(customerId, listOf(discountCode)))
+                    .execute()
+            if (!response.hasErrors() && response.data != null) {
+                emit(response.data!!.tagsAdd!!.node!!)
             } else {
                 throw Exception(
                     response.errors?.get(0)?.message ?: "Something went wrong"
@@ -375,6 +398,16 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
     }
+
+    override fun getCustomerUsedDiscounts(customerId: String): Flow<List<String>> = flow {
+        val response = apolloClient.query(GetCustomerUsedDiscountsQuery(customerId)).execute()
+        if (!response.hasErrors() && response.data != null) {
+            emit(response!!.data!!.customer!!.tags)
+        } else {
+            throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
+        }
+    }
+
 
     private fun extractCart(item: GetDraftOrdersByCustomerQuery.DraftOrders): List<CartProduct> {
 
@@ -415,7 +448,6 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
     }
 
     private fun toGraphQLDraftOrderInput(draftOrderInputModel: DraftOrderInputModel): DraftOrderInput {
-        Log.i("here", "toGraphQLDraftOrderInput: ${draftOrderInputModel.appliedDiscount!!.value}")
         return DraftOrderInput(
             lineItems = Optional.present(draftOrderInputModel.lineItems.map { lineItem ->
                 DraftOrderLineItemInput(
@@ -428,7 +460,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
                     value = draftOrderInputModel.appliedDiscount!!.value,
                     valueType = DraftOrderAppliedDiscountType.PERCENTAGE,
                 )
-            ) else Optional.absent(),
+            ) else Optional.present(null),
             customerId = Optional.present(draftOrderInputModel.customer!!.id),
             shippingAddress = draftOrderInputModel.shippingAddress!!.let {
                 Optional.present(

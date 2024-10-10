@@ -60,9 +60,10 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         totalPrice = arguments?.getDouble("totalprice")
         totalPrice = totalPrice!! * conversionRate!!
         totalPriceInCents = totalPrice!!.times(100).toInt()
-        binding.tvDiscountPrice.text="0 ${currencyCode.name}"
-        binding.tvOrderPrice.text = totalPrice!!.toTwoDecimalPlaces().toString() + " ${currencyCode.name}"
-        binding.tvSummary.text = totalPrice.toString() + " ${currencyCode.name}"
+        binding.tvDiscountPrice.text = "0 ${currencyCode.name}"
+        binding.tvOrderPrice.text = totalPrice!!.toTwoDecimalPlaces() + " ${currencyCode.name}"
+        binding.tvSummary.text =
+            totalPrice!!.toTwoDecimalPlaces().toString() + " ${currencyCode.name}"
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         viewModel.getCustomerData()
@@ -101,6 +102,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             bottomSheet.show(this.requireActivity().supportFragmentManager, bottomSheet.tag)
         }
         binding.promocodeEdittext.btnDeleteCode.setOnClickListener {
+            binding.tvInvalidDiscount.visibility = View.VISIBLE
             binding.promocodeEdittext.btnInsertCode.visibility = View.VISIBLE
             binding.promocodeEdittext.btnDeleteCode.visibility = View.GONE
             binding.promocodeEdittext.etPromoCode.setText("")
@@ -124,12 +126,15 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         binding.promocodeEdittext.btnDeleteCode.visibility = View.VISIBLE
         binding.promocodeEdittext.etPromoCode.setText(data)
         if (checkDiscount(data)) {
-            val discountRate = viewModel.selectedDiscount!!.getDiscountAsDouble()/100
+            val discountRate = viewModel.selectedDiscount!!.getDiscountAsDouble() / 100
             val discountAmount = totalPrice!! * discountRate
             val totalSummary = totalPrice!! - discountAmount
-            binding.tvDiscountPrice.text ="- "+ discountAmount.toTwoDecimalPlaces().toString()+ " ${currencyCode.name}"
-            binding.tvSummary.text = "- "+ totalSummary.toTwoDecimalPlaces().toString()+ " ${currencyCode.name}"
+            binding.tvDiscountPrice.text =
+                "- " + discountAmount.toTwoDecimalPlaces() + " ${currencyCode.name}"
+            binding.tvSummary.text = totalSummary.toTwoDecimalPlaces() + " ${currencyCode.name}"
+            binding.tvInvalidDiscount.visibility = View.INVISIBLE
         }
+        binding.tvInvalidDiscount.visibility = View.VISIBLE
     }
 
     private fun listenToPIChanges() {
@@ -319,11 +324,19 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
     }
 
     private fun checkDiscount(discountCode: String): Boolean {
+        binding.tvInvalidDiscount.text = resources.getString(R.string.DiscountInvalid)
         if (!mainActivityViewModel.discountList.isNullOrEmpty()) {
             val foundDiscount = mainActivityViewModel.discountList!!.filter {
                 it.title == discountCode
             }
             if (foundDiscount.isNotEmpty()) {
+                mainActivityViewModel.usedDiscountCodesList.forEach {
+                    if (it == discountCode) {
+                        binding.tvInvalidDiscount.text = resources.getString(R.string.DiscountUsed)
+                        return false
+                    }
+
+                }
                 "discount found"
                 viewModel.selectedDiscount = foundDiscount[0]
                 return true
