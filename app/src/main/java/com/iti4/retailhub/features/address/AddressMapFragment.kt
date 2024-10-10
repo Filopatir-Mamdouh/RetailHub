@@ -38,6 +38,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
     private lateinit var binding: FragmentAddressMapBinding
     private lateinit var map: MapView
     private lateinit var sharedFlow: MutableSharedFlow<String>
+    private val isFirstTimeViewMap = true
     private val viewModel: AddressViewModel by activityViewModels()
     private val adapter by lazy {
         AddressLookupRecyclerViewAdapter(mutableListOf(), this)
@@ -158,6 +159,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             else {
+
                                 val dialog =
                                     AddressGeocodingDialog(
                                         this@AddressMapFragment.requireContext(),
@@ -166,6 +168,7 @@ class AddressMapFragment : Fragment(), OnClickMap {
                                 dialog.show()
                                 dialog.getData(response)
                                 viewModel.selectedMapAddress = response
+
                             }
                         }
                     }

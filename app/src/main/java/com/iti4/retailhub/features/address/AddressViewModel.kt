@@ -22,16 +22,15 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     private val TAG: String = "AddressViewModel"
     private val dispatcher = Dispatchers.IO
 
+    init {
+        getAddressesById()
+    }
     // list to hold customer's addresses locally
     var addressesList: MutableList<CustomerAddressV2> = mutableListOf()
 
     // send a CustomerAddressV2 for editing either map or edit
     var editCustomerAddress: CustomerAddressV2? = null
     var selectedMapAddress: PlaceLocation? = null
-
-    private val _addressListChangeState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val addressListChangeState = _addressListChangeState.asStateFlow()
-
 
     private val _defaultAddressState = MutableStateFlow<ApiState>(ApiState.Loading)
     val defaultAddressState = _defaultAddressState.asStateFlow()
@@ -47,7 +46,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     val customerId by lazy { repository.getUserShopLocalId() }
 
 
-    fun getAddressesById() {
+    private fun getAddressesById() {
         viewModelScope.launch(dispatcher) {
             repository.getAddressesById(customerId!!)
                 .catch { e ->
@@ -56,8 +55,9 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                         "AddressViewModel : getAddressesById: on error ${e.message}"
                     )
                 }.collect {
+                    Log.i(TAG, "getAddressesById: collecting empty list ? $addressesList")
                     addressesList =
-                        if (it.addresses.isNotEmpty()) it.toCustomerAddressList() else mutableListOf()
+                       it.toCustomerAddressList() 
                     getDefaultAddress()
                 }
         }
@@ -81,29 +81,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
         }
     }
 
-    fun updateMyAddresses(address: List<CustomerAddressV2>) {
-        GlobalScope.launch(dispatcher) {
-            repository.updateCustomerAddress(customerId!!, address)
-                .catch { Log.i(TAG, "updateMyAddresses: on error ${it.message}") }
-                .collect { data ->
-                    addressesList.forEach {
-                        if (it.isDefault) {
-                            val addresss =
-                                data.customer!!.addresses.filter { insideData -> it.address1 == insideData.address1 }
-                            updateCustomerDefaultAddress(addresss[0].id)
-                        }
-                    }
-                }
-        }
-    }
 
-    private fun updateCustomerDefaultAddress(addressId: String) {
-        GlobalScope.launch(dispatcher) {
-            repository.updateCustomerDefaultAddress(customerId!!, addressId)
-                .catch { Log.i(TAG, "updateCustomerDefaultAddress: on error ${it.message}") }
-                .collect {}
-        }
-    }
 
     fun getLocationSuggestions(query: String) {
         viewModelScope.launch(dispatcher) {
@@ -133,6 +111,34 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                     } else {
                         _addressGeocoding.emit(ApiState.Error(Exception("error")))
                     }
+                }
+        }
+    }
+    fun updateMyAddresses(address: List<CustomerAddressV2>) {
+        Log.i(TAG, "updateMyAddresses: Step1  $address")
+        GlobalScope.launch(dispatcher) {
+            repository.updateCustomerAddress(customerId!!, address)
+                .catch { Log.i(TAG, "updateMyAddresses: on error ${it.message}") }
+                .collect { data ->
+                    Log.i(TAG, "updateMyAddresses: Step2 collect  $address")
+
+                    address.forEach {
+                        if (it.isDefault) {
+                            val addresss =
+                                data.customer!!.addresses.filter { insideData -> it.address1 == insideData.address1 }
+                            updateCustomerDefaultAddress(addresss[0].id)
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun updateCustomerDefaultAddress(addressId: String) {
+        GlobalScope.launch(dispatcher) {
+            repository.updateCustomerDefaultAddress(customerId!!, addressId)
+                .catch { Log.i(TAG, "updateCustomerDefaultAddress: on error ${it.message}") }
+                .collect {
+                    Log.i(TAG, "updateCustomerDefaultAddress: step3 update default")
                 }
         }
     }

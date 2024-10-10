@@ -10,7 +10,6 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,6 @@ import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.CustomerAddressV2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -71,6 +69,7 @@ class AddressFragment : Fragment(), OnClickAddress {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i(TAG, "onCreateView: ")
         binding = FragmentAddressBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -82,7 +81,8 @@ class AddressFragment : Fragment(), OnClickAddress {
         initButtonsClickListeners()
 
         // get list of saved addresses from graph
-        viewModel.getAddressesById()
+
+        Log.i(TAG, "onViewCreated: ")
         // then calls getDefault address state
         listenToDefaultAddress()
 
@@ -110,7 +110,7 @@ class AddressFragment : Fragment(), OnClickAddress {
                             else
                                 binding.addressNotFoundGroup.visibility = View.VISIBLE
                         }
-                        Log.i(TAG, "listenToDefaultAddress: "+viewModel.addressesList)
+                        Log.i(TAG, "listenToDefaultAddress: " + viewModel.addressesList)
                     }
 
                     is ApiState.Error -> {
@@ -142,17 +142,20 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStop() {
         super.onStop()
+        Log.i(TAG, "onStop: Address Fragment")
+        viewModel.updateMyAddresses(viewModel.addressesList)
         //Log.i("here", "onStop: " + viewModel.addressesList.size)
-       // viewModel.updateMyAddresses(viewModel.addressesList)
+        // viewModel.updateMyAddresses(viewModel.addressesList)
 
         // viewModel.updateCustomerDefaultAddress()
         (activity as MainActivity).showBottomNavBar()
     }
 
     override fun onDestroy() {
+
         super.onDestroy()
-        viewModel.updateMyAddresses(viewModel.addressesList)
-      //  viewModel.updateCustomerDefaultAddress()
+
+        //  viewModel.updateCustomerDefaultAddress()
 
     }
 
@@ -171,8 +174,8 @@ class AddressFragment : Fragment(), OnClickAddress {
         val bundle = Bundle().apply {
             putString("reason", "edit")
         }
-        address.isNew=false
-        viewModel.editCustomerAddress=address
+        address.isNew = false
+        viewModel.editCustomerAddress = address
         findNavController().navigate(R.id.addressDetailsFragment, bundle)
     }
 
@@ -229,12 +232,12 @@ class AddressFragment : Fragment(), OnClickAddress {
     }
 
     private fun initButtonsClickListeners() {
-        binding.rvAddress.apply {
-            val manager = LinearLayoutManager(requireContext())
-            manager.setOrientation(RecyclerView.VERTICAL)
-            layoutManager = manager
-            adapter = adapter
-        }
+
+        val manager = LinearLayoutManager(requireContext())
+        manager.setOrientation(RecyclerView.VERTICAL)
+        binding.rvAddress.layoutManager = manager
+        binding.rvAddress.adapter = adapter
+
 
         binding.btnAddAddress.setOnClickListener {
             startAnimation()

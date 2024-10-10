@@ -31,9 +31,7 @@ class AddressRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val item = listData[position]
-        Log.i(TAG, "onBindViewHolder: $item")
         with(holder.binding) {
-
             if (item.isDefault) {
                 btnDeleteAddress.visibility = View.INVISIBLE
                 cbAddressDefault.visibility = View.VISIBLE
