@@ -13,5 +13,9 @@ class ProfileViewModel @Inject constructor(private val repository: IRepository) 
         repository.setCurrencyCode(currencyCode)
     }
 
+    fun getCurrencyCode(): CountryCodes {
+        return repository.getCurrencyCode()
+    }
+
 
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.MetafieldInput
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -127,6 +128,14 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
                 }
 //            }
         }
+    }
+
+    fun getConversionRates(currencyCode: CountryCodes): Double {
+        return repository.getConversionRates(currencyCode)
+    }
+
+    fun getCurrencyCode(): CountryCodes {
+        return repository.getCurrencyCode()
     }
 }
 

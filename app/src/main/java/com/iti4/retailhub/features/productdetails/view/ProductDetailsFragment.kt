@@ -25,6 +25,8 @@ import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -35,6 +37,8 @@ class ProductDetailsFragment : Fragment() {
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private val reviewsViewModel by viewModels<ReviewsViewModel>()
 
+    private lateinit var currencyCode: CountryCodes
+    private var conversionRate: Double = 0.0
 
     lateinit var binding: FragmentProductDetailsBinding
 
@@ -44,9 +48,9 @@ class ProductDetailsFragment : Fragment() {
 
     var productId = ""
 
-    var idTodelete=""
+    var idTodelete = ""
 
-    var addToFavoritsFirstClick=true
+    var addToFavoritsFirstClick = true
 
 
     var productVariants: List<ProductDetailsQuery.Edge>? = null
@@ -66,7 +70,6 @@ class ProductDetailsFragment : Fragment() {
     }
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,6 +82,8 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        currencyCode = productDetailsViewModel.getCurrencyCode()
+        conversionRate = productDetailsViewModel.getConversionRates(currencyCode)
         binding.sesMoreReviews.setOnClickListener {
             findNavController().navigate(com.iti4.retailhub.R.id.reviewsFragment)
         }
@@ -107,7 +112,7 @@ class ProductDetailsFragment : Fragment() {
                             data.variants.edges.filter { it -> it.node.inventoryQuantity!! > 0 }
 
                         //set product details
-                         productTitle = data.title
+                        productTitle = data.title
 
                         //get favorites
                         searchInCustomerFavorites()
@@ -117,8 +122,7 @@ class ProductDetailsFragment : Fragment() {
                         val productTitleList = productTitle.split("|")
                         if (productTitleList.size > 2) {
                             binding.productPrand.text = productTitleList[2]
-                        }
-                        else {
+                        } else {
                             binding.productPrand.text = productTitleList[1]
                         }
                         produsctDetailsAdapter.submitList(data.images.edges)
@@ -138,12 +142,11 @@ class ProductDetailsFragment : Fragment() {
                         selectedProductVariantId = productVariants!!.get(0).node.id
 
 
-
                         //get all colors and sizes from variant
-                         allSizes = productVariants!!
+                        allSizes = productVariants!!
                             .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
                             .distinct()
-                         allColors = productVariants!!
+                        allColors = productVariants!!
                             .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
                             .distinct()
 
@@ -165,31 +168,37 @@ class ProductDetailsFragment : Fragment() {
                         favoritesViewModel.getFavorites()
 
                     }
+
                     is ApiState.Error -> {
-                        Toast.makeText(requireContext(), "Can't get product details, please reload page", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            requireContext(),
+                            "Can't get product details, please reload page",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
+
                     is ApiState.Loading -> {}
                 }
             }
         }
 
 
-                setupSpinners()
+        setupSpinners()
 
-                getReviewes()
+        getReviewes()
 
-                binding.cardView3.setOnClickListener {
-                    if(addToFavoritsFirstClick){
-                        addToFavoritsFirstClick=false
-                        addToFavorits()
-                    }else{
-                        addToFavoritsFirstClick=true
-                        deleteFromFavorites()
-                    }
-                }
-
+        binding.cardView3.setOnClickListener {
+            if (addToFavoritsFirstClick) {
+                addToFavoritsFirstClick = false
+                addToFavorits()
+            } else {
+                addToFavoritsFirstClick = true
+                deleteFromFavorites()
+            }
         }
+
+    }
 
     private fun deleteFromFavorites() {
         Log.d("deleteFromFavorites", "deleteFromFavorites:$idTodelete ")
@@ -231,14 +240,19 @@ class ProductDetailsFragment : Fragment() {
                 when (item) {
                     is ApiState.Success<*> -> {
                         val data = item.data as GetCustomerFavoritesQuery.Customer
-                        Log.d("searchInCustomerFavorites", "searchInCustomerFavorites:${selectedProductVariantId}${data} ")
+                        Log.d(
+                            "searchInCustomerFavorites",
+                            "searchInCustomerFavorites:${selectedProductVariantId}${data} "
+                        )
                         if (data.metafields.nodes.isNotEmpty()) {
-                            val node = data.metafields.nodes.find { it.namespace.contains(selectedProductVariantId) }
+                            val node = data.metafields.nodes.find {
+                                it.namespace.contains(selectedProductVariantId)
+                            }
 
-                            if(node?.namespace?.contains(selectedProductVariantId) == true) {
-                                addToFavoritsFirstClick=false
+                            if (node?.namespace?.contains(selectedProductVariantId) == true) {
+                                addToFavoritsFirstClick = false
                                 binding.imageView5oFavorits.setImageResource(com.iti4.retailhub.R.drawable.fav_filled)
-                                    idTodelete=node.id
+                                idTodelete = node.id
                             }
                         }
 
@@ -289,8 +303,10 @@ class ProductDetailsFragment : Fragment() {
 
                     selectedProductSize = allSizes[position]
                     selectedProductVariantId = productVariants!![position].node.id
+                    val convertedPrice =
+                        ((productVariants!![position].node.presentmentPrices.edges[0].node.price.amount as String).toDouble() * conversionRate).toTwoDecimalPlaces()
                     binding.productPrice.text =
-                        "${productVariants!![position].node.presentmentPrices.edges[0].node.price.amount} ${productVariants!![position].node.presentmentPrices.edges[0].node.price.currencyCode}"
+                        "$convertedPrice $currencyCode"
                     binding.inInventory.text =
                         "In Inventory: ${productVariants!![position].node.inventoryQuantity}"
                     searcheInBag()
@@ -320,16 +336,16 @@ class ProductDetailsFragment : Fragment() {
 
                         Log.d("searcheInBag", "onViewCreated:${data} ")
 
-                        if(data.nodes.isNotEmpty()){
-                            val productVariantInBag= data.nodes[0].lineItems.nodes[0].variant?.id
+                        if (data.nodes.isNotEmpty()) {
+                            val productVariantInBag = data.nodes[0].lineItems.nodes[0].variant?.id
 
-                            if(!productVariantInBag.isNullOrEmpty()){
+                            if (!productVariantInBag.isNullOrEmpty()) {
                                 Log.d("searcheInBag", "searcheInBag:${productVariantInBag} ")
-                                isVariantInCustomerDraftOrders=true
+                                isVariantInCustomerDraftOrders = true
                                 binding.addtocard.text = "Open In Your Bag"
                                 addToBagButtonClickListner(true)
                             }
-                        }else{
+                        } else {
                             binding.addtocard.text = "Add To Bag"
                             addToBagButtonClickListner(false)
                         }
@@ -355,9 +371,9 @@ class ProductDetailsFragment : Fragment() {
 
     private fun addToFavorits() {
         productDetailsViewModel.saveToFavorites(
-            selectedProductVariantId,productId,
-            selectedProductColor,selectedProductSize,
-            productTitle.toString(),seelectedImage,binding.productPrice.text.toString()
+            selectedProductVariantId, productId,
+            selectedProductColor, selectedProductSize,
+            productTitle.toString(), seelectedImage, binding.productPrice.text.toString()
         )
         lifecycleScope.launch {
             favoritesViewModel.savedFavortes.collect { item ->
@@ -367,14 +383,15 @@ class ProductDetailsFragment : Fragment() {
                         searchInCustomerFavorites()
                         Toast.makeText(
                             requireContext(),
-                           "Add to your favorites",
+                            "Add to your favorites",
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                        binding.imageView5oFavorits.setImageResource( com.iti4.retailhub.R.drawable.fav_filled)
+                        binding.imageView5oFavorits.setImageResource(com.iti4.retailhub.R.drawable.fav_filled)
                         Log.d("fav", "onViewCreated:${data} ")
 
                     }
+
                     is ApiState.Error -> {
                         Toast.makeText(
                             requireContext(),
@@ -383,42 +400,49 @@ class ProductDetailsFragment : Fragment() {
                         )
                             .show()
                     }
+
                     is ApiState.Loading -> {}
                 }
             }
         }
     }
 
-    private fun addToBagButtonClickListner(isAdd:Boolean){
-        if(isAdd){
+    private fun addToBagButtonClickListner(isAdd: Boolean) {
+        if (isAdd) {
             binding.addtocard.setOnClickListener {
                 findNavController().navigate(com.iti4.retailhub.R.id.myBagFragment)
             }
-        }else{
+        } else {
             binding.addtocard.setOnClickListener {
                 addToBag()
             }
         }
     }
 
-    private fun addToBag(){
+    private fun addToBag() {
         Log.d("addToFavorits", "addToBag:${selectedProductVariantId} ")
         productDetailsViewModel.addToCart(selectedProductVariantId)
-            lifecycleScope.launch {
-                productDetailsViewModel.createDraftOrder.collect { item ->
-                    when (item) {
-                        is ApiState.Success<*> -> {
-                            val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
-                            binding.addtocard.text = "Open In Your Bag"
-                        }
-                        is ApiState.Error -> {
-                            Toast.makeText(requireContext(),"Can't add to bag, try again", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                        is ApiState.Loading -> {}
+        lifecycleScope.launch {
+            productDetailsViewModel.createDraftOrder.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
+                        binding.addtocard.text = "Open In Your Bag"
                     }
+
+                    is ApiState.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Can't add to bag, try again",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                    is ApiState.Loading -> {}
                 }
             }
+        }
     }
 
 }
