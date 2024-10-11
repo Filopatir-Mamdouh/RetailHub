@@ -134,43 +134,9 @@
         tools:text="%d addresses" />
 
     <Button
-        android:id="@+id/profileCodesBtn"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/transparent"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/promo_codes"
-        android:textAlignment="viewStart"
-        android:textColor="@color/black_variant"
-        android:textSize="16sp"
-        app:icon="@drawable/baseline_arrow_forward_ios_24"
-        app:iconGravity="end"
-        app:iconTint="@color/black_variant"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileShippingBtn" />
-
-    <TextView
-        android:id="@+id/profileCodesSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:fontFamily="@font/metropolis_regular"
-        android:textColor="@color/grey"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="@+id/profileCodesBtn"
-        app:layout_constraintStart_toStartOf="@+id/profileCodesBtn"
-        tools:text="You have special promo codes" />
-
-    <Button
         android:id="@+id/profileSettingsBtn"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/transparent"
         android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
         android:paddingStart="16dp"
@@ -185,7 +151,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <TextView
         android:id="@+id/profileSettingsSubtitle"
@@ -291,16 +257,6 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
 
     <View
         android:id="@+id/divider3"
