@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.extractNumbersFromString
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +32,7 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     private val _myBagProductsUpdate = MutableStateFlow<ApiState>(ApiState.Loading)
     val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
 
-    //    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
-    val customerId = "6945540800554"
+        val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
 
     fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {

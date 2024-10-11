@@ -28,7 +28,7 @@ class FavoritesViewModel @Inject constructor(private val repository: IRepository
 
             //handle this customer id
 
-            repository.getCustomerFavoritesoById(/*customerId!!*/"gid://shopify/Customer/6945540800554",
+            repository.getCustomerFavoritesoById(customerId!!,
                "")
                 .catch {
                         e -> _savedFavortes.emit(ApiState.Error(e))

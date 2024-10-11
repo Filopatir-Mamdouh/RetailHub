@@ -30,7 +30,6 @@ import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -45,7 +44,6 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0
-    private lateinit var dotsIndicator: DotsIndicator
     private var currentPosition = 0
     private var autoScrollJob: Job? = null // Job for the coroutine
 
@@ -65,8 +63,6 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         conversionRate = viewModel.getConversionRates(currencyCode)
         displayAds()
         viewModel.getFavorites()
-
-
         lifecycleScope.launch {
             viewModel.savedFavortes.collect { item ->
                 when (item) {
@@ -75,7 +71,6 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                         val favoritList = data.metafields.nodes.filter { it.key == "favorites" }
                         getHomeProducts(favoritList)
                     }
-
                     is ApiState.Error -> {
                         Toast.makeText(
                             requireContext(),
