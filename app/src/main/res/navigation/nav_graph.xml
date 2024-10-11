@@ -72,8 +72,8 @@
         tools:layout="@layout/fragment_favorits" />
     <fragment
         android:id="@+id/producSearchFragment"
-        android:name="com.iti4.retailhub.features.product_search.view.ProductSearchFragment"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_product_search" />
+        android:name="com.iti4.retailhub.ProducSearchFragment"
+        android:label="fragment_produc_search"
+        tools:layout="@layout/fragment_produc_search" />
 
 </navigation>

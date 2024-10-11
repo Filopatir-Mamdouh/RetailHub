@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.shop.adapter
+package com.iti4.retailhub.features.productSearch
 
 import android.util.Log
 import android.view.LayoutInflater

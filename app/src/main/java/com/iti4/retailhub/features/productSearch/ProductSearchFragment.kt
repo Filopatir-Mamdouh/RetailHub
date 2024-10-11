@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.product_search.view
+package com.iti4.retailhub.features.productSearch
 
 import android.os.Bundle
 import android.util.Log
@@ -17,21 +17,19 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.R
 import com.iti4.retailhub.communicators.ToolbarController
-import com.iti4.retailhub.databinding.FragmentProductSearchBinding
+import com.iti4.retailhub.databinding.FragmentProducSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
-import com.iti4.retailhub.features.shop.adapter.ProductSearchListViewAdapter
-import com.iti4.retailhub.features.shop.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductSearchFragment : Fragment(), OnClickGoToDetails {
-    private val viewModel: SearchViewModel by viewModels()
-    private lateinit var binding: FragmentProductSearchBinding
+    private val viewModel: ProductSEarchViewModel by viewModels()
+    private lateinit var binding: FragmentProducSearchBinding
     private var currentList = emptyList<HomeProducts>()
-//    private var isListView = true
+    //    private var isListView = true
     var isratingbarevisible=false
     private val productSearchListViewAdapter by lazy { ProductSearchListViewAdapter(this) }
 
@@ -46,7 +44,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentProductSearchBinding.inflate(inflater, container, false)
+        binding = FragmentProducSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -155,27 +153,27 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         }
     }*/
 
-   /* private fun onSwitchViewClicked() {
-        binding.switchView.setOnClickListener {
-            if (isListView) {
-                binding.searchRV.apply {
-                    adapter = listViewAdapter
-                    layoutManager = GridLayoutManager(requireContext(), 2)
-                }
-                binding.switchView.setImageResource(R.drawable.view_by_grid)
-                gridViewAdapter.submitList(currentList)
-            } else {
-                binding.searchRV.apply {
-                    adapter = listViewAdapter
-                    layoutManager = LinearLayoutManager(requireContext())
-                }
-                binding.switchView.setImageResource(R.drawable.view_by_list)
-                listViewAdapter.submitList(currentList)
+    /* private fun onSwitchViewClicked() {
+         binding.switchView.setOnClickListener {
+             if (isListView) {
+                 binding.searchRV.apply {
+                     adapter = listViewAdapter
+                     layoutManager = GridLayoutManager(requireContext(), 2)
+                 }
+                 binding.switchView.setImageResource(R.drawable.view_by_grid)
+                 gridViewAdapter.submitList(currentList)
+             } else {
+                 binding.searchRV.apply {
+                     adapter = listViewAdapter
+                     layoutManager = LinearLayoutManager(requireContext())
+                 }
+                 binding.switchView.setImageResource(R.drawable.view_by_list)
+                 listViewAdapter.submitList(currentList)
 
-            }
-            isListView = !isListView
-        }
-    }*/
+             }
+             isListView = !isListView
+         }
+     }*/
 
     override fun goToDetails(productId: String) {
         findNavController().navigate(R.id.productDetailsFragment, bundleOf("productid" to productId))
