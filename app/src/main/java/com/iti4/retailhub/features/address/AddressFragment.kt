@@ -10,6 +10,7 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AddressFragment : Fragment(), OnClickAddress {
     private val TAG: String = "AddressFragment"
+    private var navigatedWithIntentionOf: String? = null
 
     //animation
     private var animationClicked = false
@@ -99,10 +101,18 @@ class AddressFragment : Fragment(), OnClickAddress {
                         val defaultAddress = customer.defaultAddress
                         if (defaultAddress != null) {
                             viewModel.addressesList.forEach {
+                                Log.i(
+                                    TAG,
+                                    "listenToDefaultAddress: actually default address is $defaultAddress"
+                                )
                                 if (it.id == defaultAddress.id)
                                     it.isDefault = true
                             }
-                            adapter.listData = (viewModel.addressesList)
+                            if (mainActivityViewModel.indexOfLastDefaultAddress != 99){
+                                viewModel.addressesList.forEach { it.isDefault=false }
+                                viewModel.addressesList[mainActivityViewModel.indexOfLastDefaultAddress].isDefault=true
+                            }
+                                adapter.listData = (viewModel.addressesList)
                             adapter.notifyDataSetChanged()
 //
                             if (viewModel.addressesList.size > 0)
@@ -129,14 +139,16 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onStart() {
         super.onStart()
+        if (viewModel.addressesList != null) {
 
+        }
 //        viewModel.getAddressesById()
-//        val reason = arguments?.getString("reason")
-//        if (reason == "changeShipping") {
-//            Log.i("here", "onStart:  change " + "here")
-//        } else if (reason == "addNew") {
-//            Log.i("here", "onStart:  add " + "here")
-//        }
+        val reason = arguments?.getString("reason")
+        if (reason == "changeShipping") {
+            navigatedWithIntentionOf = reason
+        } else if (reason == "addNew") {
+            Log.i("here", "onStart:  add " + "here")
+        }
         (activity as MainActivity).hideBottomNavBar()
     }
 
@@ -201,16 +213,20 @@ class AddressFragment : Fragment(), OnClickAddress {
         }
         viewModel.addressesList[position].isDefault = true
         adapter.updateData(viewModel.addressesList)
-
-//        viewModel.getDefaultAddress()
+        Log.i(TAG, "setDefaultAddress: i clicked on default ${viewModel.addressesList}")
+        // viewModel.getDefaultAddress()
         // findNavController().navigateUp()
+        if (navigatedWithIntentionOf == "changeShipping") {
+            mainActivityViewModel.indexOfLastDefaultAddress = position
+            viewModel.updateMyAddresses(viewModel.addressesList)
+        }
     }
 
     //callback when click on the cardView
     override fun checkoutClickedAnAddress(address: CustomerAddressV2) {
-//        mainActivityViewModel.customerChoseAnAddressNotDefault = true
-//        mainActivityViewModel.customerChosenAddress = address
-//        requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
+        mainActivityViewModel.customerChoseAnAddressNotDefault = true
+        mainActivityViewModel.customerChosenAddress = address
+        requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
     }
 
 

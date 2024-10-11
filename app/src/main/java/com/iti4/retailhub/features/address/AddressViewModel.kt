@@ -21,7 +21,7 @@ import javax.inject.Inject
 class AddressViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val TAG: String = "AddressViewModel"
     private val dispatcher = Dispatchers.IO
-
+    val customerId by lazy { repository.getUserShopLocalId() }
     init {
         getAddressesById()
     }
@@ -43,7 +43,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     val addressGeocoding = _addressGeocoding.asStateFlow()
 
 
-    val customerId by lazy { repository.getUserShopLocalId() }
+
 
 
     private fun getAddressesById() {
@@ -138,7 +138,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
             repository.updateCustomerDefaultAddress(customerId!!, addressId)
                 .catch { Log.i(TAG, "updateCustomerDefaultAddress: on error ${it.message}") }
                 .collect {
-                    Log.i(TAG, "updateCustomerDefaultAddress: step3 update default")
+                    Log.i(TAG, "updateCustomerDefaultAddress: step3 update defaul ${it.defaultAddress}")
                 }
         }
     }

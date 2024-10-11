@@ -26,7 +26,7 @@ import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
-import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private val currencyCode by lazy { mainActivityViewModel.getCurrencyCode() }
     private lateinit var binding: FragmentCheckoutBinding
-    private var checkoutAddress: CustomerAddress? = null
+    private var checkoutAddress: CustomerAddressV2? = null
     private var checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress? = null
     private lateinit var cartProducts: List<CartProduct>
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration

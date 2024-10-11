@@ -22,8 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val TAG: String = "MainActivityViewModel"
+    var indexOfLastDefaultAddress = 99
     var customerChoseAnAddressNotDefault = false
-    lateinit var customerChosenAddress: CustomerAddress
+    lateinit var customerChosenAddress: CustomerAddressV2
     private val _currencyState = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerId by lazy { (repository.getUserShopLocalId()!!) }
     val currencyState = _currencyState.asStateFlow()

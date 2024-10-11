@@ -10,7 +10,7 @@ import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.AddressInputModel
 import com.iti4.retailhub.models.CartProduct
-import com.iti4.retailhub.models.CustomerAddress
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.CustomerInputModel
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DiscountInput
@@ -85,13 +85,12 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     fun createCheckoutDraftOrder(
         listOfCartProduct: List<CartProduct>,
         isCard: Boolean,
-        checkoutAddress: CustomerAddress?,
+        checkoutAddress: CustomerAddressV2?,
         checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
     ) {
         //    val customerData = CustomerInput("customer_id:6945540800554")
-        Log.i("here", "simple call: ")
+
         viewModelScope.launch(dispatcher) {
-            Log.i("here", "createCheckoutDraftOrder: ")
             val lineItems = listOfCartProduct.map { it.toLineItem() }
             var discount: DiscountInput? = null
             if (selectedDiscount != null) {
@@ -104,17 +103,14 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                     customerId,
                     customerEmail
                 )
-
-
             val addressInputModel = if (checkoutAddress != null) {
                 customerInputModel.firstName = checkoutAddress.name
                 customerInputModel.phone = checkoutAddress.phone
-                val splitAddress = checkoutAddress.address2.split(",")
                 AddressInputModel(
-                    checkoutAddress.address1,
-                    splitAddress[0],
-                    splitAddress[1],
-                    splitAddress[2],
+                    checkoutAddress.address1!!,
+                    checkoutAddress.address2!!,
+                    checkoutAddress.city!!,
+                    checkoutAddress.country!!,
                     ""
                 )
             } else {

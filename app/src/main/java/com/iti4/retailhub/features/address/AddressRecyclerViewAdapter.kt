@@ -42,7 +42,7 @@ class AddressRecyclerViewAdapter(
                 cbAddressDefault.visibility = View.VISIBLE
             }
             // if checked do this if not do this dont let it clickable if checked
-            cbAddressDefault.setOnCheckedChangeListener { e, f ->
+            cbAddressDefault.setOnClickListener {
                 handleAction.setDefaultAddress(position)
             }
             tvAddressName.text = item.name
