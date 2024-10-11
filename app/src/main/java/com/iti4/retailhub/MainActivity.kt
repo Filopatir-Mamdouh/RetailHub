@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel.getCurrencyRates()
+
         viewModel.getDiscount()
         viewModel.getUsedDiscounts()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         if (viewModel.getFirstTime() || viewModel.getShouldIRefrechCurrency()) {
             viewModel.setFirstTime()
             viewModel.setRefrechCurrency()
-            // get data
             viewModel.getCurrencyRates()
             initCurrencyRatesListen()
         }

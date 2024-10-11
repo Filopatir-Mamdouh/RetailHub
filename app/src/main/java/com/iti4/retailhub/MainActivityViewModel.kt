@@ -49,9 +49,6 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
         return repository.getFirstTime()
     }
 
-    fun setCurrencyCode() {
-        repository.setCurrencyCode(CountryCodes.USD)
-    }
 
     fun setFirstTime() {
         repository.setFirstTime()

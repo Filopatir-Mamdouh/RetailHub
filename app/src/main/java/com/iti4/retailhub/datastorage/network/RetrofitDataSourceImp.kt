@@ -1,6 +1,7 @@
 package com.iti4.retailhub.datastorage.network
 
 
+import android.util.Log
 import com.iti4.retailhub.BuildConfig
 import com.iti4.retailhub.features.summary.Customer
 import com.iti4.retailhub.features.summary.PaymentRequest

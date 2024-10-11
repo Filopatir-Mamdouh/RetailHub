@@ -23,7 +23,7 @@ class UserLocalProfileData(context: Context) : UserLocalProfileDataInterface {
     private val currencyDataEditor: SharedPreferences.Editor = currencyData.edit()
 
     override fun getFirstTime(): Boolean {
-        return currencyData.getBoolean("firstTime", false)
+        return currencyData.getBoolean("firstTime", true)
     }
 
     private val loginStatus: SharedPreferences =
@@ -41,7 +41,7 @@ class UserLocalProfileData(context: Context) : UserLocalProfileDataInterface {
     }
 
     override fun setFirstTime() {
-        currencyDataEditor.putBoolean("firstTime", true)
+        currencyDataEditor.putBoolean("firstTime", false)
         currencyDataEditor.apply()
     }
 
