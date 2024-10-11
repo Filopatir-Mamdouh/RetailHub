@@ -116,4 +116,5 @@
     <string name="Arabic">Arabic</string>
     <string name="Language">Language:</string>
     <string name="Currency">Currency:</string>
+    <string name="ClickOnAdText">CLICK ME !</string>
 </resources>

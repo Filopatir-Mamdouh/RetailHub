@@ -124,6 +124,8 @@ dependencies {
     // facebook shimmer
 
     implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    implementation("com.tbuonomo:dotsindicator:4.3")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

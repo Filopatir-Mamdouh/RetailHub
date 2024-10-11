@@ -29,6 +29,7 @@ import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
+import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -39,6 +40,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private var checkoutAddress: CustomerAddressV2? = null
     private var checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress? = null
     private lateinit var cartProducts: List<CartProduct>
+
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
     private lateinit var paymentSheet: PaymentSheet
@@ -92,7 +94,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             requireActivity().findNavController(R.id.fragmentContainerView2)
                 .navigate(R.id.addressFragment, bundle)
         }
-        Log.i("here", "found discounts: " + mainActivityViewModel.discountList)
+
         binding.btnSubmitOrder.setOnClickListener {
             if (checkoutAddress != null || checkoutDefaultAddress != null) {
                 binding.tvNoAddressAtCheckout.visibility = View.INVISIBLE

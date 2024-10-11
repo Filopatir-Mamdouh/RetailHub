@@ -18,13 +18,20 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
+    val customerId by lazy { repository.getUserShopLocalId() }
     private val _products = MutableStateFlow<ApiState>(ApiState.Loading)
     val products = _products.onStart { getProducts() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
-    private val _brands = MutableStateFlow<ApiState>(ApiState.Loading)
 
-    val brands = _brands.onStart { getBrands() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
-    val customerId by lazy {repository.getUserShopLocalId()}
+    private val _brands = MutableStateFlow<ApiState>(ApiState.Loading)
+    val brands = _brands.onStart { getBrands() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
+
+    private val _couponsState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val couponsState = _couponsState.onStart { getDiscount() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
+
+
     private val _savedFavortes = MutableStateFlow<ApiState>(ApiState.Loading)
     val savedFavortes = _savedFavortes
 
@@ -43,18 +50,21 @@ class HomeViewModel @Inject constructor(private val repository: IRepository) : V
             }
         }
     }
-     fun  getFavorites(){
-        viewModelScope.launch(Dispatchers.IO){
+
+    fun getFavorites() {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getCustomerFavoritesoById(/*customerId!!*/"gid://shopify/Customer/6945540800554",
-                "")
-                .catch {
-                        e -> _savedFavortes.emit(ApiState.Error(e))
+                ""
+            )
+                .catch { e ->
+                    _savedFavortes.emit(ApiState.Error(e))
                 }
-                .collect{
+                .collect {
                     _savedFavortes.emit(ApiState.Success(it))
                 }
         }
     }
+
     fun getConversionRates(currencyCode: CountryCodes): Double {
         return repository.getConversionRates(currencyCode)
     }
@@ -62,5 +72,17 @@ class HomeViewModel @Inject constructor(private val repository: IRepository) : V
     fun getCurrencyCode(): CountryCodes {
         return repository.getCurrencyCode()
     }
+
+
+    fun getDiscount() {
+        viewModelScope.launch(dispatcher) {
+            repository.getDiscounts().catch { e ->
+                _couponsState.emit(ApiState.Error(e))
+            }.collect {
+                _couponsState.emit(ApiState.Success(it))
+            }
+        }
+    }
+
 
 }
