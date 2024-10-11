@@ -323,6 +323,8 @@ private fun getFavorites(){
                 }
             }
         }
+
+}
     override fun onDestroy() {
         super.onDestroy()
         autoScrollJob?.cancel()

@@ -47,20 +47,6 @@ class HomeViewModel @Inject constructor(private val repository: IRepository) : V
         }
     }
 
-    fun getFavorites() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getCustomerFavoritesoById(customerId!!,
-                ""
-            )
-                .catch { e ->
-                    _savedFavortes.emit(ApiState.Error(e))
-                }
-                .collect {
-                    _savedFavortes.emit(ApiState.Success(it))
-                }
-        }
-    }
-
     fun getConversionRates(currencyCode: CountryCodes): Double {
         return repository.getConversionRates(currencyCode)
     }

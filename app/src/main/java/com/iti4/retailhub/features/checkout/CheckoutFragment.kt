@@ -29,7 +29,6 @@ import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

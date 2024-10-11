@@ -14,6 +14,7 @@ import android.view.Window
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -403,21 +404,10 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                         }
                         is ApiState.Loading -> {}
                     }
-
-                    is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Can't add to bag, try again",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-
-                    is ApiState.Loading -> {}
                 }
             }
         }
-    }
+
 
     override fun onResume() {
         super.onResume()
@@ -469,6 +459,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     }
 
 }
+
 
 
 //                binding.back.setOnClickListener {

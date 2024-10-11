@@ -18,7 +18,7 @@ import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
 
 class NewItemAdapter(
-    val handleAction: OnClickGoToDetails, val favoritList: List<GetCustomerFavoritesQuery.Node>,
+    val handleAction: OnClickGoToDetails, var favoritList: List<GetCustomerFavoritesQuery.Node>,
     val currencyCodes: CountryCodes, val conversionRate: Double
 ) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
@@ -63,6 +63,7 @@ class NewItemAdapter(
             }else{
                 handleAction.deleteFromCustomerFavorites(pinFavorite.toString())
                 }
+                submitList(currentList)
         }
         holder.binding.apply {
             Glide.with(holder.itemView)
