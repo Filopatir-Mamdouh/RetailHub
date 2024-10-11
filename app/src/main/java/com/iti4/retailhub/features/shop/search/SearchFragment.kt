@@ -152,7 +152,11 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         selectedImage: String,
         price: String
     ) {
+        // TODO("Not yet implemented")
+    }
 
+    override fun deleteFromCustomerFavorites(pinFavorite: String) {
+//        TODO("Not yet implemented")
     }
 
     private fun search(){

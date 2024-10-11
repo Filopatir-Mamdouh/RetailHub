@@ -5,27 +5,25 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
+import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.address.AddressViewModel
 import com.iti4.retailhub.logic.NetworkUtils
+import com.iti4.retailhub.models.CurrencyResponse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import com.iti4.retailhub.datastorage.network.ApiState
-import com.iti4.retailhub.features.address.AddressViewModel
-import com.iti4.retailhub.models.CurrencyResponse
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -85,6 +83,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
 
         if (viewModel.getFirstTime() || viewModel.getShouldIRefrechCurrency()) {
             viewModel.setFirstTime()

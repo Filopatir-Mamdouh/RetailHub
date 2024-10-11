@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -296,7 +296,11 @@ private fun getFavorites(){
     }
 
     override fun navigate(filter: String, productType: String) {
-        findNavController().navigate(R.id.searchFragment, bundleOf("query" to filter, "type" to productType))
+        findNavController().navigate(
+            R.id.searchFragment,
+            bundleOf("query" to filter, "type" to productType)
+        )
+    }
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
         favoritesViewModel.deleteFavorites(pinFavorite)
         lifecycleScope.launch {
@@ -327,8 +331,7 @@ private fun getFavorites(){
                 }
             }
         }
-
-}
+    }
     override fun onDestroy() {
         super.onDestroy()
         autoScrollJob?.cancel()

@@ -14,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.MainActivity
@@ -371,7 +370,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             binding.checkoutAppbar,
             "Checkout",
             resources,
-            findNavController()
+            { requireActivity().onBackPressed() }
         )
     }
 
