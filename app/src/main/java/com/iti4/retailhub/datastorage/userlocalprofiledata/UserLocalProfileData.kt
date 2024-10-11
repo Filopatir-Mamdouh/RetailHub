@@ -2,6 +2,7 @@ package com.iti4.retailhub.datastorage.userlocalprofiledata
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.iti4.retailhub.models.CountryCodes
@@ -79,7 +80,7 @@ class UserLocalProfileData(context: Context) : UserLocalProfileDataInterface {
 
     override fun setCurrencyCode(currencyCode: CountryCodes) {
         currencyDataEditor.putString("currencyCode", currencyCode.name)
-        currencyDataEditor.apply()
+        currencyDataEditor.commit()
     }
 
     override fun getCurrencyCode(): CountryCodes {

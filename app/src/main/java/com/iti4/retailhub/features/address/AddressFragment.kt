@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 class AddressFragment : Fragment(), OnClickAddress {
     private val TAG: String = "AddressFragment"
     private var navigatedWithIntentionOf: String? = null
+    private var reason: String? = null
 
     //animation
     private var animationClicked = false
@@ -79,7 +80,6 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initButtonsClickListeners()
 
         // get list of saved addresses from graph
@@ -108,11 +108,12 @@ class AddressFragment : Fragment(), OnClickAddress {
                                 if (it.id == defaultAddress.id)
                                     it.isDefault = true
                             }
-                            if (mainActivityViewModel.indexOfLastDefaultAddress != 99){
-                                viewModel.addressesList.forEach { it.isDefault=false }
-                                viewModel.addressesList[mainActivityViewModel.indexOfLastDefaultAddress].isDefault=true
+                            if (mainActivityViewModel.indexOfLastDefaultAddress != 99) {
+                                viewModel.addressesList.forEach { it.isDefault = false }
+                                viewModel.addressesList[mainActivityViewModel.indexOfLastDefaultAddress].isDefault =
+                                    true
                             }
-                                adapter.listData = (viewModel.addressesList)
+                            adapter.listData = (viewModel.addressesList)
                             adapter.notifyDataSetChanged()
 //
                             if (viewModel.addressesList.size > 0)
@@ -143,7 +144,7 @@ class AddressFragment : Fragment(), OnClickAddress {
 
         }
 //        viewModel.getAddressesById()
-        val reason = arguments?.getString("reason")
+        reason = arguments?.getString("reason")
         if (reason == "changeShipping") {
             navigatedWithIntentionOf = reason
         } else if (reason == "addNew") {
@@ -224,9 +225,11 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     //callback when click on the cardView
     override fun checkoutClickedAnAddress(address: CustomerAddressV2) {
-        mainActivityViewModel.customerChoseAnAddressNotDefault = true
-        mainActivityViewModel.customerChosenAddress = address
-        requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
+        if (reason == "changeShipping") {
+            mainActivityViewModel.customerChoseAnAddressNotDefault = true
+            mainActivityViewModel.customerChosenAddress = address
+            requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
+        }
     }
 
 

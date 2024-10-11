@@ -22,15 +22,20 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val TAG: String = "MainActivityViewModel"
+    val customerId by lazy { (repository.getUserShopLocalId()!!) }
+    private val dispatcher = Dispatchers.IO
+    // used for addresses
     var indexOfLastDefaultAddress = 99
     var customerChoseAnAddressNotDefault = false
     lateinit var customerChosenAddress: CustomerAddressV2
+    // for getting currency everyday and firstitme
     private val _currencyState = MutableStateFlow<ApiState>(ApiState.Loading)
-    val customerId by lazy { (repository.getUserShopLocalId()!!) }
     val currencyState = _currencyState.asStateFlow()
-    private val dispatcher = Dispatchers.IO
+
+
     var discountList: MutableList<Discount>? = null
     var usedDiscountCodesList: List<String> = listOf()
+
     fun getCurrencyRates() {
         viewModelScope.launch(dispatcher) {
             repository.getCurrencyRates()

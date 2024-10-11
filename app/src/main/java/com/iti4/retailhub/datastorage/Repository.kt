@@ -3,7 +3,6 @@ package com.iti4.retailhub.datastorage
 
 import android.content.Intent
 import android.content.IntentSender
-import android.util.Log
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.AddTagsMutation
@@ -207,7 +206,6 @@ class Repository @Inject constructor(
         varientId: String,
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate> {
-        Log.d("TAG", "insertMyBagItem:start ")
         return remoteDataSource.insertMyBagItem(varientId, customerId)
     }
 

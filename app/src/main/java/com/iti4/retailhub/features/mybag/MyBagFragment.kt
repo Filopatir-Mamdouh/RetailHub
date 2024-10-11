@@ -12,7 +12,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.MainActivityViewModel
@@ -28,18 +27,11 @@ import kotlinx.coroutines.launch
 class MyBagFragment : Fragment(), OnClickMyBag {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private var conversionRate: Double? = null
-    private val currencyCode by lazy {
-        mainActivityViewModel.setCurrencyCode()
-        mainActivityViewModel.getCurrencyCode()
-    }
     private lateinit var binding: FragmentMyBagBinding
     private val viewModel by viewModels<MyBagViewModel>()
-    private val adapter by lazy {
-        MyBagProductRecyclerViewAdapter(this,currencyCode,conversionRate!!)
-    }
+    private lateinit var adapter: MyBagProductRecyclerViewAdapter
     private var totalPrice: Double? = null
     private var cartProductList: MutableList<CartProduct>? = null
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -49,7 +41,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        conversionRate = mainActivityViewModel.getConversionRates(currencyCode)
+        conversionRate = viewModel.getConversionRates(viewModel.getCurrencyCode())
+        adapter =
+            MyBagProductRecyclerViewAdapter(this, viewModel.getCurrencyCode(), conversionRate!!)
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.collect { item ->
@@ -83,7 +77,8 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                     putParcelableArrayList("data", cartProductList as ArrayList<CartProduct>)
                     putDouble("totalprice", totalPrice ?: 0.0)
                 }
-                requireActivity().findNavController(R.id.fragmentContainerView2).navigate(R.id.checkoutFragment,bundle)
+                requireActivity().findNavController(R.id.fragmentContainerView2)
+                    .navigate(R.id.checkoutFragment, bundle)
             }
         }
 
@@ -137,7 +132,8 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             price * it.itemQuantity
         }!!
         totalPrice = totalPrice!! * conversionRate!!
-        binding.tvMyBagProductPrice.text = "${totalPrice?.toTwoDecimalPlaces()} $currencyCode"
+        binding.tvMyBagProductPrice.text =
+            "${totalPrice?.toTwoDecimalPlaces()} ${viewModel.getCurrencyCode()}"
     }
 
     private fun updateQuantity() {
