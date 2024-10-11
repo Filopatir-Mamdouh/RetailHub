@@ -1,7 +1,6 @@
 package com.iti4.retailhub.features.checkout
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -24,12 +23,12 @@ import com.iti4.retailhub.databinding.FragmentCheckoutBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.logic.ToolbarSetup
+import com.iti4.retailhub.logic.extractNumbersFromString
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -46,6 +45,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private lateinit var appearance: PaymentSheet.Appearance
     private var conversionRate: Double? = null
     private var totalPrice: Double? = null
+    private var totalSummary: Double? = null
     private var totalPriceInCents: Int? = null
     private val viewModel by viewModels<CheckoutViewModel>()
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
@@ -66,11 +66,12 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             arguments?.getParcelableArrayList<CartProduct>("data") as MutableList<CartProduct>
         totalPrice = arguments?.getDouble("totalprice")
         totalPrice = totalPrice!!
+        totalSummary = totalPrice
         totalPriceInCents = totalPrice!!.times(100).toInt()
         binding.tvDiscountPrice.text = "0 ${currencyCode.name}"
         binding.tvOrderPrice.text = totalPrice!!.toTwoDecimalPlaces() + " ${currencyCode.name}"
         binding.tvSummary.text =
-            totalPrice!!.toTwoDecimalPlaces().toString() + " ${currencyCode.name}"
+            totalSummary!!.toTwoDecimalPlaces() + " ${currencyCode.name}"
 
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
         viewModel.getCustomerData()
@@ -78,7 +79,6 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         listenToCustomerDataResponse()
         listenToCustomerAddress()
         binding.btnCheckoutAddNewAddress.setOnClickListener {
-            Log.i("here", "add addr: ")
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
@@ -86,7 +86,6 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
                 .navigate(R.id.addressFragment, bundle)
         }
         binding.btnChangeAddress.setOnClickListener {
-            Log.i("here", "change addr: ")
             val bundle = Bundle().apply {
                 putString("reason", "changeShipping")
             }
@@ -145,12 +144,13 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
             val discountRate = viewModel.selectedDiscount!!.getDiscountAsDouble() / 100
             val discountAmount = totalPrice!! * discountRate
             val totalSummary = totalPrice!! - discountAmount
+            totalPriceInCents = totalSummary.times(100).toInt()
             binding.tvDiscountPrice.text =
                 "- " + discountAmount.toTwoDecimalPlaces() + " ${currencyCode.name}"
             binding.tvSummary.text = totalSummary.toTwoDecimalPlaces() + " ${currencyCode.name}"
             binding.tvInvalidDiscount.visibility = View.INVISIBLE
-        }
-        binding.tvInvalidDiscount.visibility = View.VISIBLE
+        } else
+            binding.tvInvalidDiscount.visibility = View.VISIBLE
     }
 
     private fun listenToPIChanges() {

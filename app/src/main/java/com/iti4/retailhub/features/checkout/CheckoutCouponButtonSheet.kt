@@ -68,9 +68,9 @@ class MyBottomSheetFragment(private val onClickBottomSheet: OnClickBottomSheet) 
 
         bottomSheet?.let {
             val behavior = BottomSheetBehavior.from(it)
-            behavior.isFitToContents = false
-            behavior.halfExpandedRatio = 0.5f
-            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            behavior.isFitToContents = true
+          //  behavior.halfExpandedRatio = 0.5f
+          //  behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
             behavior.isDraggable = false
         }
     }

@@ -20,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val TAG: String = "MainActivityViewModel"
+
     val customerId by lazy { (repository.getUserShopLocalId()!!) }
     private val dispatcher = Dispatchers.IO
 
