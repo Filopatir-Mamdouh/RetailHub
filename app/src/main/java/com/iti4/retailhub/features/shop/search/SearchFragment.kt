@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.shop.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,7 @@ import com.iti4.retailhub.features.shop.search.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.Locale
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -59,11 +61,11 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         binding.filterGroup.setOnClickListener { findNavController().navigate(R.id.filterFragment) }
         onSwitchViewClicked()
         setupDataListener()
+        setupChipGroup()
         if (filterQuery.isNotEmpty()){
             search()
         }
         setupAppbar()
-        setupChipGroup()
         clearFilters()
     }
 
@@ -140,6 +142,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     private fun search(){
         val finalQuery = StringBuilder().append(filterQuery).append(" $query").append(" AND $typeQuery").toString()
+        Log.d("Filo", "search: $finalQuery")
         viewModel.searchProducts(finalQuery)
     }
 
@@ -184,10 +187,23 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
 
     private fun setupChipGroup(){
+        when (typeQuery.lowercase(Locale.ROOT)){
+            "shoes" -> binding.Shoes.isChecked = true
+            "t-shirts" -> binding.Tops.isChecked = true
+            "accessories" -> binding.accsChip.isChecked = true
+            else -> binding.allChip.isChecked = true
+        }
         binding.chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             typeQuery = ""
-            checkedIds.map { id -> typeQuery += " OR " + view?.findViewById<Chip>(id)?.text.toString() }
-            if (typeQuery.contains("All")) typeQuery = ""
+            if(checkedIds.isNotEmpty()) {
+                typeQuery = view?.findViewById<Chip>(checkedIds[0])?.text.toString()
+                checkedIds.removeFirst()
+                checkedIds.map { id -> typeQuery += " OR " + view?.findViewById<Chip>(id)?.text.toString() }
+            }
+            if (typeQuery.contains("All") || typeQuery.isEmpty()) {
+                typeQuery = ""
+                binding.allChip.isChecked = true
+            }
             search()
         }
     }
