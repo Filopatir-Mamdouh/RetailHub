@@ -30,6 +30,7 @@ android {
         )
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
         buildConfigField("String", "Location_API_KEY", properties.getProperty("Location_API_KEY"))
+        buildConfigField("String", "CURRENCY_API_KEY", properties.getProperty("CURRENCY_API_KEY"))
     }
 
     buildFeatures {
@@ -62,9 +63,9 @@ android {
 
 dependencies {
     //firebase auth
-    implementation (platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-auth")
-    implementation ("com.google.android.gms:play-services-auth:20.0.0")
+    implementation("com.google.android.gms:play-services-auth:20.0.0")
     //Pagination
 
     implementation("androidx.paging:paging-runtime:3.3.2")
@@ -123,6 +124,12 @@ dependencies {
     // facebook shimmer
 
     implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    // viewpager
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    //circleindicator
+    implementation ("me.relex:circleindicator:2.1.6")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

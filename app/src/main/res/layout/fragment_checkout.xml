@@ -4,296 +4,366 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/shimmerCheckout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     app:shimmer_auto_start="true"
     tools:context=".features.checkout.CheckoutFragment">
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <include android:id="@+id/checkoutAppbar" layout="@layout/app_bar"/>
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <include
+            android:id="@+id/checkoutAppbar"
+            layout="@layout/app_bar" />
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <TextView
-                android:id="@+id/textView5"
-                style="@style/MainTextViewStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="@string/ShippingAddress"
-                android:textColor="@color/black_variant"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:cardCornerRadius="15dp"
-                app:cardElevation="3dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/tvAddressFullName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:fontFamily="@font/metropolis_medium"
-                        android:text="Jane Doe"
-                        android:textColor="@color/black_variant"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvAddressAddress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:fontFamily="@font/metropolis_regular"
-                        android:text="3 NewBridge Court"
-                        android:textColor="@color/black_variant"
-                        app:layout_constraintStart_toStartOf="@+id/tvAddressFullName"
-                        app:layout_constraintTop_toBottomOf="@+id/tvAddressFullName" />
-
-                    <TextView
-                        android:id="@+id/tvAddressRestOfAddress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="20dp"
-                        android:fontFamily="@font/metropolis_regular"
-                        android:text="Chino Hills, CA 81231, United States"
-                        android:textColor="@color/black_variant"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/tvAddressAddress"
-                        app:layout_constraintTop_toBottomOf="@+id/tvAddressAddress" />
-
-                    <TextView
-                        android:id="@+id/btnChangeAddress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:fontFamily="@font/metropolis_medium"
-                        android:text="@string/Change"
-                        android:textColor="@color/red_color"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvAddressFullName" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="@string/Payment"
-                android:textColor="@color/black_variant"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/cardView"
-                app:layout_constraintTop_toBottomOf="@+id/cardView" />
-
-
-            <TextView
-                android:id="@+id/textView16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="@string/PromoCode"
-                android:textColor="@color/black_variant"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/textView11"
-                app:layout_constraintTop_toBottomOf="@+id/radioGroupPaymentMethod" />
-
-
-            <include
-                android:id="@+id/promocode_edittext"
-                layout="@layout/mybag_promocode_edittext"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView16" />
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:fontFamily="@font/metropolis_medium"
-                android:text="@string/Order"
-                android:textColor="@color/grey"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/textView16"
-                app:layout_constraintTop_toBottomOf="@+id/promocode_edittext" />
-
-
-            <TextView
-                android:id="@+id/tvOrderPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="120$"
-                android:textColor="@color/black_variant"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView6" />
-
-
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/metropolis_medium"
-                android:text="@string/Discount"
-                android:textColor="@color/red_color"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/textView6"
-                app:layout_constraintTop_toBottomOf="@+id/textView6" />
-
-
-            <RadioGroup
-                android:id="@+id/radioGroupPaymentMethod"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="10dp"
-                android:gravity="end"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView11">
-
-                <RadioButton
-                    android:id="@+id/rbCOD"
-                    android:layout_width="match_parent"
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/groupNoAddress"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/roundedcorner_background_white"
-                    android:button="@null"
-                    android:checked="true"
-                    android:drawableRight="@drawable/abc_btn_radio_material"
-                    android:elevation="3dp"
-                    android:fontFamily="@font/metropolis_medium"
-                    android:text="@string/CashOnDelivery"
-                    android:textColor="@color/black_variant" />
+                    android:visibility="invisible"
+                    app:constraint_referenced_ids="textView15,btnCheckoutAddNewAddress" />
 
-                <RadioButton
-                    android:id="@+id/rbCARD"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/MainTextViewStyle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/roundedcorner_background_white"
-                    android:button="@null"
-                    android:checked="true"
-                    android:drawableRight="@drawable/abc_btn_radio_material"
-                    android:elevation="3dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="40dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="@string/ShippingAddress"
+                    android:textColor="@color/black_variant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvAddressCheckout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/tvAddressFullName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/metropolis_medium"
+                            android:text="Jane Doe"
+                            android:textColor="@color/black_variant"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvAddressAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:fontFamily="@font/metropolis_regular"
+                            android:text="3 NewBridge Court"
+                            android:textColor="@color/black_variant"
+                            app:layout_constraintStart_toStartOf="@+id/tvAddressFullName"
+                            app:layout_constraintTop_toBottomOf="@+id/tvAddressFullName" />
+
+                        <TextView
+                            android:id="@+id/tvAddressRestOfAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/metropolis_regular"
+                            android:text="Chino Hills, CA 81231, United States"
+                            android:textColor="@color/black_variant"
+                            app:layout_constraintStart_toStartOf="@+id/tvAddressAddress"
+                            app:layout_constraintTop_toBottomOf="@+id/tvAddressAddress" />
+
+                        <TextView
+                            android:id="@+id/btnChangeAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:fontFamily="@font/metropolis_medium"
+                            android:text="@string/Change"
+                            android:textColor="@color/red_color"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/tvAddressFullName" />
+
+                        <TextView
+                            android:id="@+id/tvPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:fontFamily="@font/metropolis_regular"
+                            android:text="TextView"
+                            android:textColor="@color/black_variant"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/tvAddressRestOfAddress"
+                            app:layout_constraintTop_toBottomOf="@+id/tvAddressRestOfAddress" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="@string/Payment"
+                    android:textColor="@color/black_variant"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/cvAddressCheckout"
+                    app:layout_constraintTop_toBottomOf="@+id/cvAddressCheckout" />
+
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="@string/PromoCode"
+                    android:textColor="@color/black_variant"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView11"
+                    app:layout_constraintTop_toBottomOf="@+id/radioGroupPaymentMethod" />
+
+
+                <include
+                    android:id="@+id/promocode_edittext"
+                    layout="@layout/mybag_promocode_edittext"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textView16" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
                     android:fontFamily="@font/metropolis_medium"
-                    android:text="@string/PayWithCard"
-                    android:textColor="@color/black_variant" />
+                    android:text="@string/Order"
+                    android:textColor="@color/grey"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView16"
+                    app:layout_constraintTop_toBottomOf="@+id/promocode_edittext" />
 
 
-            </RadioGroup>
+                <TextView
+                    android:id="@+id/tvOrderPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="0"
+                    android:textColor="@color/black_variant"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView6" />
 
 
-            <TextView
-                android:id="@+id/tvDiscountPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="- 20$"
-                android:textColor="@color/red_color"
-                android:textSize="16sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView7" />
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/metropolis_medium"
+                    android:text="@string/Discount"
+                    android:textColor="@color/red_color"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView6"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
 
-            <TextView
-                android:id="@+id/textView17"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="@string/Summary"
-                android:textColor="@color/grey"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/textView7"
-                app:layout_constraintTop_toBottomOf="@+id/textView7" />
+                <RadioGroup
+                    android:id="@+id/radioGroupPaymentMethod"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView11">
+
+                    <RadioButton
+                        android:id="@+id/rbCOD"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/roundedcorner_background_white"
+                        android:button="@null"
+                        android:checked="true"
+                        android:drawableRight="@drawable/abc_btn_radio_material"
+                        android:elevation="3dp"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:text="@string/CashOnDelivery"
+                        android:textColor="@color/black_variant" />
+
+                    <RadioButton
+                        android:id="@+id/rbCARD"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/roundedcorner_background_white"
+                        android:button="@null"
+                        android:checked="true"
+                        android:drawableRight="@drawable/abc_btn_radio_material"
+                        android:elevation="3dp"
+                        android:fontFamily="@font/metropolis_medium"
+                        android:text="@string/PayWithCard"
+                        android:textColor="@color/black_variant" />
 
 
-            <TextView
-                android:id="@+id/tvSummary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:fontFamily="@font/metropolis_semibold"
-                android:text="100 Egp"
-                android:textColor="@color/black_variant"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView17" />
+                </RadioGroup>
 
 
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/lottieAnimSubmitOrder"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:translationZ="5dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/btnSubmitOrder"
-                app:layout_constraintEnd_toEndOf="@+id/btnSubmitOrder"
-                app:layout_constraintHorizontal_bias="0.497"
-                app:layout_constraintStart_toStartOf="@+id/btnSubmitOrder"
-                app:layout_constraintTop_toTopOf="@+id/btnSubmitOrder"
-                app:lottie_autoPlay="true"
-                app:lottie_fileName="loadinganimation.json"
-                app:lottie_loop="true" />
-
-            <Button
-                android:id="@+id/btnSubmitOrder"
-                style="@style/OrangeWideButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
-                android:text="@string/SubmitOrder"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView17" />
+                <TextView
+                    android:id="@+id/tvDiscountPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="0"
+                    android:textColor="@color/red_color"
+                    android:textSize="16sp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView7" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="@string/Summary"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
-    </androidx.core.widget.NestedScrollView>
+
+                <TextView
+                    android:id="@+id/tvSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/metropolis_semibold"
+                    android:text="0"
+                    android:textColor="@color/black_variant"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView17" />
+
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieAnimSubmitOrder"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:translationZ="5dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnSubmitOrder"
+                    app:layout_constraintEnd_toEndOf="@+id/btnSubmitOrder"
+                    app:layout_constraintHorizontal_bias="0.497"
+                    app:layout_constraintStart_toStartOf="@+id/btnSubmitOrder"
+                    app:layout_constraintTop_toTopOf="@+id/btnSubmitOrder"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="loadinganimation.json"
+                    app:lottie_loop="true" />
+
+                <Button
+                    android:id="@+id/btnSubmitOrder"
+                    style="@style/OrangeWideButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/SubmitOrder"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/metropolis_medium"
+                    android:text="@string/NoAddress"
+                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <ImageButton
+                    android:id="@+id/btnCheckoutAddNewAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/circular_background_black"
+                    android:src="@drawable/ic_add"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView15"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView15" />
+
+                <TextView
+                    android:id="@+id/tvInvalidDiscount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="@font/metropolis_regular"
+                    android:text="@string/DiscountInvalid"
+                    android:textColor="@color/red_color"
+                    app:layout_constraintEnd_toEndOf="@+id/promocode_edittext"
+                    app:layout_constraintStart_toStartOf="@+id/promocode_edittext"
+                    app:layout_constraintTop_toBottomOf="@+id/promocode_edittext" />
+
+                <TextView
+                    android:id="@+id/tvNoAddressAtCheckout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="invisible"
+                    android:text="@string/PleaseAddAnAddress"
+                    android:textColor="@color/red_color"
+                    app:layout_constraintStart_toStartOf="@+id/textView15"
+                    app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>

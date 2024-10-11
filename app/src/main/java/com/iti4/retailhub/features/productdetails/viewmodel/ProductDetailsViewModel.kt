@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.extractNumbersFromString
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.MetafieldInput
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,8 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
     val customerDraftOrders = _customerDraftOrders
     private val _saveProductToFavortes = MutableStateFlow<ApiState>(ApiState.Loading)
     val saveProductToFavortes = _saveProductToFavortes
+    private val _productInFavorites = MutableStateFlow<ApiState>(ApiState.Loading)
+    val productInFavorites = _productInFavorites
     val customerId by lazy {repository.getUserShopLocalId()}
 
      fun getProductDetails(id:String) {
@@ -38,9 +42,13 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
             }
         }
     }
-fun  GetDraftOrdersByCustomer(varientId: String){
+fun  GetDraftOrdersByCustomer(productTitle:String){
+    /*val regex = """\/([^\/]+)$""".toRegex()
+    val matchResult = regex.find(customerId)
+    val customerIdNumberOnly = matchResult?.groupValues?.get(1)*/
+    val customerIdNumberOnly = extractNumbersFromString(customerId!!)
     viewModelScope.launch(Dispatchers.IO){
-        repository.GetDraftOrdersByCustomer(varientId)
+        repository.GetDraftOrdersByCustomer("(customer_id:${customerIdNumberOnly}) ${productTitle}")
             .catch {
                     e -> _customerDraftOrders.emit(ApiState.Error(e))
             }
@@ -69,9 +77,7 @@ fun  GetDraftOrdersByCustomer(varientId: String){
     }
 
     fun saveToFavorites(
-        variantID: String,
-        selectedProductColor: String,
-        selectedProductSize: String,
+        productId: String,variantID:String,
         productTitle: String,
         selectedImage: String,
         price: String
@@ -83,11 +89,11 @@ fun  GetDraftOrdersByCustomer(varientId: String){
                 metafields = Optional.present(
                     listOf(
                         MetafieldInput(
-                            namespace= Optional.present(variantID),
+                            namespace= Optional.present(productId),
                             key = Optional.present("favorites"),
-                            value = Optional.present(variantID),
+                            value = Optional.present(productId),
                             type = Optional.present("string"),
-                            description = Optional.present("${productTitle},${selectedProductColor},${selectedProductSize},${selectedImage},${price}")
+                            description = Optional.present("${productTitle},${selectedImage},${price}")
             )
                     )
                 )))
@@ -100,6 +106,35 @@ fun  GetDraftOrdersByCustomer(varientId: String){
                     _saveProductToFavortes.emit(ApiState.Success(it))
                 }
         }
+    }
+
+    fun searchProductInCustomerFavorites(selectedProductVariantId: String) {
+        val regex = """\/([^\/]+)$""".toRegex()
+        val matchResult = regex.find(selectedProductVariantId)
+        val id = selectedProductVariantId.split("/").last()
+        viewModelScope.launch(Dispatchers.IO){
+            Log.d("TAG", "addToCart:launch ")
+            /*if (customerId != null) {*/
+            Log.d("searchInCustomerFavorites", "gid://shopify/ProductVariant/${id}\"")
+            repository.getCustomerFavoritesoById(customerId!!,selectedProductVariantId.toString())
+                .catch { e ->
+                    _productInFavorites.emit(ApiState.Error(e))
+                    Log.d("TAG", "addToCart:catch ${e.message}")
+                }
+                .collect{
+                    _productInFavorites.emit(ApiState.Success(it))
+                    Log.d("TAG", "addToCart:collect ${it} ")
+                }
+//            }
+        }
+    }
+
+    fun getConversionRates(currencyCode: CountryCodes): Double {
+        return repository.getConversionRates(currencyCode)
+    }
+
+    fun getCurrencyCode(): CountryCodes {
+        return repository.getCurrencyCode()
     }
 }
 
