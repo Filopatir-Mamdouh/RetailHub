@@ -37,6 +37,8 @@ import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.But
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -48,6 +50,9 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     private val reviewsViewModel by viewModels<ReviewsViewModel>()
 
     lateinit var dialog:Dialog
+    private lateinit var currencyCode: CountryCodes
+    private var conversionRate: Double = 0.0
+
     lateinit var binding: FragmentProductDetailsBinding
 
     lateinit var produsctDetailsAdapter: ProductDetailsDiffUtilAdapter
@@ -55,9 +60,9 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
     var productId = ""
 
-    var idTodelete=""
+    var idTodelete = ""
 
-    var addToFavoritsFirstClick=true
+    var addToFavoritsFirstClick = true
 
 
     var productVariants: List<ProductDetailsQuery.Edge>? = null
@@ -77,7 +82,6 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     }
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -90,8 +94,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        currencyCode = productDetailsViewModel.getCurrencyCode()
+        conversionRate = productDetailsViewModel.getConversionRates(currencyCode)
         binding.sesMoreReviews.setOnClickListener {
             findNavController().navigate(R.id.reviewsFragment)
         }
@@ -130,7 +134,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                             data.variants.edges.filter {  it.node.inventoryQuantity!! > 0 }
 
                         //set product details
-                         productTitle = data.title
+                        productTitle = data.title
 
                         //productvariant
                         selectedProductVariantId = productVariants!!.get(0).node.id
@@ -156,7 +160,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
 
                         //get all colors and sizes from variant
-                         allSizes = productVariants!!
+                        allSizes = productVariants!!
                             .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
                             .distinct()
                         binding.spinnersize.text=allSizes[0]
@@ -169,10 +173,16 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
 
                     }
+
                     is ApiState.Error -> {
-                        Toast.makeText(requireContext(), "Can't get product details, please reload page", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            requireContext(),
+                            "Can't get product details, please reload page",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
+
                     is ApiState.Loading -> {}
                 }
             }
@@ -186,19 +196,19 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
 
 
-                getReviewes()
+        getReviewes()
 
-                binding.cardView3.setOnClickListener {
-                    if(addToFavoritsFirstClick){
-                        addToFavoritsFirstClick=false
-                        addToFavorits()
-                    }else{
-                        addToFavoritsFirstClick=true
-                        deleteFromFavorites()
-                    }
-                }
-
+        binding.cardView3.setOnClickListener {
+            if (addToFavoritsFirstClick) {
+                addToFavoritsFirstClick = false
+                addToFavorits()
+            } else {
+                addToFavoritsFirstClick = true
+                deleteFromFavorites()
+            }
         }
+
+    }
 
     private fun deleteFromFavorites() {
 
@@ -252,7 +262,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                             if(node?.namespace?.contains(productId) == true) {
                                 addToFavoritsFirstClick=false
                                 binding.imageView5oFavorits.setImageResource(com.iti4.retailhub.R.drawable.fav_filled)
-                                    idTodelete=node.id
+                                idTodelete = node.id
                             }
                         }
 
@@ -292,8 +302,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
 
 
-                        if(data.nodes.isNotEmpty()){
-                            val productVariantInBag= data.nodes[0].lineItems.nodes[0].variant?.id
+                        if (data.nodes.isNotEmpty()) {
+                            val productVariantInBag = data.nodes[0].lineItems.nodes[0].variant?.id
 
                             if(!productVariantInBag.isNullOrEmpty()){
 
@@ -301,7 +311,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                                 binding.addtocard.text = "Open In Your Bag"
                                 addToBagButtonClickListner(true)
                             }
-                        }else{
+                        } else {
                             binding.addtocard.text = "Add To Bag"
                             addToBagButtonClickListner(false)
                         }
@@ -347,6 +357,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                         binding.imageView5oFavorits.setImageResource( com.iti4.retailhub.R.drawable.fav_filled)
 
                     }
+
                     is ApiState.Error -> {
                         Toast.makeText(
                             requireContext(),
@@ -355,6 +366,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                         )
                             .show()
                     }
+
                     is ApiState.Loading -> {}
                 }
             }
@@ -367,7 +379,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
             binding.addtocard.setOnClickListener {
                 findNavController().navigate(com.iti4.retailhub.R.id.myBagFragment)
             }
-        }else{
+        } else {
             binding.addtocard.setOnClickListener {
                 addToBag()
             }
@@ -391,8 +403,20 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                         }
                         is ApiState.Loading -> {}
                     }
+
+                    is ApiState.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Can't add to bag, try again",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                    is ApiState.Loading -> {}
                 }
             }
+        }
     }
 
     override fun onResume() {

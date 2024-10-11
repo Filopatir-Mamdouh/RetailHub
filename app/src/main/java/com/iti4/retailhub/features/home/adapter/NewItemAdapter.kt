@@ -13,11 +13,16 @@ import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.NewCardItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
 
-class NewItemAdapter(val handleAction:OnClickGoToDetails, var favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
+class NewItemAdapter(
+    val handleAction: OnClickGoToDetails, val favoritList: List<GetCustomerFavoritesQuery.Node>,
+    val currencyCodes: CountryCodes, val conversionRate: Double
+) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
-
+    var isAddToFavoritesFirstClick = true
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = NewCardItemBinding.bind(itemView)
@@ -38,6 +43,7 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails, var favoritList: List<
             Log.d("NewItemAdapter", "onBindViewHolder:${it.namespace} ${item.id} ")
             it.namespace == item.id
         }?.id
+        val convertedPrice = (item.maxPrice.toDouble() * conversionRate).toTwoDecimalPlaces()
         val isFavorite = favoritList.any { it.value == item.id }
         if (isFavorite) {
             holder.binding.favBtn.setImageResource(R.drawable.fav_filled)
@@ -68,12 +74,12 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails, var favoritList: List<
             textView7.text = item.brand
             textView8.text = item.title
             newItemPrice.text = buildString {
-                append(item.maxPrice)
+                append(convertedPrice)
                 append(" ")
-                append(item.currencyCode)
+                append(currencyCodes)
             }
 
-            root.setOnClickListener{
+            root.setOnClickListener {
                 handleAction.goToDetails(item.id!!)
             }
         }
