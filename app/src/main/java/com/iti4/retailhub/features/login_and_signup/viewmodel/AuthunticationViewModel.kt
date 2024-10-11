@@ -195,11 +195,7 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
         }
 
     fun isUserLoggedIn(): Boolean {
-       if( reposatory.getLoginStatus()==null){
-           return true
-       }else{
-           return false
-       }
+        return reposatory.getLoginStatus().isNullOrBlank()
     }
 
 }
