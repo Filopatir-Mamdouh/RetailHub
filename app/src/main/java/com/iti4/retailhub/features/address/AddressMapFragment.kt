@@ -159,16 +159,11 @@ class AddressMapFragment : Fragment(), OnClickMap {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             else {
-
-                                val dialog =
-                                    AddressGeocodingDialog(
-                                        this@AddressMapFragment.requireContext(),
-                                        this@AddressMapFragment
-                                    )
+                                val dialog = AddressGeocodingDialog(this@AddressMapFragment.requireContext(),this@AddressMapFragment)
                                 dialog.show()
                                 dialog.getData(response)
                                 viewModel.selectedMapAddress = response
-
+                                viewModel.setState()
                             }
                         }
                     }
