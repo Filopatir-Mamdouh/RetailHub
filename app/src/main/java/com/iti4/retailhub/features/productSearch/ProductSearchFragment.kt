@@ -16,7 +16,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentProducSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
@@ -35,9 +34,6 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(false)
-        }
     }
 
     override fun onCreateView(
@@ -52,7 +48,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         super.onViewCreated(view, savedInstanceState)
         Log.d("search", "onViewCreated:${arguments} ")
         if (arguments != null) {
-            viewModel.search(arguments?.getString("query").toString())
+            viewModel.searchProducts(arguments?.getString("query").toString())
         }
         setupRecycleViewWithAdapter()
         searchBarTextChangeListner()
@@ -75,7 +71,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         }
         binding.rangeSlider.addOnChangeListener { slider, minValue, maxValue ->
             Log.d("search", "sliderAndFilterListner:${minValue} ${maxValue} ")
-            viewModel.search("price:>=${minValue}")
+            viewModel.searchProducts("price:>=${minValue}")
         }
     }
 
@@ -111,7 +107,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
                         //search by brand + product title
 //                   viewModel.search("title:${"vans"}* *${newText}*")
                         //search by products name
-                        viewModel.search("title:*${newText}*")
+                        viewModel.searchProducts("title:*${newText}*")
                     }
 
                 }

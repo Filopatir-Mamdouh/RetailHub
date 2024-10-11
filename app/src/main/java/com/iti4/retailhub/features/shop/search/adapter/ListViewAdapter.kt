@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:app/src/main/java/com/iti4/retailhub/features/productSearch/ProductSearchListViewAdapter.kt
-package com.iti4.retailhub.features.productSearch
-========
+
 package com.iti4.retailhub.features.shop.search.adapter
->>>>>>>> origin/Search:app/src/main/java/com/iti4/retailhub/features/shop/search/adapter/ListViewAdapter.kt
 
 import android.view.LayoutInflater
 import android.view.View

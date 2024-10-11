@@ -1,9 +1,6 @@
-<<<<<<<< HEAD:app/src/main/java/com/iti4/retailhub/features/productSearch/ProductSEarchViewModel.kt
 package com.iti4.retailhub.features.productSearch
-========
-package com.iti4.retailhub.features.shop.search.viewmodels
->>>>>>>> origin/Search:app/src/main/java/com/iti4/retailhub/features/shop/search/viewmodels/SearchViewModel.kt
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
@@ -24,16 +21,12 @@ class ProductSEarchViewModel @Inject constructor(private val repository: IReposi
     val searchList = _searchList.stateIn(viewModelScope, SharingStarted.Lazily, ApiState.Loading)
     fun searchProducts(query: String) {
         viewModelScope.launch(dispatcher){
-<<<<<<<< HEAD:app/src/main/java/com/iti4/retailhub/features/productSearch/ProductSEarchViewModel.kt
             Log.d("search", "viewModelScope: start")
             repository.getProducts(query).catch {
                     e ->Log.d("search", "viewModelScope error: ${e.message}")
                 _searchList.emit(ApiState.Error(e))
             }.collect{
                 Log.d("search", "viewModelScope collect: ${it}")
-========
-            repository.getProducts(query).catch { e -> _searchList.emit(ApiState.Error(e)) }.collect{
->>>>>>>> origin/Search:app/src/main/java/com/iti4/retailhub/features/shop/search/viewmodels/SearchViewModel.kt
                 _searchList.emit(ApiState.Success(it))
             }
         }
