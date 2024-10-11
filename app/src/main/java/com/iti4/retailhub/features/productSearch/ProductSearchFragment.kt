@@ -19,6 +19,7 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProducSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -28,8 +29,9 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: ProductSEarchViewModel by viewModels()
     private lateinit var binding: FragmentProducSearchBinding
     private var currentList = emptyList<HomeProducts>()
+
     //    private var isListView = true
-    var isratingbarevisible=false
+    var isratingbarevisible = false
     private val productSearchListViewAdapter by lazy { ProductSearchListViewAdapter(this) }
 
     override fun onStart() {
@@ -58,15 +60,15 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     }
 
     private fun sliderAndFilterListner() {
-        binding.filter.setOnClickListener{
-            if(isratingbarevisible){
+        binding.filter.setOnClickListener {
+            if (isratingbarevisible) {
                 binding.rangeSlider.visibility = View.GONE
-                isratingbarevisible=false
-            }else{
-                binding.searchView.setQuery("",true)
+                isratingbarevisible = false
+            } else {
+                binding.searchView.setQuery("", true)
                 binding.rangeSlider.visibility = View.VISIBLE
                 productSearchListViewAdapter.submitList(emptyList())
-                isratingbarevisible=true
+                isratingbarevisible = true
             }
         }
         binding.rangeSlider.addOnChangeListener { slider, minValue, maxValue ->
@@ -86,9 +88,9 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     }
 
     private fun searchBarTextChangeListner() {
-        binding.searchView.setOnClickListener{
+        binding.searchView.setOnClickListener {
             binding.rangeSlider.visibility = View.GONE
-            isratingbarevisible=false
+            isratingbarevisible = false
         }
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -98,11 +100,11 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
-                    if (newText.isEmpty()){
+                    if (newText.isEmpty()) {
                         productSearchListViewAdapter.submitList(emptyList())
-                    }else{
+                    } else {
                         binding.rangeSlider.visibility = View.GONE
-                        isratingbarevisible=false
+                        isratingbarevisible = false
                         Log.d("search", "onQueryTextChange: start")
                         //search by brand + product title
 //                   viewModel.search("title:${"vans"}* *${newText}*")
@@ -116,20 +118,26 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         })
     }
 
-    private fun setupDataListener(){
+    private fun setupDataListener() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.searchList.collect{
-                    when (it){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchList.collect {
+                    when (it) {
                         is ApiState.Success<*> -> {
                             Log.d("search", "setupDataListener:${it} ")
 //                            currentList=it.data as List<HomeProducts>
 //                            handleDataResult(currentList)
                             productSearchListViewAdapter.submitList(it.data as List<HomeProducts>)
                         }
+
                         is ApiState.Error -> {
-                            Toast.makeText(requireContext(), it.exception.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                it.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         is ApiState.Loading -> {
 
                         }
@@ -172,7 +180,10 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
      }*/
 
     override fun goToDetails(productId: String) {
-        findNavController().navigate(R.id.productDetailsFragment, bundleOf("productid" to productId))
+        findNavController().navigate(
+            R.id.productDetailsFragment,
+            bundleOf("productid" to productId)
+        )
     }
 
     override fun saveToFavorites(
