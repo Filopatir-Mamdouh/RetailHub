@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentSummaryBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,9 +38,6 @@ class SummaryFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(false)
-        }
         (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility = View.GONE
     }
 

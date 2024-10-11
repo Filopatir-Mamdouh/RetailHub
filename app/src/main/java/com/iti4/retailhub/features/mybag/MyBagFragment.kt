@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.R
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
@@ -49,14 +48,13 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                         is ApiState.Success<*> -> {
 
                             val data = item.data as List<CartProduct>
-                            if(!data.isNullOrEmpty()){
+                            if (!data.isNullOrEmpty()) {
                                 cartProductList = data.toMutableList()
                                 updateTotalPrice()
                                 adapter.submitList(data)
-                                binding.lottibagAnimation.visibility=View.GONE
-                            }
-                            else
-                                binding.lottibagAnimation.visibility=View.VISIBLE
+                                binding.lottibagAnimation.visibility = View.GONE
+                            } else
+                                binding.lottibagAnimation.visibility = View.VISIBLE
                         }
 
                         is ApiState.Error -> {
@@ -71,9 +69,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             }
         }
         binding.btnCheckout.setOnClickListener {
-            if(!cartProductList.isNullOrEmpty()){
+            if (!cartProductList.isNullOrEmpty()) {
                 val bundle = Bundle().apply {
-                    putParcelableArrayList("data",cartProductList as ArrayList<CartProduct>)
+                    putParcelableArrayList("data", cartProductList as ArrayList<CartProduct>)
                     putDouble("totalprice", totalPrice ?: 0.0)
                 }
                 findNavController().navigate(R.id.checkoutFragment, bundle)
@@ -93,6 +91,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     override fun deleteMyBagItem(cartProduct: CartProduct) {
         viewModel.deleteMyBagItem(cartProduct.draftOrderId)
         cartProductList?.remove(cartProduct)
+        if (cartProductList.isNullOrEmpty())
+            binding.lottibagAnimation.visibility = View.VISIBLE
+
         updateTotalPrice()
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
@@ -135,14 +136,21 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             if (it.didQuantityChanged) {
                 viewModel.updateMyBagItem(it)
             }
+
+
         }
     }
 
     override fun onStart() {
         super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(true)
-            setTitle("My Bag")
+        viewModel.getMyBagProducts()
+        binding.mybagAppbar.apply {
+            appBar.setExpanded(false)
+            collapsedPageName.visibility = View.GONE
+            pageName.text = requireContext().getString(R.string.my_bag)
+            backButton.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 

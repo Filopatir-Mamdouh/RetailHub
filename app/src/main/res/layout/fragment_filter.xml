@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout5"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".features.shop.search.filter.FilterFragment">
+
+    <include android:id="@+id/filterAppbar" layout="@layout/app_bar"/>
+
+    <Button
+        android:id="@+id/filterBrandsBtn"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/transparent"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/brands"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black_variant"
+        android:textSize="16sp"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:iconGravity="end"
+        app:iconTint="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroup3" />
+
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/metropolis_semibold"
+        android:text="@string/price_range"
+        android:textColor="@color/black_variant"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filterAppbar" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/rangeSlider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="EGP"
+        android:valueFrom="0"
+        android:valueTo="400"
+        app:labelBehavior="withinBounds"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView18"
+        app:layout_constraintTop_toBottomOf="@+id/textView18"
+        app:thumbColor="@color/red_color"
+        app:thumbHeight="20dp"
+        app:thumbRadius="12dp"
+        app:thumbWidth="20dp"
+        app:trackColorActive="@color/red_color"
+        app:trackColorInactive="@color/grey"
+        app:trackHeight="5dp"
+        app:values="@array/initial_slider_values" />
+
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/metropolis_semibold"
+        android:text="@string/category"
+        android:textColor="@color/black_variant"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/rangeSlider"
+        app:layout_constraintTop_toBottomOf="@+id/rangeSlider" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:chipSpacingHorizontal="40dp"
+        app:layout_constraintEnd_toEndOf="@+id/rangeSlider"
+        app:layout_constraintStart_toStartOf="@+id/textView20"
+        app:layout_constraintTop_toBottomOf="@+id/textView20"
+        app:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/menChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/men"
+            android:textColor="@color/chip_text_selector"
+            app:chipBackgroundColor="@color/chip_selector" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/womenChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/women"
+            android:textColor="@color/chip_text_selector"
+            app:chipBackgroundColor="@color/chip_selector" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/kidsChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:text="@string/kids"
+            android:textColor="@color/chip_text_selector"
+            app:chipBackgroundColor="@color/chip_selector" />
+    </com.google.android.material.chip.ChipGroup>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/applyBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button_background"
+        android:fontFamily="@font/metropolis_medium"
+        android:text="@string/apply"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/discardBtn" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/discardBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_background_outline"
+        android:fontFamily="@font/metropolis_medium"
+        android:text="@string/discard"
+        android:textColor="@color/black_variant"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/applyBtn"
+        app:layout_constraintEnd_toStartOf="@+id/applyBtn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

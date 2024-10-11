@@ -2,17 +2,13 @@ package com.iti4.retailhub.features.mybag
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.iti4.retailhub.R
+import com.iti4.retailhub.CustomDialog
 import com.iti4.retailhub.databinding.RvMybagProductItemBinding
 import com.iti4.retailhub.models.CartProduct
 
@@ -28,7 +24,7 @@ class DiffUtilProduct : DiffUtil.ItemCallback<CartProduct>() {
 }
 
 class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
-    ListAdapter<CartProduct, MyBagProductRecyclerViewAdapter.ViewHolder>(DiffUtilProduct()) {
+    ListAdapter<CartProduct, MyBagProductRecyclerViewAdapter.ViewHolder>(DiffUtilProduct())  {
 
     var context: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -64,8 +60,12 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
                 tvMyBagProductCount.text = quantity.toString()
 
 
-            btnMyBagPopmenu.setOnClickListener {
-                showPopupMenu(btnMyBagPopmenu, item)
+            btnMyBagDelete.setOnClickListener {
+                val dialog =
+                    CustomDialog(it.context, null,handleActions,"mybag")
+                dialog.show()
+                dialog.getData(null,item,::deleteMyBagItem)
+
             }
 
             btnMyBagAdd.setOnClickListener {
@@ -73,9 +73,9 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
                 val currentCount = Integer.parseInt(currentCountString) + 1
                 if (currentCount > inventoryQuantity) {
                     tvMaxReached.visibility = View.VISIBLE
-                } else{
+                } else {
                     item.itemQuantity = currentCount
-                    item.didQuantityChanged=true
+                    item.didQuantityChanged = true
                     handleActions.updateTotalPrice()
                     tvMyBagProductCount.text = (currentCount).toString()
                 }
@@ -89,7 +89,7 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
                 }
                 if (currentCount >= 1) {
                     item.itemQuantity = currentCount
-                    item.didQuantityChanged=true
+                    item.didQuantityChanged = true
                     handleActions.updateTotalPrice()
                     tvMyBagProductCount.text = (currentCount).toString()
                 }
@@ -97,36 +97,14 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
 
         }
     }
+     fun deleteMyBagItem(cartProduct: CartProduct) {
+        val currentList = currentList.toMutableList()
+        currentList.remove(cartProduct)
+        submitList(currentList)
+    }
 
     inner class ViewHolder(val binding: RvMybagProductItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-
-    private fun showPopupMenu(view: View, cartProduct: CartProduct) {
-        val popup = PopupMenu(view.context, view)
-        val inflater: MenuInflater = popup.menuInflater
-        inflater.inflate(R.menu.mybag_popupmenu, popup.menu)
-
-
-        popup.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.item1 -> {
-                    Toast.makeText(view.context, "Option 1 clicked", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-                R.id.item2 -> {
-                    val currentList = currentList.toMutableList()
-                    currentList.remove(cartProduct)
-                    submitList(currentList)
-                    handleActions.deleteMyBagItem(cartProduct)
-                    true
-                }
-
-                else -> false
-            }
-        }
-        popup.show()
-    }
 
 }

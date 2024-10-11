@@ -1,7 +1,6 @@
 package com.iti4.retailhub.features.productdetails.view
 
 import android.R
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,7 +19,6 @@ import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
-import com.iti4.retailhub.communicators.ToolbarController
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
@@ -81,7 +79,6 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.sesMoreReviews.setOnClickListener {
             findNavController().navigate(com.iti4.retailhub.R.id.reviewsFragment)
         }
@@ -423,14 +420,6 @@ class ProductDetailsFragment : Fragment() {
                 }
             }
     }
-    override fun onStart() {
-        super.onStart()
-        (requireActivity() as ToolbarController).apply {
-            setVisibility(false)
-            setTitle("")
-        }
-    }
-
 
 }
 

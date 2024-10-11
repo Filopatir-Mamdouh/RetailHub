@@ -1,5 +1,5 @@
 package com.iti4.retailhub.features.checkout
 
-interface Communicator {
+interface OnClickBottomSheet {
     fun passData(data: String)
 }

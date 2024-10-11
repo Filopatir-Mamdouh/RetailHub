@@ -4,7 +4,6 @@ package com.iti4.retailhub.datastorage
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
-import com.apollographql.apollo.api.Optional
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.iti4.retailhub.CompleteDraftOrderMutation
@@ -19,22 +18,27 @@ import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
+import com.iti4.retailhub.UpdateCustomerAddressesMutation
 import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
 import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
+import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.Brands
-import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.Category
+import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
+import com.iti4.retailhub.models.OrderDetails
 import com.iti4.retailhub.models.Review
+import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
-import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
-import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
 import com.iti4.retailhub.type.MetafieldDeleteInput
+import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -83,9 +87,22 @@ class Repository @Inject constructor(
         return retrofitDataSource.createStripePaymentIntent(paymentRequest)
     }
 
+    override fun getLocationSuggestions(
+        query: String
+    ): Flow<Response<List<PlaceLocation>>> {
+        return retrofitDataSource.getLocationSuggestions(query)
+    }
+    override fun getLocationGeocoding(
+        lat: String,
+        lon: String
+    ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>> {
+        return retrofitDataSource.getLocationGeocoding(lat,lon)
+    }
+
     override fun getProductTypesOfCollection(): Flow<List<Category>> {
         return remoteDataSource.getProductTypesOfCollection()
     }
+
     override fun getCustomerInfoById(id: String): Flow<GetCustomerByIdQuery.Customer> {
         return remoteDataSource.getCustomerInfoById(id)
     }
@@ -109,6 +126,7 @@ class Repository @Inject constructor(
     override fun createUser(input: CustomerInput): Flow<CreateCustomerMutation.CustomerCreate> {
         return remoteDataSource.createUser(input)
     }
+
     override suspend fun createUserWithEmailAndPassword(
         email: String,
         password: String
@@ -198,4 +216,18 @@ class Repository @Inject constructor(
         return remoteDataSource.getCustomerFavoritesoById(id,namespace)
     }
 
+    override fun updateCustomerAddress(
+        customerId: String,
+        address: List<CustomerAddress>
+    ): Flow<UpdateCustomerAddressesMutation.CustomerUpdate> {
+        return remoteDataSource.updateCustomerAddress(customerId, address)
+    }
+
+    override fun getOrders(query: String) : Flow<List<Order>> {
+        return remoteDataSource.getOrders(query)
+    }
+
+    override fun getOrderDetails(id: String) : Flow<OrderDetails>{
+        return remoteDataSource.getOrderDetails(id)
+    }
 }

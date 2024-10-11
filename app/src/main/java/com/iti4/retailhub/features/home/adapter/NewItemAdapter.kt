@@ -3,17 +3,18 @@ package com.iti4.retailhub.features.home.adapter
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.NewCardItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.models.HomeProducts
 
-class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(NewItemUtils()) {
+class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
     var isAddToFavoritesFirstClick=true
 
@@ -49,14 +50,18 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<G
             }
         }
         holder.binding.apply {
-            Glide.with(holder.itemView).load(item.image).into(imageView)
+            Glide.with(holder.itemView)
+                .load(item.image).diskCacheStrategy(DiskCacheStrategy.ALL).fitCenter()
+                .apply(RequestOptions().override(150, 200))
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(imageView)
+//            Glide.with(holder.itemView).load(item.image).centerCrop().into(imageView)
             textView7.text = item.brand
             textView8.text = item.title
-            textView10.text = buildString {
+            newItemPrice.text = buildString {
                 append(item.maxPrice)
                 append(" ")
                 append(item.currencyCode)
-
             }
 
             root.setOnClickListener{

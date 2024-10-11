@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MyBagViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
     private val _myBagProducts = MutableStateFlow<ApiState>(ApiState.Loading)
-    val products = _myBagProducts.onStart { getMyBagProducts() }
+    val products = _myBagProducts.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
     private val _myBagProductsRemove = MutableStateFlow<ApiState>(ApiState.Loading)
@@ -34,7 +34,7 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
 //    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
 val customerId ="6945540800554"
 
-    private fun getMyBagProducts() {
+     fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {
             repository.getMyBagProducts("customer_id:$customerId")
                 .catch { e -> _myBagProducts.emit(ApiState.Error(e)) }.collect {

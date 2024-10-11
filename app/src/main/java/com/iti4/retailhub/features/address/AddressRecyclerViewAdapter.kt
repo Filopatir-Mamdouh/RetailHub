@@ -5,28 +5,27 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.iti4.retailhub.GetAddressesByIdQuery
+import com.iti4.retailhub.CustomDialog
 import com.iti4.retailhub.databinding.RvAddressesItemBinding
+import com.iti4.retailhub.models.CustomerAddress
 
 
-class DiffUtilAddresses : DiffUtil.ItemCallback<GetAddressesByIdQuery.Address>() {
+class DiffUtilAddresses : DiffUtil.ItemCallback<CustomerAddress>() {
     override fun areItemsTheSame(
-        oldItem: GetAddressesByIdQuery.Address,
-        newItem: GetAddressesByIdQuery.Address
+        oldItem: CustomerAddress, newItem: CustomerAddress
     ): Boolean {
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
-        oldItem: GetAddressesByIdQuery.Address,
-        newItem: GetAddressesByIdQuery.Address
+        oldItem: CustomerAddress, newItem: CustomerAddress
     ): Boolean {
         return oldItem == newItem
     }
 }
 
-class AddressRecyclerViewAdapter() :
-    ListAdapter<GetAddressesByIdQuery.Address, AddressRecyclerViewAdapter.ViewHolder>(
+class AddressRecyclerViewAdapter(val handleAction: OnClickAddress) :
+    ListAdapter<CustomerAddress, AddressRecyclerViewAdapter.ViewHolder>(
         DiffUtilAddresses()
     ) {
 
@@ -41,8 +40,20 @@ class AddressRecyclerViewAdapter() :
         with(holder.binding) {
             tvAddressName.text = item.name
             tvAddress1Add.text = item.address1
-            tvAddress2Add.text = item.address2+" "+item.city+" "+item.country
+            tvAddress2Add.text = item.address2
             tvAddressPhone.text = item.phone
+            tvAddressEdit.setOnClickListener {
+                handleAction.editDetails(
+                    item
+                )
+            }
+            btnDeleteAddress.setOnClickListener {
+                val dialog =
+                    CustomDialog(it.context, handleAction, null, "address")
+                dialog.show()
+                dialog.getData(item.id ?: "null")
+
+            }
         }
     }
 
