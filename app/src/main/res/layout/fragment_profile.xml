@@ -134,43 +134,9 @@
         tools:text="%d addresses" />
 
     <Button
-        android:id="@+id/profileCodesBtn"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/transparent"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/promo_codes"
-        android:textAlignment="viewStart"
-        android:textColor="@color/black_variant"
-        android:textSize="16sp"
-        app:icon="@drawable/baseline_arrow_forward_ios_24"
-        app:iconGravity="end"
-        app:iconTint="@color/black_variant"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileShippingBtn" />
-
-    <TextView
-        android:id="@+id/profileCodesSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:fontFamily="@font/metropolis_regular"
-        android:textColor="@color/grey"
-        android:textSize="11sp"
-        app:layout_constraintBottom_toBottomOf="@+id/profileCodesBtn"
-        app:layout_constraintStart_toStartOf="@+id/profileCodesBtn"
-        tools:text="You have special promo codes" />
-
-    <Button
         android:id="@+id/profileSettingsBtn"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/transparent"
         android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
         android:paddingStart="16dp"
@@ -185,7 +151,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <TextView
         android:id="@+id/profileSettingsSubtitle"
@@ -223,84 +189,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider">
 
-        <TextView
-            android:id="@+id/textView31"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/metropolis_medium"
-            android:text="@string/Language"
-            android:textColor="@color/grey"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></TextView>
-
-        <RadioGroup
-            android:id="@+id/radioGroupLanguage"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/textView31"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView31">
-
-            <RadioButton
-                android:id="@+id/rbEn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:checked="true"
-                android:fontFamily="@font/metropolis_medium"
-                android:text="@string/English"
-                android:textColor="@color/black_variant" />
-
-            <RadioButton
-                android:id="@+id/rbAr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/metropolis_medium"
-                android:text="@string/Arabic"
-                android:textColor="@color/black_variant" />
-
-
-        </RadioGroup>
-
 
         <TextView
             android:id="@+id/textView32"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/metropolis_medium"
             android:text="@string/Currency"
             android:textColor="@color/grey"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView31"
-            app:layout_constraintTop_toBottomOf="@+id/textView31"></TextView>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></TextView>
 
         <Spinner
             android:id="@+id/spinnerCurrency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@+id/textView32"
-            app:layout_constraintEnd_toEndOf="@+id/radioGroupLanguage"
             app:layout_constraintTop_toTopOf="@+id/textView32"
-            app:layout_constraintVertical_bias="0.833" />
+            app:layout_constraintVertical_bias="0.833"
+            tools:layout_editor_absoluteX="273dp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
 
     <View
         android:id="@+id/divider3"

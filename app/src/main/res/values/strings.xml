@@ -60,7 +60,7 @@
     <string name="seemore">See More Reviews</string>
     <string name="reviews_toolbar"><![CDATA[Rating&Reviews]]></string>
     <string name="Edit">Edit</string>
-    <string name="ShippingDefaultText">Use as the shipping address</string>
+    <string name="ShippingDefaultText">Use as the default address</string>
     <string name="AddToCart">Add To Cart</string>
     <string name="FullName">Full Name</string>
     <string name="Address">Address</string>
@@ -118,4 +118,5 @@
     <string name="Language">Language:</string>
     <string name="Currency">Currency:</string>
     <string name="ClickOnAdText">CLICK ME !</string>
+    <string name="SearchText">Search for a location</string>
 </resources>

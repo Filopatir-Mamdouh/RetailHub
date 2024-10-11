@@ -22,9 +22,11 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     private val TAG: String = "AddressViewModel"
     private val dispatcher = Dispatchers.IO
     val customerId by lazy { repository.getUserShopLocalId() }
+
     init {
         getAddressesById()
     }
+
     // list to hold customer's addresses locally
     var addressesList: MutableList<CustomerAddressV2> = mutableListOf()
 
@@ -43,8 +45,11 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
     val addressGeocoding = _addressGeocoding.asStateFlow()
 
 
-
-
+     fun setState() {
+        viewModelScope.launch(dispatcher) {
+            _addressGeocoding.emit(ApiState.Loading)
+        }
+    }
 
     private fun getAddressesById() {
         viewModelScope.launch(dispatcher) {
@@ -57,7 +62,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                 }.collect {
                     Log.i(TAG, "getAddressesById: collecting empty list ? $addressesList")
                     addressesList =
-                       it.toCustomerAddressList() 
+                        it.toCustomerAddressList()
                     getDefaultAddress()
                 }
         }
@@ -80,7 +85,6 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
             addressesList[index] = address
         }
     }
-
 
 
     fun getLocationSuggestions(query: String) {
@@ -114,6 +118,7 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                 }
         }
     }
+
     fun updateMyAddresses(address: List<CustomerAddressV2>) {
         Log.i(TAG, "updateMyAddresses: Step1  $address")
         GlobalScope.launch(dispatcher) {
@@ -138,7 +143,10 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
             repository.updateCustomerDefaultAddress(customerId!!, addressId)
                 .catch { Log.i(TAG, "updateCustomerDefaultAddress: on error ${it.message}") }
                 .collect {
-                    Log.i(TAG, "updateCustomerDefaultAddress: step3 update defaul ${it.defaultAddress}")
+                    Log.i(
+                        TAG,
+                        "updateCustomerDefaultAddress: step3 update defaul ${it.defaultAddress}"
+                    )
                 }
         }
     }
