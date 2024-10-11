@@ -55,6 +55,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         filterQuery = arguments?.getString("query") ?: ""
+        typeQuery = arguments?.getString("type") ?: ""
         binding.filterGroup.setOnClickListener { findNavController().navigate(R.id.filterFragment) }
         onSwitchViewClicked()
         setupDataListener()

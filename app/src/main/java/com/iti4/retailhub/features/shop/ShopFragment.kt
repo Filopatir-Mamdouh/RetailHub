@@ -75,6 +75,6 @@ class ShopFragment : Fragment(), OnClickNavigate {
     }
 
     override fun navigate(category: String, productType:String) {
-        findNavController().navigate(R.id.searchFragment, bundleOf("query" to "$category AND $productType"))
+        findNavController().navigate(R.id.searchFragment, bundleOf("query" to category, "type" to  productType))
     }
 }
