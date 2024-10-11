@@ -21,9 +21,11 @@ class HomeViewModel @Inject constructor(private val repository: IRepository) : V
     val products = _products.onStart { getProducts() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
     private val _brands = MutableStateFlow<ApiState>(ApiState.Loading)
-    val brands = _brands.onStart { getBrands() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
+    val brands = _brands.onStart { getBrands() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
+    val customerId by lazy {repository.getUserShopLocalId()}
+    private val _savedFavortes = MutableStateFlow<ApiState>(ApiState.Loading)
+    val savedFavortes = _savedFavortes
 
     private fun getBrands() {
         viewModelScope.launch(dispatcher) {
@@ -40,7 +42,18 @@ class HomeViewModel @Inject constructor(private val repository: IRepository) : V
             }
         }
     }
-
+     fun  getFavorites(){
+        viewModelScope.launch(Dispatchers.IO){
+            repository.getCustomerFavoritesoById(/*customerId!!*/"gid://shopify/Customer/6945540800554",
+                "")
+                .catch {
+                        e -> _savedFavortes.emit(ApiState.Error(e))
+                }
+                .collect{
+                    _savedFavortes.emit(ApiState.Success(it))
+                }
+        }
+    }
 
 
 }

@@ -1,12 +1,13 @@
 package com.iti4.retailhub.logic
 
-import android.util.Log
 import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.CollectionsQuery
 import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetProductTypesOfCollectionQuery
+import com.iti4.retailhub.OrderDetailsQuery
+import com.iti4.retailhub.OrdersQuery
 import com.iti4.retailhub.ProductsQuery
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.Category
@@ -14,7 +15,11 @@ import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
+import com.iti4.retailhub.models.OrderDetails
+import com.iti4.retailhub.models.OrderDetailsItem
 import com.iti4.retailhub.type.MailingAddressInput
+
 
 fun ProductsQuery.Products.toProductsList(): List<HomeProducts> {
     val list = ArrayList<HomeProducts>()
@@ -93,7 +98,7 @@ fun GetAddressesByIdQuery.Customer.toCustomerAddressList(): MutableList<Customer
     }.toMutableList()
 }
 
- fun List<CustomerAddressV2>.customerAddressV2ToMailingAddressInput(address: List<CustomerAddressV2>): List<MailingAddressInput> {
+fun List<CustomerAddressV2>.customerAddressV2ToMailingAddressInput(address: List<CustomerAddressV2>): List<MailingAddressInput> {
     return address.map {
         MailingAddressInput(
             address1 = Optional.present(it.address1),
@@ -105,3 +110,47 @@ fun GetAddressesByIdQuery.Customer.toCustomerAddressList(): MutableList<Customer
         )
     }
 }
+
+fun OrdersQuery.Node.toOrder(): Order {
+    return Order(
+        this.id,
+        this.name,
+        this.confirmationNumber,
+        this.createdAt.toString().split("T")[0],
+        this.currentTotalPriceSet.shopMoney.amount.toString(),
+        this.currentTotalPriceSet.shopMoney.currencyCode.toString(),
+        this.currentSubtotalLineItemsQuantity,
+        this.displayFinancialStatus.toString(),
+        this.displayFulfillmentStatus.toString()
+    )
+}
+
+fun OrderDetailsQuery.Order.toOrderDetails(): OrderDetails {
+    return OrderDetails(
+        this.id,
+        this.name,
+        this.createdAt.toString().split("T")[0],
+        this.confirmationNumber.toString(),
+        this.displayFulfillmentStatus.toString(),
+        this.currentSubtotalLineItemsQuantity.toString(),
+        this.lineItems.nodes.map {
+            OrderDetailsItem(
+                it.id,
+                it.product?.title ?: "",
+                it.product?.vendor ?: "",
+                it.currentQuantity.toString(),
+                it.variantTitle?.split("/")?.get(0) ?: "",
+                it.variantTitle?.split("/")?.get(1) ?: "",
+                it.originalUnitPriceSet.shopMoney.amount.toString(),
+                it.originalUnitPriceSet.shopMoney.currencyCode.toString(),
+                it.product?.media?.nodes?.get(0)?.onMediaImage?.image?.url?.toString() ?: "",
+            )
+        },
+        this.shippingAddress?.formatted?.joinToString(", ") ?: "",
+        this.displayFinancialStatus.toString(),
+        this.currentTotalDiscountsSet.shopMoney.amount.toString(),
+        this.currentTotalPriceSet.shopMoney.amount.toString(),
+        "EGP"
+    )
+}
+

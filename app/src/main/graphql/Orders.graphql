@@ -1,19 +1,19 @@
 query Orders($query: String!) {
     orders(first: 10, sortKey: CREATED_AT, query: $query) {
-        edges {
-            cursor
-            node {
-                id
-                poNumber
-                processedAt
-                displayFulfillmentStatus
-                totalPriceSet {
-                    presentmentMoney {
-                        amount
-                        currencyCode
-                    }
+        nodes{
+            id
+            name
+            confirmationNumber
+            createdAt
+            currentTotalPriceSet{
+                shopMoney{
+                    amount
+                    currencyCode
                 }
             }
+            currentSubtotalLineItemsQuantity
+            displayFinancialStatus
+            displayFulfillmentStatus
         }
     }
 }

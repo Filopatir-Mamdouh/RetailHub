@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".features.profile.ProfileFragment">
+
+    <Button
+        android:id="@+id/profileSettingsBtn2"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/transparent"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="Log out"
+        android:textAlignment="viewStart"
+        android:textColor="@color/red_color"
+        android:textSize="16sp"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:iconGravity="end"
+        app:iconTint="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <include
+        android:id="@+id/profileAppbar"
+        layout="@layout/app_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileImg"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/photo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileAppbar" />
+
+    <TextView
+        android:id="@+id/profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/metropolis_semibold"
+        tools:text="John Doe"
+        android:textColor="@color/black_variant"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/profileImg"
+        app:layout_constraintTop_toTopOf="@+id/profileImg" />
+
+    <TextView
+        android:id="@+id/profileMail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/metropolis_medium"
+        android:textColor="@color/grey"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/profileName"
+        app:layout_constraintTop_toBottomOf="@+id/profileName"
+        tools:text="john.doe@gmail.com" />
+
+    <Button
+        android:id="@+id/profileOrderBtn"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/transparent"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/my_orders"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black_variant"
+        android:textSize="16sp"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:iconGravity="end"
+        app:iconTint="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileImg" />
+
+    <TextView
+        android:id="@+id/profileOrderSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/metropolis_regular"
+        android:textColor="@color/grey"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profileOrderBtn"
+        app:layout_constraintStart_toStartOf="@+id/profileOrderBtn"
+        tools:text="Already have %d orders" />
+
+
+    <Button
+        android:id="@+id/profileShippingBtn"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/transparent"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:textSize="16sp"
+        android:text="@string/shipping_addresses"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black_variant"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:iconGravity="end"
+        app:iconTint="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileOrderBtn" />
+
+    <TextView
+        android:id="@+id/profileShippingSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/metropolis_regular"
+        android:textColor="@color/grey"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profileShippingBtn"
+        app:layout_constraintStart_toStartOf="@+id/profileShippingBtn"
+        tools:text="%d addresses" />
+
+    <Button
+        android:id="@+id/profileCodesBtn"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:backgroundTint="@color/transparent"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:textSize="16sp"
+        android:text="@string/promo_codes"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black_variant"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:iconGravity="end"
+        app:iconTint="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileShippingBtn" />
+
+    <TextView
+        android:id="@+id/profileCodesSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/metropolis_regular"
+        android:textColor="@color/grey"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profileCodesBtn"
+        app:layout_constraintStart_toStartOf="@+id/profileCodesBtn"
+        tools:text="You have special promo codes" />
+
+    <Button
+        android:id="@+id/profileSettingsBtn"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/transparent"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:textSize="16sp"
+        android:text="Settings"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black_variant"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:iconGravity="end"
+        app:iconTint="@color/black_variant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
+
+    <TextView
+        android:id="@+id/profileSettingsSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/metropolis_regular"
+        android:textColor="@color/grey"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profileSettingsBtn"
+        app:layout_constraintStart_toStartOf="@+id/profileSettingsBtn"
+        tools:text="Currency, Language" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileSettingsBtn" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileShippingBtn" />
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileOrderBtn" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.iti4.retailhub.features.favorits.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.type.MetafieldDeleteInput
@@ -22,7 +23,13 @@ class FavoritesViewModel @Inject constructor(private val repository: IRepository
 
     fun  getFavorites(){
         viewModelScope.launch(Dispatchers.IO){
-            repository.getCustomerFavoritesoById(customerId!!)
+
+
+
+            //handle this customer id
+
+            repository.getCustomerFavoritesoById(/*customerId!!*/"gid://shopify/Customer/6945540800554",
+               "")
                 .catch {
                         e -> _savedFavortes.emit(ApiState.Error(e))
                 }

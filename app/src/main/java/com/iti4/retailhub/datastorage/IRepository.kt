@@ -35,6 +35,8 @@ import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
+import com.iti4.retailhub.models.Order
+import com.iti4.retailhub.models.OrderDetails
 import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.modelsdata.PlaceLocation
 import com.iti4.retailhub.type.CustomerInput
@@ -82,8 +84,7 @@ interface IRepository {
         varientId: String,
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-
-    fun GetDraftOrdersByCustomer(varientId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun updateCustomerAddress(
@@ -98,7 +99,7 @@ interface IRepository {
     ): Flow<Response<com.iti4.retailhub.features.address.PlaceLocation>>
 
     fun saveProductToFavotes(input: CustomerInput): Flow<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>
-    fun getCustomerFavoritesoById(id: String): Flow<GetCustomerFavoritesQuery.Customer>
+    fun getCustomerFavoritesoById(id: String,namespace: String): Flow<GetCustomerFavoritesQuery.Customer>
     fun deleteCustomerFavoritItem(id: MetafieldDeleteInput): Flow<String?>
     fun getDefaultAddress(customerId: String): Flow<GetAddressesDefaultIdQuery.Customer>
     fun updateCustomerDefaultAddress(
@@ -122,4 +123,8 @@ interface IRepository {
     ): Flow<AddTagsMutation.Node>
 
     fun getCustomerUsedDiscounts(customerId: String): Flow<List<String>>
+    fun getOrders(query: String): Flow<List<Order>>
+    fun getOrderDetails(id: String): Flow<OrderDetails>
+    abstract fun setLoginStatus(loginStatus: String)
+    fun getLoginStatus(): String?
 }
