@@ -71,7 +71,7 @@ class ShopFragment : Fragment(), OnClickNavigate {
 
     override fun onStart() {
         super.onStart()
-        ToolbarSetup.setupToolbar(binding.appBarLayout, "Categories", resources, findNavController())
+        ToolbarSetup.setupToolbar(binding.appBarLayout, "Categories", resources, {activity?.onBackPressed()})
     }
 
     override fun navigate(category: String, productType:String) {

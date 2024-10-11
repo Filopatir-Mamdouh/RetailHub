@@ -149,7 +149,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             collapsedPageName.visibility = View.GONE
             pageName.text = requireContext().getString(R.string.my_bag)
             backButton.setOnClickListener {
-                findNavController().navigateUp()
+                activity?.onBackPressed()
             }
         }
     }

@@ -2,14 +2,16 @@ package com.iti4.retailhub
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
-import androidx.navigation.ui.setupWithNavController
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.features.address.AddressViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,23 +32,33 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        binding.navigationView.setupWithNavController(
-            Navigation.findNavController(
-                this,
-                R.id.fragmentContainerView2
-            )
-        )
+        binding.navigationView.apply {
+            setOnItemSelectedListener { menuItem ->
+                val navController = Navigation.findNavController(this@MainActivity, R.id.fragmentContainerView2)
+                if (menuItem.itemId != navController.currentDestination?.id) {
+                    Log.d("Filo", "Navigating to: ${menuItem.itemId}")
+                    navController.navigate(menuItem.itemId, null,
+                        NavOptions.Builder().setPopUpTo(R.id.homeFragment, false).build())
+                    true
+                } else {
+                    false
+                }
+            }
+        }
     }
-
 
     override fun onBackPressed() {
         val navController = Navigation.findNavController(this, R.id.fragmentContainerView2)
         if (navController.previousBackStackEntry != null) {
             navController.navigateUp()
+            if(navController.currentDestination?.id == R.id.homeFragment){
+                binding.navigationView.menu[0].isChecked = true
+            }
         } else {
             super.onBackPressed()
         }
     }
+
 
     fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -56,10 +68,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun hideBottomNavBar(){
-        binding.navigationView.visibility = View.GONE;
+        binding.navigationView.visibility = View.GONE
     }
     fun showBottomNavBar(){
-        binding.navigationView.visibility = View.VISIBLE;
+        binding.navigationView.visibility = View.VISIBLE
     }
+
 
 }

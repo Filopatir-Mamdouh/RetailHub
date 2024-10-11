@@ -256,7 +256,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
 
     override fun onStart() {
         super.onStart()
-        ToolbarSetup.setupToolbar(binding.checkoutAppbar, "Checkout",resources, findNavController())
+        ToolbarSetup.setupToolbar(binding.checkoutAppbar, "Checkout",resources, {activity?.onBackPressed()})
     }
 
 }

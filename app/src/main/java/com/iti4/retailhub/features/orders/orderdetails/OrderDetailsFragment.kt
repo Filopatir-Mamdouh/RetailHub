@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.databinding.FragmentOrderDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.orders.orderdetails.adapter.OrderDetailsAdapter
@@ -61,7 +60,7 @@ class OrderDetailsFragment : Fragment() {
     }
 
     private fun setupData(orderDetails: OrderDetails){
-        ToolbarSetup.setupToolbar(binding.orderDetailsAppbar, "Order Details", resources, findNavController())
+        ToolbarSetup.setupToolbar(binding.orderDetailsAppbar, "Order Details", resources, {activity?.onBackPressed()})
         val adapter = OrderDetailsAdapter()
         binding.apply {
             orderDetailsAppbar.collapsedPageName.visibility = View.GONE

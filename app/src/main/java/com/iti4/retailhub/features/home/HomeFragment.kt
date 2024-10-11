@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -21,13 +22,14 @@ import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.home.adapter.BrandAdapter
 import com.iti4.retailhub.features.home.adapter.NewItemAdapter
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
+import com.iti4.retailhub.features.shop.adapter.OnClickNavigate
 import com.iti4.retailhub.models.Brands
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), OnClickGoToDetails {
+class HomeFragment : Fragment(), OnClickGoToDetails, OnClickNavigate {
 
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
@@ -133,7 +135,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         binding.brandItemRow.apply {
             title.text = getString(R.string.brands)
             subtitle.text = getString(R.string.brands_subtitle)
-            val adapter = BrandAdapter()
+            val adapter = BrandAdapter(this@HomeFragment)
             recyclerView.layoutManager =
                 GridLayoutManager(requireContext(), 2, GridLayoutManager.HORIZONTAL, false)
             recyclerView.adapter = adapter
@@ -187,5 +189,9 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                 }
             }
         }
+    }
+
+    override fun navigate(filter: String, productType: String) {
+        findNavController().navigate(R.id.searchFragment, bundleOf("query" to filter, "type" to productType))
     }
 }

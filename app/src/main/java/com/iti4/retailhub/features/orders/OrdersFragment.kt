@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.databinding.FragmentOrdersBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.orders.adapter.OrdersAdapter
@@ -38,7 +37,7 @@ class OrdersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolbarSetup.setupToolbar(binding.ordersAppbar, "Orders", resources, findNavController())
+        ToolbarSetup.setupToolbar(binding.ordersAppbar, "Orders", resources, {activity?.onBackPressed()})
         val adapter = OrdersAdapter()
         binding.ordersRV.adapter = adapter
         lifecycleScope.launch {

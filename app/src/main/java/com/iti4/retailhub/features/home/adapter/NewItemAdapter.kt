@@ -53,9 +53,7 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<G
             Glide.with(holder.itemView)
                 .load(item.image).diskCacheStrategy(DiskCacheStrategy.ALL).fitCenter()
                 .apply(RequestOptions().override(150, 200))
-                .placeholder(R.drawable.ic_launcher_background)
                 .into(imageView)
-//            Glide.with(holder.itemView).load(item.image).centerCrop().into(imageView)
             textView7.text = item.brand
             textView8.text = item.title
             newItemPrice.text = buildString {

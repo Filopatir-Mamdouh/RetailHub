@@ -49,7 +49,7 @@ class FilterFragment : Fragment(), FilterBrandsCommunicator {
     }
 
     private fun setupToolbar() {
-        ToolbarSetup.setupToolbar(binding.filterAppbar, "Filters", resources, findNavController())
+        ToolbarSetup.setupToolbar(binding.filterAppbar, "Filters", resources, {activity?.onBackPressed()})
         binding.filterAppbar.apply {
             imageButton.visibility = View.GONE
             appBar.setExpanded(false)
