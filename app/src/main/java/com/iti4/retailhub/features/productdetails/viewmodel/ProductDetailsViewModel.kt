@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.extractNumbersFromString
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.type.MetafieldInput
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +29,7 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
     val saveProductToFavortes = _saveProductToFavortes
     private val _productInFavorites = MutableStateFlow<ApiState>(ApiState.Loading)
     val productInFavorites = _productInFavorites
-//    val customerId by lazy {repository.getUserShopLocalId()}
-    val customerId ="gid://shopify/Customer/6945540800554"
+    val customerId by lazy {repository.getUserShopLocalId()}
 
      fun getProductDetails(id:String) {
         viewModelScope.launch(Dispatchers.IO){
@@ -42,9 +43,10 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
         }
     }
 fun  GetDraftOrdersByCustomer(productTitle:String){
-    val regex = """\/([^\/]+)$""".toRegex()
+    /*val regex = """\/([^\/]+)$""".toRegex()
     val matchResult = regex.find(customerId)
-    val customerIdNumberOnly = matchResult?.groupValues?.get(1)
+    val customerIdNumberOnly = matchResult?.groupValues?.get(1)*/
+    val customerIdNumberOnly = extractNumbersFromString(customerId!!)
     viewModelScope.launch(Dispatchers.IO){
         repository.GetDraftOrdersByCustomer("(customer_id:${customerIdNumberOnly}) ${productTitle}")
             .catch {
@@ -75,9 +77,7 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
     }
 
     fun saveToFavorites(
-        variantID: String,productId:String,
-        selectedProductColor: String,
-        selectedProductSize: String,
+        productId: String,variantID:String,
         productTitle: String,
         selectedImage: String,
         price: String
@@ -89,11 +89,11 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
                 metafields = Optional.present(
                     listOf(
                         MetafieldInput(
-                            namespace= Optional.present(variantID),
+                            namespace= Optional.present(productId),
                             key = Optional.present("favorites"),
                             value = Optional.present(productId),
                             type = Optional.present("string"),
-                            description = Optional.present("${productTitle},${selectedProductColor},${selectedProductSize},${selectedImage},${price}")
+                            description = Optional.present("${productTitle},${selectedImage},${price}")
             )
                     )
                 )))
@@ -116,7 +116,7 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
             Log.d("TAG", "addToCart:launch ")
             /*if (customerId != null) {*/
             Log.d("searchInCustomerFavorites", "gid://shopify/ProductVariant/${id}\"")
-            repository.getCustomerFavoritesoById(customerId,selectedProductVariantId.toString())
+            repository.getCustomerFavoritesoById(customerId!!,selectedProductVariantId.toString())
                 .catch { e ->
                     _productInFavorites.emit(ApiState.Error(e))
                     Log.d("TAG", "addToCart:catch ${e.message}")
@@ -127,6 +127,14 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
                 }
 //            }
         }
+    }
+
+    fun getConversionRates(currencyCode: CountryCodes): Double {
+        return repository.getConversionRates(currencyCode)
+    }
+
+    fun getCurrencyCode(): CountryCodes {
+        return repository.getCurrencyCode()
     }
 }
 

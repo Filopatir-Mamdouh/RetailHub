@@ -7,10 +7,9 @@
     tools:context=".features.profile.ProfileFragment">
 
     <Button
-        android:id="@+id/profileSettingsBtn2"
+        android:id="@+id/profileLogoutBtn"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/transparent"
         android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
         android:paddingStart="16dp"
@@ -25,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        app:layout_constraintTop_toBottomOf="@+id/expandable_layout" />
 
     <include
         android:id="@+id/profileAppbar"
@@ -50,11 +49,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/metropolis_semibold"
-        tools:text="John Doe"
         android:textColor="@color/black_variant"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/profileImg"
-        app:layout_constraintTop_toTopOf="@+id/profileImg" />
+        app:layout_constraintTop_toTopOf="@+id/profileImg"
+        tools:text="John Doe" />
 
     <TextView
         android:id="@+id/profileMail"
@@ -105,15 +104,15 @@
         android:id="@+id/profileShippingBtn"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/transparent"
         android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
-        android:textSize="16sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:text="@string/shipping_addresses"
         android:textAlignment="viewStart"
         android:textColor="@color/black_variant"
+        android:textSize="16sp"
         app:icon="@drawable/baseline_arrow_forward_ios_24"
         app:iconGravity="end"
         app:iconTint="@color/black_variant"
@@ -139,14 +138,14 @@
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_marginTop="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:backgroundTint="@color/transparent"
         android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
-        android:textSize="16sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:text="@string/promo_codes"
         android:textAlignment="viewStart"
         android:textColor="@color/black_variant"
+        android:textSize="16sp"
         app:icon="@drawable/baseline_arrow_forward_ios_24"
         app:iconGravity="end"
         app:iconTint="@color/black_variant"
@@ -171,15 +170,15 @@
         android:id="@+id/profileSettingsBtn"
         android:layout_width="0dp"
         android:layout_height="45dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/transparent"
         android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
-        android:textSize="16sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:text="Settings"
         android:textAlignment="viewStart"
         android:textColor="@color/black_variant"
+        android:textSize="16sp"
         app:icon="@drawable/baseline_arrow_forward_ios_24"
         app:iconGravity="end"
         app:iconTint="@color/black_variant"
@@ -210,6 +209,89 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileSettingsBtn" />
 
+
+    <!-- Content that will expand/collapse -->
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/expandable_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider">
+
+        <TextView
+            android:id="@+id/textView31"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:text="@string/Language"
+            android:textColor="@color/grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></TextView>
+
+        <RadioGroup
+            android:id="@+id/radioGroupLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/textView31"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView31">
+
+            <RadioButton
+                android:id="@+id/rbEn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:checked="true"
+                android:fontFamily="@font/metropolis_medium"
+                android:text="@string/English"
+                android:textColor="@color/black_variant" />
+
+            <RadioButton
+                android:id="@+id/rbAr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/metropolis_medium"
+                android:text="@string/Arabic"
+                android:textColor="@color/black_variant" />
+
+
+        </RadioGroup>
+
+
+        <TextView
+            android:id="@+id/textView32"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/metropolis_medium"
+            android:text="@string/Currency"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textView31"
+            app:layout_constraintTop_toBottomOf="@+id/textView31"></TextView>
+
+        <Spinner
+            android:id="@+id/spinnerCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/textView32"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroupLanguage"
+            app:layout_constraintTop_toTopOf="@+id/textView32"
+            app:layout_constraintVertical_bias="0.833" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <View
         android:id="@+id/divider2"
         android:layout_width="0dp"
@@ -219,6 +301,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileCodesBtn" />
+
     <View
         android:id="@+id/divider3"
         android:layout_width="0dp"
@@ -228,6 +311,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileShippingBtn" />
+
     <View
         android:id="@+id/divider4"
         android:layout_width="0dp"

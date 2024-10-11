@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.iti4.retailhub.CustomDialog
 import com.iti4.retailhub.databinding.RvMybagProductItemBinding
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.CountryCodes
+import com.iti4.retailhub.type.CurrencyCode
 
 
 class DiffUtilProduct : DiffUtil.ItemCallback<CartProduct>() {
@@ -23,8 +26,12 @@ class DiffUtilProduct : DiffUtil.ItemCallback<CartProduct>() {
     }
 }
 
-class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
-    ListAdapter<CartProduct, MyBagProductRecyclerViewAdapter.ViewHolder>(DiffUtilProduct())  {
+class MyBagProductRecyclerViewAdapter(
+    val handleActions: OnClickMyBag,
+    val currencyCode: CountryCodes,
+    val conversionRate: Double
+) :
+    ListAdapter<CartProduct, MyBagProductRecyclerViewAdapter.ViewHolder>(DiffUtilProduct()) {
 
     var context: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -45,9 +52,9 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
             val quantity = item.itemQuantity
             val inventoryQuantity = item.inventoryQuantity
 
-
+            val price = item.itemPrice.toDouble() * conversionRate
             tvMyBagProductName.text = item.itemTitle
-            tvMyBagProductPrice.text = item.itemPrice + " EGP"
+            tvMyBagProductPrice.text = price.toTwoDecimalPlaces() + " $currencyCode"
             tvMyBagProductColor.text = item.itemColor
             tvMyBagProductSize.text = item.itemSize
 
@@ -62,9 +69,9 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
 
             btnMyBagDelete.setOnClickListener {
                 val dialog =
-                    CustomDialog(it.context, null,handleActions,"mybag")
+                    CustomDialog(it.context, null, handleActions, "mybag")
                 dialog.show()
-                dialog.getData(null,item,::deleteMyBagItem)
+                dialog.getData(null, item, ::deleteMyBagItem)
 
             }
 
@@ -97,7 +104,8 @@ class MyBagProductRecyclerViewAdapter(val handleActions: OnClickMyBag) :
 
         }
     }
-     fun deleteMyBagItem(cartProduct: CartProduct) {
+
+    fun deleteMyBagItem(cartProduct: CartProduct) {
         val currentList = currentList.toMutableList()
         currentList.remove(cartProduct)
         submitList(currentList)

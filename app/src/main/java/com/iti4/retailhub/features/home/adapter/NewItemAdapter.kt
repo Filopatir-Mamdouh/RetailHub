@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.home.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -12,11 +13,16 @@ import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.NewCardItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
 
-class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<GetCustomerFavoritesQuery.Node>) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
+class NewItemAdapter(
+    val handleAction: OnClickGoToDetails, var favoritList: List<GetCustomerFavoritesQuery.Node>,
+    val currencyCodes: CountryCodes, val conversionRate: Double
+) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
-    var isAddToFavoritesFirstClick=true
+    var isAddToFavoritesFirstClick = true
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = NewCardItemBinding.bind(itemView)
@@ -26,20 +32,27 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<G
         context = parent.context
         return ViewHolder(View.inflate(parent.context, R.layout.new_card_item, null).rootView)
     }
-
+    fun updateFavorites(newFavorites: List<GetCustomerFavoritesQuery.Node>) {
+        favoritList = newFavorites
+        notifyDataSetChanged() // Refresh the entire adapter or notify changes more efficiently using specific item range
+    }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-
+        Log.d("NewItemAdapter", "onBindViewHolder:$favoritList ")
+        val pinFavorite = favoritList.find {
+            Log.d("NewItemAdapter", "onBindViewHolder:${it.namespace} ${item.id} ")
+            it.namespace == item.id
+        }?.id
+        val convertedPrice = (item.maxPrice.toDouble() * conversionRate).toTwoDecimalPlaces()
         val isFavorite = favoritList.any { it.value == item.id }
         if (isFavorite) {
             holder.binding.favBtn.setImageResource(R.drawable.fav_filled)
 
         }
             holder.binding.favBtn.setOnClickListener{
-                if(isAddToFavoritesFirstClick) {
+                if(!isFavorite) {
                     handleAction.saveToFavorites(
-                        "", item.id!!,
-                        "", "",
+                        item.id!!,
                         item.title!!, item.image,
                         buildString {
                             append(item.maxPrice)
@@ -47,7 +60,10 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<G
                             append(item.currencyCode)
                         }
                     )
-            }
+            }else{
+                handleAction.deleteFromCustomerFavorites(pinFavorite.toString())
+                }
+                submitList(currentList)
         }
         holder.binding.apply {
             Glide.with(holder.itemView)
@@ -57,12 +73,12 @@ class NewItemAdapter(val handleAction:OnClickGoToDetails,val favoritList: List<G
             textView7.text = item.brand
             textView8.text = item.title
             newItemPrice.text = buildString {
-                append(item.maxPrice)
+                append(convertedPrice)
                 append(" ")
-                append(item.currencyCode)
+                append(currencyCodes)
             }
 
-            root.setOnClickListener{
+            root.setOnClickListener {
                 handleAction.goToDetails(item.id!!)
             }
         }

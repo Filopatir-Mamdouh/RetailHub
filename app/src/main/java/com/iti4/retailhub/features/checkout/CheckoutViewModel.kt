@@ -1,14 +1,19 @@
 package com.iti4.retailhub.features.checkout
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.summary.PaymentIntentResponse
 import com.iti4.retailhub.features.summary.PaymentRequest
 import com.iti4.retailhub.models.AddressInputModel
 import com.iti4.retailhub.models.CartProduct
+import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.CustomerInputModel
+import com.iti4.retailhub.models.Discount
+import com.iti4.retailhub.models.DiscountInput
 import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.toLineItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +32,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     private val dispatcher = Dispatchers.IO
     private lateinit var customerEmail: String
     private lateinit var customerName: String
+    var selectedDiscount: Discount? = null
 
     private val _customerDataResponse = MutableStateFlow<ApiState>(ApiState.Loading)
     val customerResponse = _customerDataResponse.onStart { }
@@ -40,8 +46,13 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     val paymentIntentResponse = _paymentIntentResponse.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
+    private val _addressesState = MutableStateFlow<ApiState>(ApiState.Loading)
+    val addressesState = _addressesState.onStart {}
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
-    val customerId by lazy {(repository.getUserShopLocalId()!!)}
+    val customerId by lazy { (repository.getUserShopLocalId()!!) }
+
+
     fun getCustomerData() {
         viewModelScope.launch(dispatcher) {
             repository.getCustomerInfoById(customerId)
@@ -61,34 +72,101 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         }
     }
 
-    fun createCheckoutDraftOrder(listOfCartProduct: List<CartProduct>, isCard: Boolean) {
+    fun getDefaultAddress() {
+        viewModelScope.launch(dispatcher) {
+            repository.getDefaultAddress(customerId!!)
+                .catch { e -> _addressesState.emit(ApiState.Error(e)) }.collect {
+                    _addressesState.emit(ApiState.Success(it))
+                }
+        }
+    }
+
+
+    fun createCheckoutDraftOrder(
+        listOfCartProduct: List<CartProduct>,
+        isCard: Boolean,
+        checkoutAddress: CustomerAddressV2?,
+        checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
+    ) {
         //    val customerData = CustomerInput("customer_id:6945540800554")
+
         viewModelScope.launch(dispatcher) {
             val lineItems = listOfCartProduct.map { it.toLineItem() }
-            val customerId = "gid://shopify/Customer/6945540800554"
+            var discount: DiscountInput? = null
+            if (selectedDiscount != null) {
+                discount = DiscountInput(
+                    selectedDiscount!!.getDiscountAsDouble(), selectedDiscount!!.title
+                )
+            }
             val customerInputModel =
-                CustomerInputModel(customerId, customerName, customerName, customerEmail)
-            val addressInputModel =
-                AddressInputModel("3 NewBridge Court", "Chino Hills", "CA", "91709", "USA")
+                CustomerInputModel(
+                    customerId,
+                    customerEmail
+                )
+            val addressInputModel = if (checkoutAddress != null) {
+                customerInputModel.firstName = checkoutAddress.name
+                customerInputModel.phone = checkoutAddress.phone
+                AddressInputModel(
+                    checkoutAddress.address1!!,
+                    checkoutAddress.address2!!,
+                    checkoutAddress.city!!,
+                    checkoutAddress.country!!,
+                    ""
+                )
+            } else {
+                customerInputModel.firstName = checkoutDefaultAddress!!.name
+                customerInputModel.phone = checkoutDefaultAddress!!.phone
+                AddressInputModel(
+                    checkoutDefaultAddress!!.address1!!,
+                    checkoutDefaultAddress!!.address2!!,
+                    checkoutDefaultAddress!!.city!!,
+                    checkoutDefaultAddress!!.country!!,
+                    ""
+                )
+            }
             val draftOrderInputModel = DraftOrderInputModel(
-                lineItems, customerInputModel, addressInputModel, customerEmail, null, false
+                lineItems, customerInputModel, addressInputModel, customerEmail, discount, false
             )
             listOfCartProduct.forEach {
-                repository.deleteMyBagItem(it.draftOrderId).collect {}
-            }
-            repository.createCheckoutDraftOrder(draftOrderInputModel).catch { e ->
-                _checkoutDraftOrderCreated.emit(ApiState.Error(e))
-            }.collect { draftId ->
-                repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
-                    repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
-                        .collect { responseFromComplete ->
-                            if(isCard){repository.markOrderAsPaid(responseFromComplete.order!!.id).collect{}}
-                            repository.deleteMyBagItem(responseFromComplete.id).collect {
-                                _checkoutDraftOrderCreated.emit(ApiState.Success(it))
-                            }
-                        }
+                repository.deleteMyBagItem(it.draftOrderId).catch {
+                    Log.i("here", "deleteMyBagItem: " + it.message)
+                }.collect {
+                    Log.i("here", "deleteMyBagItem: " + it.deletedId)
                 }
             }
+            repository.createCheckoutDraftOrder(draftOrderInputModel)
+                .catch { e ->
+                    Log.i("here", "he big one:: " + e)
+                    _checkoutDraftOrderCreated.emit(ApiState.Error(e))
+                }.collect { draftId ->
+                    Log.i("here", "the big one: " + draftId)
+                    repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
+                        Log.i("here", "emailCheckoutDraftOrder: " + it.id)
+                        repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
+                            .collect { responseFromComplete ->
+                                Log.i("here", "completeCheckoutDraftOrder: ")
+                                if (discount != null) {
+                                    repository.setCustomerUsedDiscounts(
+                                        customerId,
+                                        discount.valueType
+                                    )
+                                        .collect {
+                                            Log.i("here", "setCustomerUsedDiscounts: ")
+                                        }
+                                }
+                                if (isCard) {
+                                    repository.markOrderAsPaid(responseFromComplete.order!!.id)
+                                        .collect {
+                                            Log.i("here", "markOrderAsPaid: ")
+                                        }
+                                }
+                                repository.deleteMyBagItem(responseFromComplete.id).collect {
+                                    Log.i("here", "deleteMyBagItem: ")
+                                    _checkoutDraftOrderCreated.emit(ApiState.Success(it))
+                                }
+                            }
+                    }
+                }
 
         }
     }
@@ -97,7 +175,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         viewModelScope.launch(dispatcher) {
             repository.createStripePaymentIntent(
                 PaymentRequest(
-                    customerEmail, customerName, orderPrice, "Egp"
+                    customerEmail, customerName, orderPrice, repository.getCurrencyCode().toString()
                 )
             ).collect {
                 val response = it

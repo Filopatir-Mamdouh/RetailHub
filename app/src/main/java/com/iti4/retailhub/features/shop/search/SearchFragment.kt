@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
@@ -25,6 +26,7 @@ import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.features.shop.search.adapter.GridViewAdapter
 import com.iti4.retailhub.features.shop.search.adapter.ListViewAdapter
 import com.iti4.retailhub.features.shop.search.viewmodels.SearchViewModel
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -34,13 +36,15 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class SearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: SearchViewModel by viewModels()
+    private lateinit var currencyCode: CountryCodes
+    private var conversionRate: Double = 0.0
     private lateinit var binding: FragmentSearchBinding
     private var isListView = true
-    private val listViewAdapter by lazy { ListViewAdapter(this) }
-    private val gridViewAdapter by lazy { GridViewAdapter(this) }
-    private var filterQuery : String = ""
-    private var query : String = ""
-    private var typeQuery : String = ""
+    private lateinit var listViewAdapter: ListViewAdapter
+    private lateinit var gridViewAdapter: GridViewAdapter
+    private var filterQuery: String = ""
+    private var query: String = ""
+    private var typeQuery: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +60,11 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        currencyCode = viewModel.getCurrencyCode()
+        conversionRate = viewModel.getConversionRates(currencyCode)
+        listViewAdapter = ListViewAdapter(this, currencyCode, conversionRate)
+        gridViewAdapter = GridViewAdapter(this, currencyCode, conversionRate)
         filterQuery = arguments?.getString("query") ?: ""
         typeQuery = arguments?.getString("type") ?: ""
         binding.filterGroup.setOnClickListener { findNavController().navigate(R.id.filterFragment) }
@@ -69,17 +78,23 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         clearFilters()
     }
 
-    private fun setupDataListener(){
+    private fun setupDataListener() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.searchList.collect{
-                    when (it){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchList.collect {
+                    when (it) {
                         is ApiState.Success<*> -> {
                             handleDataResult(it.data as List<HomeProducts>)
                         }
+
                         is ApiState.Error -> {
-                            Toast.makeText(requireContext(), it.exception.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                it.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         is ApiState.Loading -> {}
                     }
                 }
@@ -87,7 +102,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         }
     }
 
-    private fun handleDataResult(data: List<HomeProducts>){
+    private fun handleDataResult(data: List<HomeProducts>) {
         if (isListView) {
             binding.searchRV.apply {
                 adapter = listViewAdapter
@@ -125,19 +140,19 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     }
 
     override fun goToDetails(productId: String) {
-        findNavController().navigate(R.id.productDetailsFragment, bundleOf("productid" to productId))
+        findNavController().navigate(
+            R.id.productDetailsFragment,
+            bundleOf("productid" to productId)
+        )
     }
 
     override fun saveToFavorites(
-        variantID: String,
         productId: String,
-        selectedProductColor: String,
-        selectedProductSize: String,
         productTitle: String,
         selectedImage: String,
         price: String
     ) {
-        //TODO("Not yet implemented")
+
     }
 
     private fun search(){
@@ -146,7 +161,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         viewModel.searchProducts(finalQuery)
     }
 
-    private fun setupAppbar(){
+    private fun setupAppbar() {
         binding.apply {
             appBar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
                 val totalScrollRange = appBarLayout.totalScrollRange
@@ -164,23 +179,25 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
             }
             backButton.setOnClickListener { findNavController().navigateUp() }
             searchBtn.setOnClickListener {
-                searchBtn.animate().translationX(-500f).setDuration(400).withStartAction {
+                searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
                     collapsedPageName.alpha = 0f
-                    editTextText.animate().alpha(1f).translationX(-500f).setDuration(400).withEndAction {
-                        editTextText.requestFocus()
-                    }.start()
+                    editTextText.animate().alpha(1f).translationX(-500f).setDuration(400)
+                        .withEndAction {
+                            editTextText.requestFocus()
+                        }.start()
                 }.start()
             }
-            editTextText.setOnKeyListener{
-                    _,key,_ -> if (key == KeyEvent.KEYCODE_ENTER){
-                query = "title: ${editTextText.text}"
-                search()
-                searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
-                    collapsedPageName.alpha = 1f
-                    editTextText.animate().alpha(0f).setDuration(400).start()
-                }.start()
-                true
-            }else false
+            editTextText.setOnKeyListener { _, key, _ ->
+                if (key == KeyEvent.KEYCODE_ENTER) {
+                    query = "title: ${editTextText.text}"
+                    search()
+                    searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
+                        collapsedPageName.alpha = 1f
+                        editTextText.animate().alpha(0f).translationX(0f).setDuration(400).start()
+                        (activity as MainActivity).hideKeyboard()
+                    }.start()
+                    true
+                } else false
             }
         }
     }
@@ -208,7 +225,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         }
     }
 
-    private fun clearFilters(){
+    private fun clearFilters() {
         binding.imageView8.setOnClickListener {
             binding.imageView8.visibility = View.GONE
             filterQuery = ""

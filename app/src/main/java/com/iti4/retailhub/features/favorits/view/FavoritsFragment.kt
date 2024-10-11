@@ -32,6 +32,17 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     lateinit var binding: FragmentFavoritsBinding
 
+    override fun onStart() {
+        super.onStart()
+        binding.mybagAppbar.apply {
+            appBar.setExpanded(false)
+            collapsedPageName.visibility = View.GONE
+            pageName.text = requireContext().getString(R.string.favorites)
+            backButton.setOnClickListener {
+                findNavController().navigateUp()
+            }
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -137,7 +148,7 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
                     is ApiState.Success<*> -> {
                         Toast.makeText(
                             requireContext(),
-                           "Product Is Deleted Successfully",
+                           "Product Is Deleted",
                             Toast.LENGTH_SHORT
                         )
                             .show()

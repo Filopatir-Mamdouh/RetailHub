@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.logic.NetworkUtils
@@ -21,17 +22,27 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.address.AddressViewModel
+import com.iti4.retailhub.models.CurrencyResponse
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import retrofit2.Response
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val _isConnectedToNetwork = MutableStateFlow(false)
+    private val sharedViewModel: AddressViewModel by viewModels()
+    private val viewModel by viewModels<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel.getDiscount()
+        viewModel.getUsedDiscounts()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -74,12 +85,19 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+        if (viewModel.getFirstTime() || viewModel.getShouldIRefrechCurrency()) {
+            viewModel.setFirstTime()
+            viewModel.setRefrechCurrency()
+            viewModel.getCurrencyRates()
+            initCurrencyRatesListen()
         }
     }
 
     override fun onBackPressed() {
         val navController = Navigation.findNavController(this, R.id.fragmentContainerView2)
         if (navController.previousBackStackEntry != null) {
+
             navController.navigateUp()
             if(navController.currentDestination?.id == R.id.homeFragment){
                 binding.navigationView.menu[0].isChecked = true
@@ -97,11 +115,13 @@ class MainActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
     }
-    fun hideBottomNavBar(){
-        binding.navigationView.visibility = View.GONE
+
+    fun hideBottomNavBar() {
+        binding.navigationView.visibility = View.GONE;
     }
-    fun showBottomNavBar(){
-        binding.navigationView.visibility = View.VISIBLE
+
+    fun showBottomNavBar() {
+        binding.navigationView.visibility = View.VISIBLE;
     }
 
     private fun checkNetwork() {
@@ -112,4 +132,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun initCurrencyRatesListen() {
+        lifecycleScope.launch {
+            viewModel.currencyState.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        if (item.data != null) {
+                            val response = item.data as Response<CurrencyResponse>
+                            if (response.isSuccessful) {
+                                val datas = response.body()!!.conversion_rates
+                                viewModel.saveConversionRates(datas)
+                            }
+                        }
+                    }
+
+                    is ApiState.Error -> {
+                        Log.i("here", "error: ")
+                    }
+
+                    is ApiState.Loading -> {}
+                }
+            }
+
+        }
+    }
 }
+
+

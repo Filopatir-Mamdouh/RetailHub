@@ -10,20 +10,32 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.RvShopProductItemBinding
 import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.features.home.adapter.HomeProductsDiffUtils
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
 
-class ListViewAdapter(private val handleAction: OnClickGoToDetails): ListAdapter<HomeProducts, ListViewAdapter.ListViewHolder>(HomeProductsDiffUtils()) {
+class ListViewAdapter(
+    val handleAction: OnClickGoToDetails,
+    val currencyCodes: CountryCodes,
+    val conversionRate: Double
+) : ListAdapter<HomeProducts, ListViewAdapter.ListViewHolder>(HomeProductsDiffUtils()) {
     class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = RvShopProductItemBinding.bind(itemView)
     }
+
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): ListViewHolder {
-        return ListViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.rv_shop_product_item, parent, false))
+        return ListViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.rv_shop_product_item, parent, false)
+        )
     }
+
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val item = getItem(position)
+        val convertedPrice = (item.maxPrice.toDouble() * conversionRate).toTwoDecimalPlaces()
         holder.binding.apply {
             productName.text = item.title?.split("|")?.get(1)
-            productPrice.text = item.maxPrice
+            productPrice.text = "$convertedPrice $currencyCodes"
             productBrand.text = item.brand
             Glide.with(productImg).load(item.image)
                 .apply(RequestOptions().override(150, 150))
