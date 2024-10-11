@@ -102,4 +102,5 @@
     <string name="t_shirts">T-Shirts</string>
     <string name="price_lowest_to_high">Price: lowest to high</string>
     <string name="delete_message">Are you sure you want to delete this product?</string>
+    <string name="select_size">Select size</string>
 </resources>

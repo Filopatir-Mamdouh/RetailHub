@@ -10,6 +10,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProfileBinding
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.logic.ToolbarSetup
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +19,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
     private val viewModel: ProfileViewModel by viewModels()
+    private val authuntication: UserAuthunticationViewModelViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,5 +38,10 @@ class ProfileFragment : Fragment() {
          ToolbarSetup.setupToolbar(binding.profileAppbar,"My Profile", resources, findNavController())
          binding.profileAppbar.collapsedPageName.visibility = View.GONE
          binding.profileOrderBtn.setOnClickListener { Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_ordersFragment) }
+         binding.profileSettingsBtn2.setOnClickListener {
+             if (authuntication.isUserLoggedIn()) {
+                 authuntication.signOut()
+             }
+         }
      }
 }

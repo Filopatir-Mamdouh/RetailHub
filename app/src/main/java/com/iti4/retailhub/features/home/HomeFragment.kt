@@ -32,7 +32,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
-
+lateinit var adapter: NewItemAdapter
     private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,28 +44,9 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getFavorites()
-        lifecycleScope.launch {
-                viewModel.savedFavortes.collect { item ->
-                    when (item) {
-                        is ApiState.Success<*> -> {
-                            val data = item.data as GetCustomerFavoritesQuery.Customer
-                            val favoritList = data.metafields.nodes.filter { it.key == "favorites" }
-                            getHomeProducts(favoritList)
-                        }
-                        is ApiState.Error -> {
-                            Toast.makeText(
-                                requireContext(),
-                                item.exception.message,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }
+        adapter = NewItemAdapter(this@HomeFragment, emptyList())
 
-                        is ApiState.Loading -> {}
-                    }
-                }
-        }
+        getHomeProducts()
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
@@ -91,8 +72,33 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         }
 
     }
+private fun getFavorites(){
+    favoritesViewModel.getFavorites()
+    lifecycleScope.launch {
+        favoritesViewModel.savedFavortes.collect { item ->
+            when (item) {
+                is ApiState.Success<*> -> {
+                    val data = item.data as GetCustomerFavoritesQuery.Customer
+                    val favoritList = data.metafields.nodes.filter { it.key == "favorites" }
 
-    private fun getHomeProducts(favoritList: List<GetCustomerFavoritesQuery.Node>) {
+                    adapter.updateFavorites(favoritList)
+
+                }
+                is ApiState.Error -> {
+                    Toast.makeText(
+                        requireContext(),
+                        item.exception.message,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+                is ApiState.Loading -> {}
+            }
+        }
+    }
+}
+    private fun getHomeProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.collect { item ->
@@ -100,7 +106,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                         is ApiState.Success<*> -> {
                             binding.animationView.visibility = View.GONE
                             val data = item.data as List<HomeProducts>
-                            displayNewItemRowData(data,favoritList)
+                            displayNewItemRowData(data)
                         }
                         is ApiState.Error -> {
                             Toast.makeText(
@@ -117,15 +123,15 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
     }
 
     private fun displayNewItemRowData(
-        data: List<HomeProducts>,
-        favoritList: List<GetCustomerFavoritesQuery.Node>
+        data: List<HomeProducts>
     ) {
         binding.newItemRow.apply {
             title.text = getString(R.string.new_item)
             subtitle.text = getString(R.string.you_ve_never_seen_it_before)
-            val adapter = NewItemAdapter(this@HomeFragment,favoritList)
+
             recyclerView.adapter = adapter
             adapter.submitList(data)
+            getFavorites()
         }
     }
 
@@ -144,21 +150,17 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
     override fun goToDetails(productId: String) {
         val bundle = Bundle()
         bundle.putString("productid", productId)
-        findNavController().navigate(R.id.productDetailsFragment, bundle)
+        findNavController().navigate(R.id.action_homeFragment_to_productDetailsFragment2, bundle)
     }
 
     override fun saveToFavorites(
-        variantID: String,
         productId: String,
-        selectedProductColor: String,
-        selectedProductSize: String,
         productTitle: String,
         selectedImage: String,
         price: String
     ) {
         productDetailsViewModel.saveToFavorites(
             productId,productId,
-            selectedProductColor,selectedProductSize,
             productTitle,selectedImage,price
         )
         lifecycleScope.launch {
@@ -173,7 +175,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                         )
                             .show()
                         Log.d("fav", "onViewCreated:${data} ")
-                        viewModel.getFavorites()
+                        favoritesViewModel.getFavorites()
                     }
                     is ApiState.Error -> {
                         Toast.makeText(
@@ -183,6 +185,38 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                         )
                             .show()
                     }
+                    is ApiState.Loading -> {}
+                }
+            }
+        }
+    }
+
+    override fun deleteFromCustomerFavorites(pinFavorite: String) {
+        favoritesViewModel.deleteFavorites(pinFavorite)
+        lifecycleScope.launch {
+            favoritesViewModel.deletedFavortes.collect { item ->
+
+                when (item) {
+
+                    is ApiState.Success<*> -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Product Is Deleted",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        favoritesViewModel.getFavorites()
+                    }
+
+                    is ApiState.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            item.exception.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
                     is ApiState.Loading -> {}
                 }
             }

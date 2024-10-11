@@ -123,6 +123,12 @@ dependencies {
     // facebook shimmer
 
     implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    // viewpager
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+
+    //circleindicator
+    implementation ("me.relex:circleindicator:2.1.6")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

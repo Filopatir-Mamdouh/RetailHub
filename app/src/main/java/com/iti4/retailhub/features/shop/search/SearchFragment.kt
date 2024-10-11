@@ -126,15 +126,16 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     }
 
     override fun saveToFavorites(
-        variantID: String,
         productId: String,
-        selectedProductColor: String,
-        selectedProductSize: String,
         productTitle: String,
         selectedImage: String,
         price: String
     ) {
-        //TODO("Not yet implemented")
+
+    }
+
+    override fun deleteFromCustomerFavorites(pinFavorite: String) {
+
     }
 
     private fun search(){

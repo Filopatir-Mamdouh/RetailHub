@@ -75,9 +75,7 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
     }
 
     fun saveToFavorites(
-        variantID: String,productId:String,
-        selectedProductColor: String,
-        selectedProductSize: String,
+        productId: String,variantID:String,
         productTitle: String,
         selectedImage: String,
         price: String
@@ -89,11 +87,11 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
                 metafields = Optional.present(
                     listOf(
                         MetafieldInput(
-                            namespace= Optional.present(variantID),
+                            namespace= Optional.present(productId),
                             key = Optional.present("favorites"),
                             value = Optional.present(productId),
                             type = Optional.present("string"),
-                            description = Optional.present("${productTitle},${selectedProductColor},${selectedProductSize},${selectedImage},${price}")
+                            description = Optional.present("${productTitle},${selectedImage},${price}")
             )
                     )
                 )))
@@ -128,6 +126,8 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
 //            }
         }
     }
+
+
 }
 
 
