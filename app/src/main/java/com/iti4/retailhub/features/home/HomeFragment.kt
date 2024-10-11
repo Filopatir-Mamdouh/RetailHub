@@ -1,5 +1,8 @@
 package com.iti4.retailhub.features.home
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -15,7 +20,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import com.google.android.material.snackbar.Snackbar
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.databinding.FragmentHomeBinding
@@ -38,8 +45,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), OnClickGoToDetails {
-
+class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon {
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
@@ -48,6 +55,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
     private lateinit var dotsIndicator: DotsIndicator
     private var currentPosition = 0
     private var autoScrollJob: Job? = null // Job for the coroutine
+
 
     private lateinit var adsAdapter: AdsViewPagerAdapter
     private lateinit var binding: FragmentHomeBinding
@@ -194,14 +202,14 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
         val manager = LinearLayoutManager(this.requireContext())
         manager.orientation = LinearLayoutManager.HORIZONTAL
         binding.vpHomeAds.layoutManager = manager
-        adsAdapter = AdsViewPagerAdapter(listOf())
+        adsAdapter = AdsViewPagerAdapter(listOf(), this@HomeFragment)
         val pagerSnapHelper = PagerSnapHelper()
         pagerSnapHelper.attachToRecyclerView(binding.vpHomeAds)
         binding.vpHomeAds.adapter = adsAdapter
         binding.vpHomeAds.addItemDecoration(
             DotsIndicatorDecoration(
                 colorInactive = ContextCompat.getColor(this.requireContext(), R.color.red_color),
-                colorActive = ContextCompat.getColor(this.requireContext(), R.color.black_variant)
+                colorActive = ContextCompat.getColor(this.requireContext(), R.color.red_color)
             )
         )
         startAutoScroll()
@@ -270,6 +278,18 @@ class HomeFragment : Fragment(), OnClickGoToDetails {
                     is ApiState.Loading -> {}
                 }
             }
+        }
+    }
+
+    override fun copyCoupon(coupon: Discount) {
+        if(mainActivityViewModel.copiedCouponsList.none{ it.value==coupon.value}){
+            mainActivityViewModel.copiedCouponsList.add(coupon)
+            val clipboard = requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("label", coupon.title)
+            clipboard.setPrimaryClip(clip)
+            Snackbar.make(binding.root, "Discount Code Copied !", Snackbar.LENGTH_SHORT).show()
+        }else{
+            Snackbar.make(binding.root, "Code already in your clipboard !", Snackbar.LENGTH_SHORT).show()
         }
     }
 

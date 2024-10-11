@@ -40,7 +40,6 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
     private var checkoutAddress: CustomerAddressV2? = null
     private var checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress? = null
     private lateinit var cartProducts: List<CartProduct>
-
     private lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     private lateinit var paymentIntentClientSecret: String
     private lateinit var paymentSheet: PaymentSheet

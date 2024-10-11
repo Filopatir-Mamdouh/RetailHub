@@ -6,12 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CountryCodes
-import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -24,15 +22,18 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
     private val TAG: String = "MainActivityViewModel"
     val customerId by lazy { (repository.getUserShopLocalId()!!) }
     private val dispatcher = Dispatchers.IO
+
     // used for addresses
     var indexOfLastDefaultAddress = 99
     var customerChoseAnAddressNotDefault = false
     lateinit var customerChosenAddress: CustomerAddressV2
+
     // for getting currency everyday and firstitme
     private val _currencyState = MutableStateFlow<ApiState>(ApiState.Loading)
     val currencyState = _currencyState.asStateFlow()
 
-
+    //
+    var copiedCouponsList: MutableList<Discount> = mutableListOf()
     var discountList: MutableList<Discount>? = null
     var usedDiscountCodesList: List<String> = listOf()
 

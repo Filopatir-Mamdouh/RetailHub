@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.databinding.VpHomeAdsLayoutBinding
+import com.iti4.retailhub.features.home.OnClickAddCopyCoupon
+import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.toDrawable
 
 
 class AdsViewPagerAdapter(
-    private var data: List<Discount>
+    private var data: List<Discount>,
+    private val actionHandler: OnClickAddCopyCoupon
 ) :
     RecyclerView.Adapter<AdsViewPagerAdapter.ViewHolder>() {
     private lateinit var context: Context
@@ -29,7 +32,9 @@ class AdsViewPagerAdapter(
         val item = data[position]
         with(holder.binding) {
             ivDiscountImage.setImageResource(item.toDrawable())
-
+            root.setOnClickListener {
+                actionHandler.copyCoupon(item)
+            }
         }
     }
 
