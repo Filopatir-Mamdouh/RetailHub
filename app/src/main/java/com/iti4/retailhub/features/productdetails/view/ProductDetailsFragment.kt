@@ -157,8 +157,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                     addToFavoritsFirstClick = false
                     addToFavorits()
                 } else {
-                    addToFavoritsFirstClick = true
-                    deleteFromFavorites()
+                    showDeleteAlert()
+
                 }
             }else{
                 showGuestAlert("login to add to your favorites")
@@ -254,6 +254,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                     is ApiState.Success<*> -> {
                         searchInCustomerFavorites()
                         binding.imageView5oFavorits.setImageResource(R.drawable.baseline_favorite_border_24)
+                        addToFavoritsFirstClick = true
                         Toast.makeText(
                             requireContext(),
                             "Product Is Deleted",
@@ -324,10 +325,35 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         reviewsAdapter.submitList(allReviews)
         binding.ratingBar3.rating = allReviews.map { it.rate }.average().toFloat()
     }
+     fun showDeleteAlert() {
+        val dialog = Dialog(requireContext())
 
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+
+        dialog.setContentView(R.layout.favorit_delete_alert)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btnYes)
+        val btnNo: Button = dialog.findViewById(R.id.btnNo)
+        val tvmessage=dialog.findViewById<TextView>(R.id.tvMessage)
+        tvmessage.text="Are you sure you want to delete this product?"
+        btnYes.setOnClickListener {
+            deleteFromFavorites()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
     private fun searcheInBag() {
         productDetailsViewModel.GetDraftOrdersByCustomer("${productTitle} - $selectedProductColor / $selectedProductSize")
         lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
             productDetailsViewModel.customerDraftOrders.collect { item ->
                 when (item) {
                     is ApiState.Success<*> -> {
@@ -338,9 +364,9 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                         if (data.nodes.isNotEmpty()) {
                             val productVariantInBag = data.nodes[0].lineItems.nodes[0].variant?.id
 
-                            if(!productVariantInBag.isNullOrEmpty()){
+                            if (!productVariantInBag.isNullOrEmpty()) {
 
-                                isVariantInCustomerDraftOrders=true
+                                isVariantInCustomerDraftOrders = true
                                 binding.addtocard.text = "Open In Your Bag"
                                 addToBagButtonClickListner(true)
                             }
@@ -364,6 +390,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                     }
                 }
             }
+        }
         }
     }
 

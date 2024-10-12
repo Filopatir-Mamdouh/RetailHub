@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -319,6 +318,38 @@ private fun getFavorites(){
            showGuestDialog()
        }
     }
+    fun showDeleteAlert(pinFavorite: String) {
+
+        favoritesViewModel.deleteFavorites(pinFavorite)
+        lifecycleScope.launch {
+            favoritesViewModel.deletedFavortes.collect { item ->
+
+                when (item) {
+
+                    is ApiState.Success<*> -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Product Is Deleted",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        favoritesViewModel.getFavorites()
+                    }
+
+                    is ApiState.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            item.exception.message,
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+
+                    is ApiState.Loading -> {}
+                }
+            }
+        }
+    }
 private fun showGuestDialog(){
     val dialog = Dialog(requireContext())
 
@@ -348,35 +379,29 @@ private fun showGuestDialog(){
 }
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
         if (!userAuthViewModel.isguestMode()) {
-            favoritesViewModel.deleteFavorites(pinFavorite)
-            lifecycleScope.launch {
-                favoritesViewModel.deletedFavortes.collect { item ->
+            val dialog = Dialog(requireContext())
 
-                    when (item) {
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(true)
 
-                        is ApiState.Success<*> -> {
-                            Toast.makeText(
-                                requireContext(),
-                                "Product Is Deleted",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            favoritesViewModel.getFavorites()
-                        }
+            dialog.setContentView(R.layout.favorit_delete_alert)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-                        is ApiState.Error -> {
-                            Toast.makeText(
-                                requireContext(),
-                                item.exception.message,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }
 
-                        is ApiState.Loading -> {}
-                    }
-                }
+            val btnYes: Button = dialog.findViewById(R.id.btnYes)
+            val btnNo: Button = dialog.findViewById(R.id.btnNo)
+            val tvmessage=dialog.findViewById<TextView>(R.id.tvMessage)
+            tvmessage.text="Are you sure you want to delete this product from favorites?"
+            btnYes.setOnClickListener {
+            showDeleteAlert(pinFavorite)
+                dialog.dismiss()
             }
+
+            btnNo.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
         }else{
             showGuestDialog()
         }
