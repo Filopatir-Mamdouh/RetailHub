@@ -102,8 +102,12 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         currencyCode = productDetailsViewModel.getCurrencyCode()
         conversionRate = productDetailsViewModel.getConversionRates(currencyCode)
+
+
         binding.sesMoreReviews.setOnClickListener {
             findNavController().navigate(R.id.reviewsFragment)
         }
@@ -128,7 +132,35 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
 
 
+        showProductDetails()
+        binding.frameLayout3.setOnClickListener{
+            setupBottomDialog(allSizes,"size",selectedProductSize)
+        }
+        binding.frameLayout4.setOnClickListener{
+            setupBottomDialog(allColors,"color",selectedProductColor)
+        }
 
+
+
+        getReviewes()
+
+
+        binding.cardView3.setOnClickListener {
+            if (!userAuthViewModel.isguestMode()) {
+                if (addToFavoritsFirstClick) {
+                    addToFavoritsFirstClick = false
+                    addToFavorits()
+                } else {
+                    addToFavoritsFirstClick = true
+                    deleteFromFavorites()
+                }
+            }else{
+                showGuestAlert("login to add to your favorites")
+            }
+        }
+    }
+
+    private fun showProductDetails() {
         productDetailsViewModel.getProductDetails(productId)
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
@@ -193,31 +225,6 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                 }
             }
         }
-        binding.frameLayout3.setOnClickListener{
-            setupBottomDialog(allSizes,"size",selectedProductSize)
-        }
-        binding.frameLayout4.setOnClickListener{
-            setupBottomDialog(allColors,"color",selectedProductColor)
-        }
-
-
-
-        getReviewes()
-
-
-        binding.cardView3.setOnClickListener {
-            if (!userAuthViewModel.isguestMode()) {
-                if (addToFavoritsFirstClick) {
-                    addToFavoritsFirstClick = false
-                    addToFavorits()
-                } else {
-                    addToFavoritsFirstClick = true
-                    deleteFromFavorites()
-                }
-            }else{
-                showGuestAlert("login to add to your favorites")
-            }
-        }
     }
 
     private fun deleteFromFavorites() {
@@ -230,7 +237,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
                     is ApiState.Success<*> -> {
                         searchInCustomerFavorites()
-                        binding.imageView5oFavorits.setImageResource(com.iti4.retailhub.R.drawable.baseline_favorite_border_24)
+                        binding.imageView5oFavorits.setImageResource(R.drawable.baseline_favorite_border_24)
                         Toast.makeText(
                             requireContext(),
                             "Product Is Deleted",
