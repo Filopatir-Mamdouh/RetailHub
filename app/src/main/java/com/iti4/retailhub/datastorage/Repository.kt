@@ -147,7 +147,9 @@ class Repository @Inject constructor(
     }
 
     override  fun loginOut(): Boolean {
-        return userAuthuntication.loginOut()
+        val out= userAuthuntication.loginOut()
+        UserLocalProfileData.deleteUserData()
+        return out
     }
 
     override suspend fun sendEmailVerification(user: FirebaseUser): Boolean {

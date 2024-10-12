@@ -166,7 +166,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getMyBagProducts()
+        if(!userAuthViewModel.isguestMode()) {
+            viewModel.getMyBagProducts()
+        }
         binding.mybagAppbar.apply {
             appBar.setExpanded(false)
             collapsedPageName.visibility = View.GONE

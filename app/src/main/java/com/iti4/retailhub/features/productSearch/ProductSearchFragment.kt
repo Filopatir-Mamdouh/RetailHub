@@ -34,6 +34,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onStart() {
         super.onStart()
+
     }
 
     override fun onCreateView(
@@ -47,6 +48,8 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("search", "onViewCreated:${arguments} ")
+
+        binding.toolbar2.navigationIcon
         if (arguments != null) {
             viewModel.searchProducts(arguments?.getString("query").toString())
         }
@@ -69,11 +72,11 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
                 isratingbarevisible=true
             }
         }
-        binding.rangeSlider.addOnChangeListener { slider, minValue, maxValue ->
+        binding.rangeSlider.addOnChangeListener { _, minValue, maxValue ->
             Log.d("search", "sliderAndFilterListner:${minValue} ${maxValue} ")
 //            binding.maxtool.text=maxValue.toString()
             val formattedNumber = java.lang.String.format("%.1f", minValue)
-            binding.mintool.text="Max price:${formattedNumber}"
+            binding.maxtool.text="Max price:${formattedNumber}"
             viewModel.searchProducts("price:<=${minValue}")
         }
     }

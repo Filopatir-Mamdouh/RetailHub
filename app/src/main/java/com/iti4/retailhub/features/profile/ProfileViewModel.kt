@@ -25,6 +25,7 @@ class ProfileViewModel @Inject constructor(private val repository: IRepository) 
     }
     fun signOut() {
         repository.loginOut()
+
     }
 
 }

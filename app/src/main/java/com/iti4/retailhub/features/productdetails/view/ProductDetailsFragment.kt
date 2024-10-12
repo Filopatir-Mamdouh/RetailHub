@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.productdetails.view
 
+import android.annotation.SuppressLint
 import com.iti4.retailhub.R
 import android.app.Dialog
 import android.content.Intent
@@ -37,7 +38,6 @@ import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
-import com.iti4.retailhub.features.productdetails.ViewAdapter
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.ButtomDialogOnClickListn
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
@@ -99,6 +99,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         currencyCode = productDetailsViewModel.getCurrencyCode()
@@ -159,11 +160,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                             seelectedImage = data.images.edges[0].node.url.toString()
                             binding.productDescription.text = data.description
                             binding.productPrice.text =
-                                "${productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount} ${
-                                    productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.currencyCode
-                                }"
-                            binding.inInventory.text =
-                                "In Inventory: ${productVariants!![0].node.inventoryQuantity}"
+                                productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount.toString() + " " + productVariants!![0].node.presentmentPrices.edges[0].node.price.currencyCode
+                            "In Inventory: ${productVariants!![0].node.inventoryQuantity}".also { binding.inInventory.text = it }
 
 
                             //get all colors and sizes from variant
@@ -356,7 +354,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                 when (item) {
                     is ApiState.Success<*> -> {
 
-                        val data = item.data as  UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
+//                        val data = item.data as  UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
 
                         searchInCustomerFavorites()
 
@@ -435,7 +433,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                 productDetailsViewModel.createDraftOrder.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
+//                            val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
                             binding.addtocard.text = "Open In Your Bag"
                             addToBagButtonClickListner(true)
                         }

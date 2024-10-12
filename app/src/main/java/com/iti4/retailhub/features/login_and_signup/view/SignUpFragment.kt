@@ -99,10 +99,10 @@ class SignUpFragment : Fragment() {
                         if (authResultState.error!="Idle") {
                             customLoadingDialog.dismiss()
                             if (authResultState.error=="Verification email sent") {
-                                customMesssageDialog.setText(authResultState.error)
+                                customMesssageDialog.setText(authResultState.error,"Chechout your email and login")
                                 customMesssageDialog.show()
                             }else if (authResultState.error=="Failed to send verification email") {
-                                customMesssageDialog.setText(authResultState.error)
+                                customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
                             }else {
                                 Toast.makeText(

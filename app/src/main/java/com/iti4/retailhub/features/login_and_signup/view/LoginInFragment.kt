@@ -91,10 +91,10 @@ class LoginInFragment : Fragment() {
                         if (authResultState.error!="Idle") {
                             customLoadingDialog.dismiss()
                             if (authResultState.error=="Email is not verified") {
-                                customMesssageDialog.setText(authResultState.error)
+                                customMesssageDialog.setText(authResultState.error,"Verify your email and try again")
                                 customMesssageDialog.show()
                             }else if (authResultState.error=="Failed to send verification email") {
-                                customMesssageDialog.setText(authResultState.error)
+                                customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
                             }else {
                                 loginUpBinding.emailTextInput.error= authResultState.error
