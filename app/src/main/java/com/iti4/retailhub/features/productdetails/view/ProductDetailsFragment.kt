@@ -503,14 +503,25 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
             Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id} ")
 
             binding.spinnersize.text=item.toString()
-            selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id
+            /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id
+            */
+            selectedProductVariantId = productVariants!!.find { variant ->
+                variant.node.selectedOptions.any { option -> option.name == "Size" && option.value == item } &&
+                        variant.node.selectedOptions.any { option -> option.name == "Color" && option.value == selectedProductColor }
+            }?.node?.id.toString()
 
         }else{
             selectedProductColor=item.toString()
             binding.spinnercolor.text=item.toString()
-//            selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id
-//            Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id} ")
+            /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id
+            Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id} ")
+        */
+            selectedProductVariantId = productVariants!!.find { variant ->
+                variant.node.selectedOptions.any { option -> option.name == "Size" && option.value == selectedProductSize } &&
+                        variant.node.selectedOptions.any { option -> option.name == "Color" && option.value == item }
+            }?.node?.id.toString()
         }
+        binding.inInventory.text= "In Inventory: ${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.inventoryQuantity}".also { binding.inInventory.text = it }
         if(!userAuthViewModel.isguestMode()) {
             searcheInBag()
         }

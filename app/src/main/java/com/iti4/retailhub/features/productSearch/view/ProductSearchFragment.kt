@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.productSearch
+package com.iti4.retailhub.features.productSearch.view
 
 import android.os.Bundle
 import android.util.Log
@@ -19,13 +19,14 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProducSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.features.productSearch.viewmodel.ProductSearchViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductSearchFragment : Fragment(), OnClickGoToDetails {
-    private val viewModel: ProductSEarchViewModel by viewModels()
+    private val viewModel: ProductSearchViewModel by viewModels()
     private lateinit var binding: FragmentProducSearchBinding
     private var currentList = emptyList<HomeProducts>()
     //    private var isListView = true

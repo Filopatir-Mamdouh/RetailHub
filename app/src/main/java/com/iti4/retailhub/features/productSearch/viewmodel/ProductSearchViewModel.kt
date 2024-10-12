@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.productSearch
+package com.iti4.retailhub.features.productSearch.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -15,10 +15,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductSEarchViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
+class ProductSearchViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
     private val _searchList = MutableStateFlow<ApiState>(ApiState.Loading)
-    val searchList = _searchList.stateIn(viewModelScope, SharingStarted.Lazily, ApiState.Loading)
+    val searchList = _searchList
+
+
+
     fun searchProducts(query: String) {
         viewModelScope.launch(dispatcher){
             Log.d("search", "viewModelScope: start")

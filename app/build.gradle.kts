@@ -132,6 +132,9 @@ dependencies {
 
     //circleindicator
     implementation ("me.relex:circleindicator:2.1.6")
+    //unit test
+    testImplementation ("io.mockk:mockk-android:1.13.13")
+    testImplementation ("io.mockk:mockk-agent:1.13.13")
     //------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
