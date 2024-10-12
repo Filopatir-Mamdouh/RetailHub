@@ -47,15 +47,16 @@ class ProfileFragment : Fragment() {
             resources,
             findNavController()
         )
-
+        val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
         binding.profileAppbar.collapsedPageName.visibility = View.GONE
         if (authuntication.isguestMode()) {
             binding.guestpp.visibility = View.VISIBLE
             binding.messagepp.text = "login first to see your profile"
             binding.btnOkaypp.setOnClickListener {
-                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+
                 intent.putExtra("guest","guest")
                 startActivity(intent)
+                requireActivity().finish()
             }
             binding.btnCancelpp.setOnClickListener {
                 Navigation.findNavController(view).navigate(R.id.homeFragment)
@@ -76,6 +77,8 @@ class ProfileFragment : Fragment() {
 
 binding.profileLogoutBtn.setOnClickListener {
     viewModel.signOut()
+    startActivity(intent)
+    requireActivity().finish()
 }
         binding.profileShippingBtn.setOnClickListener{
             val bundle = Bundle().apply {

@@ -418,6 +418,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
             intent.putExtra("guest","guest")
             startActivity(intent)
             requireActivity().finish()
+            requireActivity().finish()
         }
 
         btnNo.setOnClickListener {

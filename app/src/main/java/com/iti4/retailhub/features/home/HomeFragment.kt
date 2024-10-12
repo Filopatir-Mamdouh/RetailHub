@@ -337,6 +337,7 @@ private fun showGuestDialog(){
         val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
         intent.putExtra("guest","guest")
         startActivity(intent)
+        requireActivity().finish()
     }
 
     btnNo.setOnClickListener {

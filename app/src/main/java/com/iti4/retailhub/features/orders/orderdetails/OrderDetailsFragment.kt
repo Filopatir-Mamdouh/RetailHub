@@ -11,7 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentOrderDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.orders.orderdetails.adapter.OrderDetailsAdapter
@@ -68,6 +70,9 @@ class OrderDetailsFragment : Fragment() {
             orderDetailsRecyclerView.adapter = adapter
             adapter.submitList(orderDetails.items)
             orderDetailsName.text = orderDetails.name
+            orderDetailsAppbar.imageButton.setOnClickListener {
+                requireActivity().findNavController(R.id.fragmentContainerView2).navigate(R.id.producSearchFragment)
+            }
             orderDetailsDate.text = orderDetails.date
             orderDetailsStatus.text = orderDetails.status
             orderDetailsNumber.text = orderDetails.number

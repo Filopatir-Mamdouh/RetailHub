@@ -174,6 +174,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             backButton.setOnClickListener {
                 requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
             }
+            imageButton.setOnClickListener {
+                requireActivity().findNavController(R.id.fragmentContainerView2).navigate(R.id.producSearchFragment)
+            }
         }
     }
 

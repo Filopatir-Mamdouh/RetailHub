@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.GetCustomerFavoritesQuery
@@ -48,6 +49,9 @@ lateinit var favoritesAdapter:FavoritsDiffUtilAdapter
             backButton.setOnClickListener {
                 findNavController().navigateUp()
             }
+        }
+        binding.mybagAppbar.imageButton.setOnClickListener {
+            requireActivity().findNavController(R.id.fragmentContainerView2).navigate(R.id.producSearchFragment)
         }
     }
     override fun onCreateView(

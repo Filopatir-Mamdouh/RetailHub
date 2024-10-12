@@ -71,7 +71,10 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         }
         binding.rangeSlider.addOnChangeListener { slider, minValue, maxValue ->
             Log.d("search", "sliderAndFilterListner:${minValue} ${maxValue} ")
-            viewModel.searchProducts("price:>=${minValue}")
+//            binding.maxtool.text=maxValue.toString()
+            val formattedNumber = java.lang.String.format("%.1f", minValue)
+            binding.mintool.text="Max price:${formattedNumber}"
+            viewModel.searchProducts("price:<=${minValue}")
         }
     }
 

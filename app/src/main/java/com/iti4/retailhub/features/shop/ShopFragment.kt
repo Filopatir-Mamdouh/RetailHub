@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.iti4.retailhub.R
@@ -87,6 +88,9 @@ class ShopFragment : Fragment(), OnClickNavigate {
             resources,
             findNavController()
         )
+        binding.appBarLayout.imageButton.setOnClickListener {
+            requireActivity().findNavController(R.id.fragmentContainerView2).navigate(R.id.producSearchFragment)
+        }
     }
 
     override fun navigate(category: String, productType: String) {
