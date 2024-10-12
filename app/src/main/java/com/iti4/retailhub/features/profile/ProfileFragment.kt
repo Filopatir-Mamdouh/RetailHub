@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProfileBinding
+import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.CountryCodes
@@ -45,7 +47,20 @@ class ProfileFragment : Fragment() {
             resources,
             findNavController()
         )
+
         binding.profileAppbar.collapsedPageName.visibility = View.GONE
+        if (authuntication.isguestMode()) {
+            binding.guestpp.visibility = View.VISIBLE
+            binding.messagepp.text = "login first to see your profile"
+            binding.btnOkaypp.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+                intent.putExtra("guest","guest")
+                startActivity(intent)
+            }
+            binding.btnCancelpp.setOnClickListener {
+                Navigation.findNavController(view).navigate(R.id.homeFragment)
+            }
+        } else {
         binding.profileOrderBtn.setOnClickListener {
             Navigation.findNavController(view)
                 .navigate(R.id.action_profileFragment_to_ordersFragment)
@@ -58,6 +73,10 @@ class ProfileFragment : Fragment() {
             }
             isExpanded = !isExpanded
         }
+
+binding.profileLogoutBtn.setOnClickListener {
+    viewModel.signOut()
+}
         binding.profileShippingBtn.setOnClickListener{
             val bundle = Bundle().apply {
                 putString("reason", "profile")
@@ -65,7 +84,7 @@ class ProfileFragment : Fragment() {
             requireActivity().findNavController(R.id.fragmentContainerView2)
                 .navigate(R.id.addressFragment, bundle)
         }
-    }
+    }}
 
     private fun setupSpinner() {
 

@@ -118,4 +118,5 @@
     <string name="Language">Language:</string>
     <string name="Currency">Currency:</string>
     <string name="ClickOnAdText">CLICK ME !</string>
+    <string name="loginfirst">Login First</string>
 </resources>

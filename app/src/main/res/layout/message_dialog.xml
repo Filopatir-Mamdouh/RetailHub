@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/dialog_layout"
-    >
+    app:cardCornerRadius="40dp">
 
-    <TextView
-        android:id="@+id/messageTextCustomDialog"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
+    <LinearLayout
+        android:layout_width="356dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="24sp"
-        android:gravity="center"
-        android:padding="40dp"
-        />
-</FrameLayout>
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/messageTextCustomDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/messageTextCustomDialog2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="20dp"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:text="@string/stripe_paymentsheet_close" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

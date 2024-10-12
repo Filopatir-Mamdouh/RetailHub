@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.favorits.view
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,15 +16,19 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentFavoritsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.view.adapter.FavoritsDiffUtilAdapter
 import com.iti4.retailhub.features.favorits.view.adapter.OnFavoritItemClocked
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
+import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,6 +36,8 @@ import kotlinx.coroutines.launch
 class FavoritsFragment : Fragment(), OnFavoritItemClocked {
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     lateinit var binding: FragmentFavoritsBinding
+lateinit var favoritesAdapter:FavoritsDiffUtilAdapter
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
 
     override fun onStart() {
         super.onStart()
@@ -56,56 +63,70 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         super.onViewCreated(view, savedInstanceState)
 
 
-        val favoritesAdapter = FavoritsDiffUtilAdapter(requireContext(),this)
-        binding.favoritsRecycleView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.favoritsRecycleView.adapter = favoritesAdapter
+        if (userAuthViewModel.isguestMode()){
+           binding.guestf.visibility=View.VISIBLE
+            binding.messagef.text="login first to see your favorites"
+            binding.btnOkayf.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+                intent.putExtra("guest","guest")
+                startActivity(intent)
+            }
+            binding.btnCancelf.setOnClickListener {
+                Navigation.findNavController(view).navigate(R.id.homeFragment)
+            }
+        }else{
+            favoritesAdapter = FavoritsDiffUtilAdapter(requireContext(),this)
+            binding.favoritsRecycleView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.favoritsRecycleView.adapter = favoritesAdapter
 
 
-
-        favoritesViewModel.getFavorites()
-
-
-        lifecycleScope.launch {
-            favoritesViewModel.savedFavortes.collect { item ->
-                when (item) {
-                    is ApiState.Success<*> -> {
-
-                        val data = item.data as GetCustomerFavoritesQuery.Customer
+            favoritesViewModel.getFavorites()
+            savedFavoritesCollect()
+        }
 
 
-                        binding.favoritProgress.visibility = View.GONE
-                        Log.d("fav", "onViewCreated:${data} ")
+    }
+
+private fun savedFavoritesCollect(){
+    lifecycleScope.launch {
+        favoritesViewModel.savedFavortes.collect { item ->
+            when (item) {
+                is ApiState.Success<*> -> {
+
+                    val data = item.data as GetCustomerFavoritesQuery.Customer
 
 
-                        val favoritList=data.metafields.nodes
-                        favoritesAdapter.submitList(favoritList.filter { it.key == "favorites" })
+                    binding.favoritProgress.visibility = View.GONE
+                    Log.d("fav", "onViewCreated:${data} ")
 
 
-                        if(favoritList.isEmpty()){
-                            binding.lottibagAnimation.visibility=View.VISIBLE
-                        }else{
-                            binding.lottibagAnimation.visibility=View.GONE
-                        }
+                    val favoritList=data.metafields.nodes
+                    favoritesAdapter.submitList(favoritList.filter { it.key == "favorites" })
+
+
+                    if(favoritList.isEmpty()){
+                        binding.lottibagAnimation.visibility=View.VISIBLE
+                    }else{
+                        binding.lottibagAnimation.visibility=View.GONE
                     }
+                }
 
-                    is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                           /* item.exception.message*/"Error can't delete product, try again",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
+                is ApiState.Error -> {
+                    Toast.makeText(
+                        requireContext(),
+                        /* item.exception.message*/"Error can't delete product, try again",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
 
-                    is ApiState.Loading -> {
-                    }
+                is ApiState.Loading -> {
                 }
             }
         }
     }
-
-
+}
     override fun onShowFavoritItemDetails(variantId: String) {
         val bundle = Bundle()
         bundle.putString("productid", variantId)

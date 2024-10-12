@@ -56,7 +56,7 @@
         tools:text="Dorothy Perkins" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -74,8 +74,8 @@
         android:fontFamily="@font/metropolis_medium"
         android:textColor="@color/grey"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="@+id/message"
+        app:layout_constraintTop_toBottomOf="@+id/message"
         tools:text="@string/old_usd" />
 
     <TextView

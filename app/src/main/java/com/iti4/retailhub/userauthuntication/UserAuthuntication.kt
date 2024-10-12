@@ -26,7 +26,7 @@ val auth =Firebase.auth
     override suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult? {
         return auth.signInWithEmailAndPassword(email, password).await()
     }
-    override suspend fun loginOut():Boolean {
+    override  fun loginOut():Boolean {
         try {
             auth.signOut()
             return true

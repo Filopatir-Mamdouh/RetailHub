@@ -25,7 +25,6 @@ class LoginInFragment : Fragment() {
 
     val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
     lateinit var loginUpBinding: FragmentLoginInBinding
-//    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
     lateinit var customLoadingDialog : CustomLoadingDialog
     lateinit var customMesssageDialog : CustomMessageDialog
     val EMAIL_REGEX: String = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
@@ -74,6 +73,7 @@ class LoginInFragment : Fragment() {
             userAuthViewModel.setLoginStatus("guest")
             val intent= Intent(requireContext(), MainActivity::class.java)
             startActivity(intent)
+            requireActivity().finish()
         }
         viewLifecycleOwner.lifecycleScope.launch {
             userAuthViewModel.authState.collect { authResultState ->

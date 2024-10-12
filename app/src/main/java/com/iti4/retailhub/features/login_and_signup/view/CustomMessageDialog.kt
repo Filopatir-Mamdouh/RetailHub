@@ -13,6 +13,7 @@ class CustomMessageDialog(context: Context) : Dialog(context) {
         setContentView(R.layout.message_dialog)
         setCancelable(true)
         findViewById<View>(R.id.dialog_layout).setOnClickListener { dismiss() } // Dismiss on click
+        findViewById<View>(R.id.button).setOnClickListener { dismiss() } // Dismiss on click
         loadingTextView = findViewById(R.id.messageTextCustomDialog)
     }
 

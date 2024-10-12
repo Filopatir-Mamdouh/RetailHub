@@ -29,8 +29,7 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Messages("Idle"))
     val authState: StateFlow<AuthState> = _authState
-    private val _loginState = MutableStateFlow<String>("")
-    val loginState: StateFlow<String> = _loginState
+
 
 
     fun createUser(userName: String, email: String, password: String) {
@@ -177,23 +176,18 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
         }
     }
 
-    fun signOut() {
-        viewModelScope.launch {
-            val result = reposatory.loginOut()
-            if (!result) {
-                _loginState.value = "Sign-out failed"
-            } else {
-                reposatory.deleteUserData()
-                Log.d("UserLocalProfileData", reposatory.getUserProfileData())
-                _loginState.value = "Sign-out successful"
-            }
-        }
-    }
+
 
         fun setLoginStatus(loginStatus: String) {
             reposatory.setLoginStatus(loginStatus)
         }
-
+    fun isguestMode(): Boolean {
+        if( reposatory.getLoginStatus()=="guest"){
+            return true
+        }else{
+            return false
+        }
+    }
     fun isUserLoggedIn(): Boolean {
        if( reposatory.getLoginStatus()==null){
            return true

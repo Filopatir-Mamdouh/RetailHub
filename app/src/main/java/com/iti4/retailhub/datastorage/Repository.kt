@@ -146,7 +146,7 @@ class Repository @Inject constructor(
         return userAuthuntication.signInWithEmailAndPassword(email, password)
     }
 
-    override suspend fun loginOut(): Boolean {
+    override  fun loginOut(): Boolean {
         return userAuthuntication.loginOut()
     }
 

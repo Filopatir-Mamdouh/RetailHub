@@ -65,7 +65,7 @@ interface IRepository {
 
     suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult?
     suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult?
-    suspend fun loginOut(): Boolean
+     fun loginOut(): Boolean
     suspend fun sendEmailVerification(user: FirebaseUser): Boolean
     suspend fun signIn(): IntentSender?
     suspend fun signInWithIntent(intent: Intent): AuthResult?

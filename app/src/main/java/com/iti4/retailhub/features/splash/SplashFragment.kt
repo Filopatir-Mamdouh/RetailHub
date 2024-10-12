@@ -19,8 +19,12 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
     val viewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    lateinit var receivedString:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val intent = requireActivity().intent // get the intent that started this activity
+        receivedString =
+            intent.getStringExtra("guest").toString() // access the extra with key "guest"
     }
 
     override fun onCreateView(
@@ -35,13 +39,14 @@ class SplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
             delay(3000)
-            if(viewModel.isUserLoggedIn()){
+            if(viewModel.isUserLoggedIn()||receivedString=="guest"){
                 //navigate to home fragment
                 findNavController(view).navigate(R.id.action_splashFragment_to_signUpFragment)
             }else{
                 //navigate to login fragment
                 val intent= Intent(requireContext(), MainActivity::class.java)
                 startActivity(intent)
+                requireActivity().finish()
             }
         }
     }

@@ -80,6 +80,7 @@ class SignUpFragment : Fragment() {
             userAuthViewModel.setLoginStatus("guest")
             val intent= Intent(requireContext(), MainActivity::class.java)
             startActivity(intent)
+            requireActivity().finish()
         }
         if (!isLaunched) {
             isLaunched = true
