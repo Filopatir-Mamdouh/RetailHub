@@ -55,8 +55,8 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     fun updateMyBagItem(cartProduct: CartProduct) {
         GlobalScope.launch(dispatcher) {
             repository.updateMyBagItem(cartProduct)
-                .catch { e -> _myBagProductsRemove.emit(ApiState.Error(e)) }.collect {
-                    _myBagProductsRemove.emit(ApiState.Success(it))
+                .catch { e -> _myBagProductsUpdate.emit(ApiState.Error(e)) }.collect {
+                    _myBagProductsUpdate.emit(ApiState.Success(it))
                 }
         }
     }
