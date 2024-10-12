@@ -148,7 +148,6 @@ class Repository @Inject constructor(
 
     override  fun loginOut(): Boolean {
         val out= userAuthuntication.loginOut()
-        UserLocalProfileData.deleteUserData()
         return out
     }
 

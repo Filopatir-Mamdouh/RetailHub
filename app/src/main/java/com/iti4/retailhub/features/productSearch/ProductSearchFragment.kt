@@ -64,15 +64,17 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         binding.filter.setOnClickListener{
             if(isratingbarevisible){
                 binding.rangeSlider.visibility = View.GONE
+                binding.filter.setImageResource(R.drawable.baseline_filter_list_24)
                 isratingbarevisible=false
             }else{
                 binding.searchView.setQuery("",true)
                 binding.rangeSlider.visibility = View.VISIBLE
                 productSearchListViewAdapter.submitList(emptyList())
+                binding.filter.setImageResource(R.drawable.filter_list_off)
                 isratingbarevisible=true
             }
         }
-        binding.rangeSlider.addOnChangeListener { _, minValue, maxValue ->
+        binding.rangeSlider2.addOnChangeListener { _, minValue, maxValue ->
             Log.d("search", "sliderAndFilterListner:${minValue} ${maxValue} ")
 //            binding.maxtool.text=maxValue.toString()
             val formattedNumber = java.lang.String.format("%.1f", minValue)
@@ -94,6 +96,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private fun searchBarTextChangeListner() {
         binding.searchView.setOnClickListener{
             binding.rangeSlider.visibility = View.GONE
+            binding.filter.setImageResource(R.drawable.filter_list_off)
             isratingbarevisible=false
         }
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

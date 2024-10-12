@@ -22,7 +22,6 @@ class NewItemAdapter(
     val currencyCodes: CountryCodes, val conversionRate: Double
 ) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
-    var isAddToFavoritesFirstClick = true
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = NewCardItemBinding.bind(itemView)
@@ -32,25 +31,29 @@ class NewItemAdapter(
         context = parent.context
         return ViewHolder(View.inflate(parent.context, R.layout.new_card_item, null).rootView)
     }
-    fun updateFavorites(newFavorites: List<GetCustomerFavoritesQuery.Node>) {
+    /*fun updateFavorites(newFavorites: List<GetCustomerFavoritesQuery.Node>) {
         favoritList = newFavorites
         notifyDataSetChanged() // Refresh the entire adapter or notify changes more efficiently using specific item range
-    }
+    }*/
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        Log.d("NewItemAdapter", "onBindViewHolder:$favoritList ")
+
+/*
         val pinFavorite = favoritList.find {
-            Log.d("NewItemAdapter", "onBindViewHolder:${it.namespace} ${item.id} ")
+            Log.d("onBindViewHolder", "it.namespace:${it.namespace} == ${item.id }")
             it.namespace == item.id
-        }?.id
+        }?.id*/
         val convertedPrice = (item.maxPrice.toDouble() * conversionRate).toTwoDecimalPlaces()
-        val isFavorite = favoritList.any { it.value == item.id }
-        if (isFavorite) {
+        /*val isFavorite = favoritList.any {
+            Log.d("onBindViewHolder", "it.value:${it.value} == ${item.id }")
+            it.value == item.id
+        }*/
+        if (item.isInFavorites) {
             holder.binding.favBtn.setImageResource(R.drawable.fav_filled)
 
         }
             holder.binding.favBtn.setOnClickListener{
-                if(!isFavorite) {
+                if(!item.isInFavorites) {
                     handleAction.saveToFavorites(
                         item.id!!,
                         item.title!!, item.image,
@@ -61,7 +64,7 @@ class NewItemAdapter(
                         }
                     )
             }else{
-                handleAction.deleteFromCustomerFavorites(pinFavorite.toString())
+                handleAction.deleteFromCustomerFavorites(item.id.toString())
                 }
                 submitList(currentList)
         }

@@ -8,5 +8,7 @@ data class HomeProducts (
     val brand: String,
     val maxPrice: String,
     val minPrice: String,
-    val currencyCode: String
+    val currencyCode: String,
+    var isInFavorites:Boolean=false,
+    var variantId:String=""
 )

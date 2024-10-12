@@ -45,6 +45,9 @@ class SignUpFragment : Fragment() {
             findNavController(view).navigate(R.id.action_signUpFragment_to_loginInFragment)
         }
         signUpBinding.sigInBtn.setOnClickListener {
+            signUpBinding.nameTextInput.isErrorEnabled  = false // Clear error message
+            signUpBinding.emailTextInput.isErrorEnabled  = false // Clear error message
+            signUpBinding.passowrdTex.isErrorEnabled  = false
             signUpBinding.nameTextInput.error = null // Clear error message
             signUpBinding.emailTextInput.error = null // Clear error message
             signUpBinding.passowrdTex.error = null // Clear error message
@@ -52,20 +55,25 @@ class SignUpFragment : Fragment() {
             val email = signUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
             val password = signUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
             if (userName.isEmpty()) {
+                signUpBinding.nameTextInput.isErrorEnabled  = true
                 signUpBinding.nameTextInput.error = "Please enter your name"
                 return@setOnClickListener
             }
             if (email.isEmpty()) {
+                signUpBinding.emailTextInput.isErrorEnabled  = true
                 signUpBinding.emailTextInput.error = "Please enter your email"
                 return@setOnClickListener
             } else if (!email.matches(EMAIL_REGEX.toRegex())) {
+                signUpBinding.emailTextInput.isErrorEnabled  = true
                 signUpBinding.emailTextInput.error = "Invalid email format"
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
+                signUpBinding.passowrdTex.isErrorEnabled  = true
                 signUpBinding.passowrdTex.error = "Please enter your password"
                 return@setOnClickListener
             } else if (password.length < 6) {
+                signUpBinding.passowrdTex.isErrorEnabled  = true
                 signUpBinding.passowrdTex.error = "Password must be at least 6 characters"
                 return@setOnClickListener
             }

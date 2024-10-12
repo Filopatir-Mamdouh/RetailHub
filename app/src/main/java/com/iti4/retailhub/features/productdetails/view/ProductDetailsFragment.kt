@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
@@ -63,7 +65,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     lateinit var binding: FragmentProductDetailsBinding
 
     lateinit var produsctDetailsAdapter: ProductDetailsDiffUtilAdapter
-
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
 
     var productId = ""
 
@@ -102,6 +105,9 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewPager = view.findViewById(R.id.viewPager)
+        tabLayout = view.findViewById(R.id.tabLayout)
+
 
 
         currencyCode = productDetailsViewModel.getCurrencyCode()
@@ -125,10 +131,10 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
        /*val viewAdapter= ViewAdapter(requireContext(), emptyList())
         binding.viewPager.setAdapter(viewAdapter);
         binding.dot1.setViewPager(viewPager);*/
-        produsctDetailsAdapter = ProductDetailsDiffUtilAdapter(requireContext())
+        /*produsctDetailsAdapter = ProductDetailsDiffUtilAdapter(requireContext())
         binding.productImages.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.productImages.adapter = produsctDetailsAdapter
+        binding.productImages.adapter = produsctDetailsAdapter*/
 
 
 
@@ -188,8 +194,18 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                             val productTitleList = productTitle.split("|")
                             binding.prand.text = productTitleList[0]
                             binding.title.text = productTitleList.drop(1).joinToString(" | ")
-                            produsctDetailsAdapter.submitList(data.images.edges)
+
+                            //images
+//                            produsctDetailsAdapter.submitList(data.images.edges)
                             seelectedImage = data.images.edges[0].node.url.toString()
+                            // Set up your adapter
+                            val adapter = ProductDetailsAdapter(data.images.edges)
+                            viewPager.adapter = adapter
+                            binding.circular.setViewPager(viewPager)
+                            // Link TabLayout with ViewPager2
+                            TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
+
+
                             binding.productDescription.text = data.description
                             binding.productPrice.text =
                                 productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount.toString() + " " + productVariants!![0].node.presentmentPrices.edges[0].node.price.currencyCode

@@ -126,6 +126,8 @@ class UserLocalProfileData(context: Context) : UserLocalProfileDataInterface {
     }
     override fun deleteUserData() {
         profileDataEditor.clear()
+        loginStatusEditor.clear()
         profileDataEditor.apply()
+        loginStatusEditor.apply()
     }
 }

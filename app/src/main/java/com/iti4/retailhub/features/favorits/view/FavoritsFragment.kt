@@ -69,14 +69,10 @@ lateinit var favoritesAdapter:FavoritsDiffUtilAdapter
 
         if (userAuthViewModel.isguestMode()){
            binding.guestf.visibility=View.VISIBLE
-            binding.messagef.text="login first to see your favorites"
             binding.btnOkayf.setOnClickListener {
                 val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
                 intent.putExtra("guest","guest")
                 startActivity(intent)
-            }
-            binding.btnCancelf.setOnClickListener {
-                Navigation.findNavController(view).navigate(R.id.homeFragment)
             }
         }else{
             favoritesAdapter = FavoritsDiffUtilAdapter(requireContext(),this)
@@ -102,6 +98,7 @@ private fun savedFavoritesCollect(){
 
 
                     binding.favoritProgress.visibility = View.GONE
+
                     Log.d("fav", "onViewCreated:${data} ")
 
 
@@ -113,6 +110,7 @@ private fun savedFavoritesCollect(){
                         binding.lottibagAnimation.visibility=View.VISIBLE
                     }else{
                         binding.lottibagAnimation.visibility=View.GONE
+                        binding.favoritsRecycleView.visibility=View.VISIBLE
                     }
                 }
 
@@ -149,7 +147,8 @@ private fun savedFavoritesCollect(){
 
         val btnYes: Button = dialog.findViewById(R.id.btnYes)
         val btnNo: Button = dialog.findViewById(R.id.btnNo)
-
+val tvmessage=dialog.findViewById<TextView>(R.id.tvMessage)
+        tvmessage.text="Are you sure you want to delete this product?"
         btnYes.setOnClickListener {
             deleteFavoritProduct(id)
             dialog.dismiss()

@@ -19,14 +19,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/productImages"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
                 android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <me.relex.circleindicator.CircleIndicator3
+                android:id="@+id/circular"
+                android:layout_width="match_parent"
+                android:padding="2dp"
+                android:layout_height="wrap_content"
+                app:ci_drawable="@drawable/active_indicator"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:ci_drawable_unselected="@drawable/inactive_indicator"
+                app:layout_constraintTop_toBottomOf="@+id/viewPager" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+android:background="@color/white"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/viewPager" />
+
+
 
             <TextView
                 android:id="@+id/title"
@@ -45,7 +69,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:text="dsad"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +131,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/frameLayout4"
                 app:layout_constraintHorizontal_bias="0.635"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/productImages">
+                app:layout_constraintTop_toBottomOf="@+id/circular">
 
                 <TextView
                     android:id="@+id/textView9"
@@ -156,7 +179,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="41dp"/>
+                    android:layout_marginStart="41dp" />
 
                 <ImageView
                     android:layout_width="15dp"

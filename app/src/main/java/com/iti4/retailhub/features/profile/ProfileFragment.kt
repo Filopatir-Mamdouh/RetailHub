@@ -1,12 +1,18 @@
 package com.iti4.retailhub.features.profile
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.AdapterView
+import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
@@ -28,7 +34,7 @@ class ProfileFragment : Fragment() {
     private val viewModel: ProfileViewModel by viewModels()
     private val authuntication: UserAuthunticationViewModelViewModel by viewModels()
 
-
+lateinit var intent:Intent
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,19 +53,15 @@ class ProfileFragment : Fragment() {
             resources,
             findNavController()
         )
-        val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+         intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
         binding.profileAppbar.collapsedPageName.visibility = View.GONE
         if (authuntication.isguestMode()) {
             binding.guestpp.visibility = View.VISIBLE
-            binding.messagepp.text = "login first to see your profile"
             binding.btnOkaypp.setOnClickListener {
 
                 intent.putExtra("guest","guest")
                 startActivity(intent)
                 requireActivity().finish()
-            }
-            binding.btnCancelpp.setOnClickListener {
-                Navigation.findNavController(view).navigate(R.id.homeFragment)
             }
         } else {
         binding.profileOrderBtn.setOnClickListener {
@@ -74,11 +76,9 @@ class ProfileFragment : Fragment() {
             }
             isExpanded = !isExpanded
         }
-
+//--------------------------------------------------------
 binding.profileLogoutBtn.setOnClickListener {
-    viewModel.signOut()
-    startActivity(intent)
-    requireActivity().finish()
+    showLoginOutAlert()
 }
         binding.profileShippingBtn.setOnClickListener{
             val bundle = Bundle().apply {
@@ -88,7 +88,33 @@ binding.profileLogoutBtn.setOnClickListener {
                 .navigate(R.id.addressFragment, bundle)
         }
     }}
+    private fun showLoginOutAlert() {
+        val dialog = Dialog(requireContext())
 
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+
+        dialog.setContentView(R.layout.favorit_delete_alert)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btnYes)
+        val btnNo: Button = dialog.findViewById(R.id.btnNo)
+        val tvmessage=dialog.findViewById<TextView>(R.id.tvMessage)
+        tvmessage.text="Are you sure you want to loginout?"
+        btnYes.setOnClickListener {
+            viewModel.signOut()
+            startActivity(intent)
+            requireActivity().finish()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
     private fun setupSpinner() {
 
         val options = listOf(

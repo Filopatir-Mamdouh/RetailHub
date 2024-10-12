@@ -48,15 +48,11 @@ class MyBagFragment : Fragment(), OnClickMyBag {
         super.onViewCreated(view, savedInstanceState)
         if (userAuthViewModel.isguestMode()) {
             binding.guestb.visibility = View.VISIBLE
-            binding.messageb.text = "login first to see your bag items"
             binding.btnOkayb.setOnClickListener {
                 val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
                 intent.putExtra("guest","guest")
                 startActivity(intent)
                 requireActivity().finish()
-            }
-            binding.btnCancelb.setOnClickListener {
-                Navigation.findNavController(view).navigate(R.id.homeFragment)
             }
         } else {
             conversionRate = viewModel.getConversionRates(viewModel.getCurrencyCode())

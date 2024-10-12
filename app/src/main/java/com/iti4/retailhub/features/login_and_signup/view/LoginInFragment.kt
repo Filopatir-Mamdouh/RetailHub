@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.navigation.fragment.findNavController
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.iti4.retailhub.MainActivity
+import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentLoginInBinding
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
@@ -42,23 +44,32 @@ class LoginInFragment : Fragment() {
         customLoadingDialog = CustomLoadingDialog(requireContext())
         customMesssageDialog = CustomMessageDialog(requireContext())
 
+        loginUpBinding.back.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
         loginUpBinding.sigInBtn.setOnClickListener {
+            loginUpBinding.emailTextInput.isErrorEnabled  = false// Clear error message
+            loginUpBinding.passowrdTex.isErrorEnabled  = false
             loginUpBinding.emailTextInput.error = null // Clear error message
             loginUpBinding.passowrdTex.error = null // Clear error message
             val email = loginUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
             val password = loginUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
             if (email.isEmpty()) {
+                loginUpBinding.emailTextInput.isErrorEnabled  = true
                 loginUpBinding.emailTextInput.error = "Please enter your email"
                 return@setOnClickListener
             } else if (!email.matches(EMAIL_REGEX.toRegex())) {
+                loginUpBinding.emailTextInput.isErrorEnabled  = true
                 loginUpBinding.emailTextInput.error = "Invalid email format"
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
+                loginUpBinding.passowrdTex.isErrorEnabled  = true
                 loginUpBinding.passowrdTex.error = "Please enter your password"
                 return@setOnClickListener
             } else if (password.length < 6) {
+                loginUpBinding.passowrdTex.isErrorEnabled  = true
                 loginUpBinding.passowrdTex.error = "Password must be at least 6 characters"
                 return@setOnClickListener
             }
@@ -86,6 +97,7 @@ class LoginInFragment : Fragment() {
                         userAuthViewModel.setLoginStatus("login")
                         val intent= Intent(requireContext(), MainActivity::class.java)
                         startActivity(intent)
+                        requireActivity().finish()
                     }
                     is AuthState.Messages -> {
                         if (authResultState.error!="Idle") {
@@ -97,7 +109,6 @@ class LoginInFragment : Fragment() {
                                 customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
                             }else {
-                                loginUpBinding.emailTextInput.error= authResultState.error
                                 Toast.makeText(
                                     requireContext(),
                                     authResultState.error,

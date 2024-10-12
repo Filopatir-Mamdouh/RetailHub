@@ -2,6 +2,7 @@ package com.iti4.retailhub.features.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,8 @@ class SplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
             delay(3000)
-            if(viewModel.isUserLoggedIn()||receivedString=="guest"){
+            Log.d("p00000000000000000", "onViewCreated:${viewModel.isUserLoggedIn()} ")
+            if((!viewModel.isUserLoggedIn())||receivedString=="guest"){
                 //navigate to home fragment
                 findNavController(view).navigate(R.id.action_splashFragment_to_signUpFragment)
             }else{
@@ -48,6 +50,15 @@ class SplashFragment : Fragment() {
                 startActivity(intent)
                 requireActivity().finish()
             }
+           /* if((!viewModel.isUserLoggedIn())||receivedString=="guest"){
+                //navigate to home fragment
+                findNavController(view).navigate(R.id.action_splashFragment_to_signUpFragment)
+            }else{
+                //navigate to login fragment
+                val intent= Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            }*/
         }
     }
 }
