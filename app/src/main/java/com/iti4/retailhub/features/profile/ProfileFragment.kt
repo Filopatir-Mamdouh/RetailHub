@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
@@ -52,9 +53,16 @@ class ProfileFragment : Fragment() {
         }
         binding.profileSettingsBtn.setOnClickListener {
             if (!isExpanded) {
-                binding.expandableLayout.visibility = View.VISIBLE
+                binding.apply{
+                    expandableLayout.visibility = View.VISIBLE
+                    profileSettingsBtn.setCompoundDrawables(null, null, ResourcesCompat.getDrawable(resources, R.drawable.baseline_keyboard_arrow_down_24, null), null)
+                }
+
             } else {
-                binding.expandableLayout.visibility = View.GONE
+                binding.apply{
+                    expandableLayout.visibility = View.GONE
+                    profileSettingsBtn.setCompoundDrawables(null, null, ResourcesCompat.getDrawable(resources, R.drawable.baseline_arrow_forward_ios_24, null), null)
+                }
             }
             isExpanded = !isExpanded
         }

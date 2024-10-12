@@ -11,16 +11,13 @@
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:backgroundTint="@color/transparent"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:text="Log out"
         android:textAlignment="viewStart"
         android:textColor="@color/red_color"
         android:textSize="16sp"
-        app:icon="@drawable/baseline_arrow_forward_ios_24"
         app:iconGravity="end"
-        app:iconTint="@color/black_variant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +135,7 @@
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:backgroundTint="@color/transparent"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+        android:drawableTint="@color/black_variant"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:text="Settings"
@@ -187,7 +184,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider">
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        tools:visibility="visible">
 
 
         <TextView
@@ -195,23 +193,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
             android:fontFamily="@font/metropolis_medium"
             android:text="@string/Currency"
             android:textColor="@color/grey"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/spinnerCurrency"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></TextView>
+            app:layout_constraintTop_toTopOf="@+id/spinnerCurrency"></TextView>
 
         <Spinner
             android:id="@+id/spinnerCurrency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/textView32"
-            app:layout_constraintTop_toTopOf="@+id/textView32"
-            app:layout_constraintVertical_bias="0.833"
-            tools:layout_editor_absoluteX="273dp" />
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.833" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
