@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/myBagFragment"
-        android:name="com.iti4.retailhub.features.mybag.MyBagFragment"
+        android:name="com.iti4.retailhub.features.mybag.view.MyBagFragment"
         android:label="fragment_my_bag"
         tools:layout="@layout/fragment_my_bag" >
         <action

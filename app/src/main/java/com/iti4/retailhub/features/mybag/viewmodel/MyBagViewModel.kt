@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.mybag.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,7 +32,7 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     private val _myBagProductsUpdate = MutableStateFlow<ApiState>(ApiState.Loading)
     val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
 
-        val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
+    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
 
     fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {

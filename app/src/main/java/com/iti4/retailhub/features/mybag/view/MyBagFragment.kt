@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.mybag.view
 
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +18,8 @@ import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.mybag.OnClickMyBag
+import com.iti4.retailhub.features.mybag.viewmodel.MyBagViewModel
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.AndroidEntryPoint

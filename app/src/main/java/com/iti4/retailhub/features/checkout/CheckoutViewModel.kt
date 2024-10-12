@@ -61,7 +61,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 }
                 .collect {
                     if (it.email.isNullOrEmpty())
-                        _customerDataResponse.emit(ApiState.Error(throw Exception("Customer not found")))
+                        _customerDataResponse.emit(ApiState.Error(Exception("invalid data")))
                     else {
                         customerName = it.firstName + it.lastName
                         customerEmail = it.email!!
@@ -88,8 +88,6 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         checkoutAddress: CustomerAddressV2?,
         checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
     ) {
-        //    val customerData = CustomerInput("customer_id:6945540800554")
-
         viewModelScope.launch(dispatcher) {
             val lineItems = listOfCartProduct.map { it.toLineItem() }
             var discount: DiscountInput? = null
@@ -129,45 +127,35 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
             )
             listOfCartProduct.forEach {
                 repository.deleteMyBagItem(it.draftOrderId).catch {
-                    Log.i("here", "deleteMyBagItem: " + it.message)
                 }.collect {
-                    Log.i("here", "deleteMyBagItem: " + it.deletedId)
                 }
             }
             repository.createCheckoutDraftOrder(draftOrderInputModel)
                 .catch { e ->
-                    Log.i("here", "he big one:: " + e)
                     _checkoutDraftOrderCreated.emit(ApiState.Error(e))
                 }.collect { draftId ->
-                    Log.i("here", "the big one: " + draftId)
                     repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
-                        Log.i("here", "emailCheckoutDraftOrder: " + it.id)
                         repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
                             .collect { responseFromComplete ->
-                                Log.i("here", "completeCheckoutDraftOrder: ")
                                 if (discount != null) {
                                     repository.setCustomerUsedDiscounts(
                                         customerId,
                                         discount.valueType
                                     )
                                         .collect {
-                                            Log.i("here", "setCustomerUsedDiscounts: ")
                                         }
                                 }
                                 if (isCard) {
                                     repository.markOrderAsPaid(responseFromComplete.order!!.id)
                                         .collect {
-                                            Log.i("here", "markOrderAsPaid: ")
                                         }
                                 }
                                 repository.deleteMyBagItem(responseFromComplete.id).collect {
-                                    Log.i("here", "deleteMyBagItem: ")
                                     _checkoutDraftOrderCreated.emit(ApiState.Success(it))
                                 }
                             }
                     }
                 }
-
         }
     }
 

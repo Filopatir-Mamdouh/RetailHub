@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.mybag.view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.iti4.retailhub.CustomDialog
 import com.iti4.retailhub.databinding.RvMybagProductItemBinding
+import com.iti4.retailhub.features.mybag.OnClickMyBag
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.CountryCodes
-import com.iti4.retailhub.type.CurrencyCode
 
 
 class DiffUtilProduct : DiffUtil.ItemCallback<CartProduct>() {
