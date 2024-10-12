@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,7 +58,7 @@ lateinit var adapter: NewItemAdapter
     private var conversionRate: Double = 0.0
     private var currentPosition = 0
     private var autoScrollJob: Job? = null // Job for the coroutine
-var homeProductList= emptyList<HomeProducts>()
+
     private lateinit var adsAdapter: AdsViewPagerAdapter
     private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
@@ -157,7 +158,7 @@ var homeProductList= emptyList<HomeProducts>()
             }
         }
     }
-private fun getFavorites() {
+private fun getFavorites(){
     favoritesViewModel.getFavorites()
     lifecycleScope.launch {
         favoritesViewModel.savedFavortes.collect { item ->
@@ -165,14 +166,8 @@ private fun getFavorites() {
                 is ApiState.Success<*> -> {
                     val data = item.data as GetCustomerFavoritesQuery.Customer
                     val favoritList = data.metafields.nodes.filter { it.key == "favorites" }
-// Create a set of favorite product IDs for faster lookup
-                    val favoriteIds = favoritList.mapNotNull { it.namespace }.toSet()
 
-                    // Update isInFavorites for each product in data
-                    val updatedData = homeProductList.map { product ->
-                        product.copy(isInFavorites = favoriteIds.contains(product.id))
-                    }
-                    adapter.submitList(updatedData)
+                    adapter.updateFavorites(favoritList)
 
                 }
                 is ApiState.Error -> {
@@ -197,7 +192,6 @@ private fun getFavorites() {
                         is ApiState.Success<*> -> {
                             binding.animationView.visibility = View.GONE
                             val data = item.data as List<HomeProducts>
-                            homeProductList=data
                             displayNewItemRowData(data)
                         }
 
@@ -223,11 +217,9 @@ private fun getFavorites() {
             title.text = getString(R.string.new_item)
             subtitle.text = getString(R.string.you_ve_never_seen_it_before)
             recyclerView.adapter = adapter
-
+            adapter.submitList(data)
             if (!userAuthViewModel.isguestMode()) {
                 getFavorites()
-            }else{
-                adapter.submitList(data)
             }
         }
     }
@@ -307,7 +299,7 @@ private fun getFavorites() {
                            )
                                .show()
                            Log.d("fav", "onViewCreated:${data} ")
-                           getFavorites()
+                           favoritesViewModel.getFavorites()
                        }
 
                        is ApiState.Error -> {
