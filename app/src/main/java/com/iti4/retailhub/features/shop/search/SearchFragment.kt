@@ -160,7 +160,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     }
 
     private fun search(){
-        val finalQuery = StringBuilder().append(filterQuery).append(" $query").append(" AND $typeQuery").toString()
+        val finalQuery = StringBuilder().append(query).append(" $filterQuery").append(" AND $typeQuery").toString()
         Log.d("Filo", "search: $finalQuery")
         viewModel.searchProducts(finalQuery)
     }
@@ -193,7 +193,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
             }
             editTextText.setOnKeyListener { _, key, _ ->
                 if (key == KeyEvent.KEYCODE_ENTER) {
-                    query = "title: ${editTextText.text}"
+                    query = if (editTextText.text.isEmpty()) "" else "title:${editTextText.text}"
                     search()
                     searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
                         collapsedPageName.alpha = 1f

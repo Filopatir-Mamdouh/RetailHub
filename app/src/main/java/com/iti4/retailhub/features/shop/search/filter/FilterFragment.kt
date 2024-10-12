@@ -40,7 +40,7 @@ class FilterFragment : Fragment(), FilterBrandsCommunicator {
         }
         binding.applyBtn.setOnClickListener {
             binding.apply {
-                query+= " price:>=${rangeSlider.values[0].toInt()} price:<=${rangeSlider.values[1].toInt()}"
+                query+= " price:>=${rangeSlider.values[0].toInt()} price:<=${rangeSlider.values[1].toInt()} "
                 query += if (chipGroup3.checkedChipId == View.NO_ID) "" else view.findViewById<Chip>(chipGroup3.checkedChipId).text.toString()
             }
             findNavController().navigate(R.id.action_filterFragment_to_searchFragment, bundleOf("query" to query))
