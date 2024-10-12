@@ -23,7 +23,7 @@ import javax.inject.Inject
 class MyBagViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
     private val _myBagProducts = MutableStateFlow<ApiState>(ApiState.Loading)
-    val products = _myBagProducts.onStart { }
+    val myBagProductsState = _myBagProducts.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
     private val _myBagProductsRemove = MutableStateFlow<ApiState>(ApiState.Loading)

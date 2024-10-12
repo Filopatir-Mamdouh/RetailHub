@@ -46,7 +46,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon {
+class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnClickNavigate {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
@@ -315,7 +315,6 @@ private fun getFavorites(){
             favoritesViewModel.deletedFavortes.collect { item ->
 
                 when (item) {
-
                     is ApiState.Success<*> -> {
                         Toast.makeText(
                             requireContext(),
@@ -325,7 +324,6 @@ private fun getFavorites(){
                             .show()
                         favoritesViewModel.getFavorites()
                     }
-
                     is ApiState.Error -> {
                         Toast.makeText(
                             requireContext(),
@@ -334,7 +332,6 @@ private fun getFavorites(){
                         )
                             .show()
                     }
-
                     is ApiState.Loading -> {}
                 }
             }

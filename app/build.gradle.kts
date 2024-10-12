@@ -136,7 +136,23 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    //Timber
+    implementation ("com.jakewharton.timber:timber:5.0.1")
+
+    // hamcrest // for assertion functions
+    testImplementation ("org.hamcrest:hamcrest:3.0")
+
+
     testImplementation(libs.junit)
+    // for android core features in unit testing like using context and stuff
+    testImplementation ("org.robolectric:robolectric:4.13")
+    // for mocking classes instead of creating fake repos
+    testImplementation("io.mockk:mockk:1.13.13")
+    // for dispatches
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    // for using coroutines in testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

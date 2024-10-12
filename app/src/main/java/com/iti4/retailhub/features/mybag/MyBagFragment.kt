@@ -46,7 +46,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             MyBagProductRecyclerViewAdapter(this, viewModel.getCurrencyCode(), conversionRate!!)
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.products.collect { item ->
+                viewModel.myBagProductsState.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
 
