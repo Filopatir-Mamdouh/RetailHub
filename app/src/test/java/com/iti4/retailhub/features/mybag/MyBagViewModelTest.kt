@@ -238,7 +238,33 @@ class MyBagViewModelTest {
     }
 
 
+    @Test
+    fun `test getConversionRates returns default value when no rate exists`() {
+        val countryCode = CountryCodes.USD
+        val defaultRate = 1.0
+        every { repository.getConversionRates(countryCode) } returns defaultRate
+        val actualRate = viewModel.getConversionRates(countryCode)
+        assertThat(actualRate, closeTo(defaultRate, 0.0));
+        verify(exactly = 1) { repository.getConversionRates(countryCode) }
+    }
 
+
+    @Test
+    fun `test getCurrencyCode returns correct value from shared preferences`() {
+        val expectedCountryCode = CountryCodes.USD
+        every { repository.getCurrencyCode() } returns expectedCountryCode
+        val actualCountryCode = viewModel.getCurrencyCode()
+        assertThat(actualCountryCode, `is`(expectedCountryCode))
+        verify(exactly = 1) { repository.getCurrencyCode() }
+    }
+
+    @Test
+    fun `test getCurrencyCode returns default value from shared preferences`() {
+        every { repository.getCurrencyCode() } returns CountryCodes.EGP
+        val actualCountryCode = viewModel.getCurrencyCode()
+        assertThat(actualCountryCode, `is`(CountryCodes.EGP))
+        verify(exactly = 1) { repository.getCurrencyCode() }
+    }
 
 
 
