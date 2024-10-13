@@ -4,14 +4,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -25,7 +23,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
-import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.databinding.FragmentHomeBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
@@ -43,15 +40,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon {
+class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnClickNavigate {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
-lateinit var adapter: NewItemAdapter
+    lateinit var adapter: NewItemAdapter
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0
     private var currentPosition = 0
@@ -70,12 +68,12 @@ lateinit var adapter: NewItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-      
 
-        
+
+        favoritesViewModel.getFavorites()
         currencyCode = viewModel.getCurrencyCode()
         conversionRate = viewModel.getConversionRates(currencyCode)
-        adapter = NewItemAdapter(this@HomeFragment, emptyList(),currencyCode,conversionRate)
+        adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate)
         displayAds()
         getHomeProducts()
         // viewModel.getFavorites()
@@ -147,36 +145,38 @@ lateinit var adapter: NewItemAdapter
             }
         }
     }
-private fun getFavorites(){
-    favoritesViewModel.getFavorites()
-    lifecycleScope.launch {
-        favoritesViewModel.savedFavortes.collect { item ->
-            when (item) {
-                is ApiState.Success<*> -> {
-                    val data = item.data as GetCustomerFavoritesQuery.Customer
-                    val favoritList = data.metafields.nodes.filter { it.key == "favorites" }
-
-                    adapter.updateFavorites(favoritList)
-
-                }
-                is ApiState.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        item.exception.message,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-
-                is ApiState.Loading -> {}
-            }
-        }
-    }
-}
+//private fun getFavorites(){
+//    favoritesViewModel.getFavorites()
+//    lifecycleScope.launch {
+//        favoritesViewModel.savedFavortes.collect { item ->
+//            when (item) {
+//                is ApiState.Success<*> -> {
+//                    val data = item.data as GetCustomerFavoritesQuery.Customer
+//                    val favoritList = data.metafields.nodes.filter { it.key == "favorites" }
+//
+//                    adapter.updateFavorites(favoritList)
+//
+//                }
+//                is ApiState.Error -> {
+//                    Toast.makeText(
+//                        requireContext(),
+//                        item.exception.message,
+//                        Toast.LENGTH_SHORT
+//                    )
+//                        .show()
+//                }
+//
+//                is ApiState.Loading -> {}
+//            }
+//        }
+//    }
+//}
     private fun getHomeProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.products.collect { item ->
+                viewModel.products.combine(favoritesViewModel.savedFavortes){
+                    products,favorites->
+                    handleProductsAndFavoritesCombination(products,favorites) }.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
                             binding.animationView.visibility = View.GONE
@@ -199,6 +199,29 @@ private fun getFavorites(){
         }
     }
 
+    private fun handleProductsAndFavoritesCombination(products: ApiState, favorites: ApiState): ApiState{
+        if (products is ApiState.Success<*> && favorites is ApiState.Success<*>){
+            val productsList = products.data as List<HomeProducts>
+            val data = favorites.data as GetCustomerFavoritesQuery.Customer
+            val favoritesList = data.metafields.nodes.filter { it.key == "favorites" }
+            val combinedList = productsList.map { product ->
+                favoritesList.forEach {
+                    node -> if(node.key == "favorites" && node.value == product.id){
+                         product.favID = node.id
+                        product.isFav = true
+                    }
+                }
+                return@map product
+            }
+            return ApiState.Success(combinedList)
+        }
+        else if (products is ApiState.Loading || favorites is ApiState.Loading){
+            return ApiState.Loading
+        }
+        else
+            return if (products is ApiState.Error) products else favorites
+    }
+
     private fun displayNewItemRowData(
         data: List<HomeProducts>
     ) {
@@ -207,7 +230,6 @@ private fun getFavorites(){
             subtitle.text = getString(R.string.you_ve_never_seen_it_before)
             recyclerView.adapter = adapter
             adapter.submitList(data)
-            getFavorites()
         }
     }
 
@@ -272,35 +294,37 @@ private fun getFavorites(){
             productId,productId,
             productTitle,selectedImage,price
         )
-        lifecycleScope.launch {
-            productDetailsViewModel.saveProductToFavortes.collect { item ->
-                when (item) {
-                    is ApiState.Success<*> -> {
-                        val data =
-                            item.data as UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
-                        Toast.makeText(
-                            requireContext(),
-                            "Add to your favorites",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        Log.d("fav", "onViewCreated:${data} ")
-                        favoritesViewModel.getFavorites()
-                    }
-
-                    is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            item.exception.message,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-
-                    is ApiState.Loading -> {}
-                }
-            }
-        }
+//        favoritesViewModel.getFavorites()
+        Toast.makeText(requireContext(), "Added to your favorites", Toast.LENGTH_SHORT).show()
+//        lifecycleScope.launch {
+//            productDetailsViewModel.saveProductToFavortes.collect { item ->
+//                when (item) {u
+//                    is ApiState.Success<*> -> {
+//                        val data =
+//                            item.data as UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Add to your favorites",
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+//                        Log.d("fav", "onViewCreated:${data} ")
+//                        favoritesViewModel.getFavorites()
+//                    }
+//
+//                    is ApiState.Error -> {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            item.exception.message,
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+//                    }
+//
+//                    is ApiState.Loading -> {}
+//                }
+//            }
+//        }
     }
 
     override fun navigate(filter: String, productType: String) {
@@ -311,34 +335,36 @@ private fun getFavorites(){
     }
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
         favoritesViewModel.deleteFavorites(pinFavorite)
-        lifecycleScope.launch {
-            favoritesViewModel.deletedFavortes.collect { item ->
-
-                when (item) {
-
-                    is ApiState.Success<*> -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Product Is Deleted",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        favoritesViewModel.getFavorites()
-                    }
-
-                    is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            item.exception.message,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-
-                    is ApiState.Loading -> {}
-                }
-            }
-        }
+//        favoritesViewModel.getFavorites()
+        Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
+//        lifecycleScope.launch {
+//            favoritesViewModel.deletedFavortes.collect { item ->
+//
+//                when (item) {
+//
+//                    is ApiState.Success<*> -> {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Product Is Deleted",
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+//                        favoritesViewModel.getFavorites()
+//                    }
+//
+//                    is ApiState.Error -> {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            item.exception.message,
+//                            Toast.LENGTH_SHORT
+//                        )
+//                            .show()
+//                    }
+//
+//                    is ApiState.Loading -> {}
+//                }
+//            }
+//        }
     }
     override fun copyCoupon(coupon: Discount) {
         if(mainActivityViewModel.copiedCouponsList.none{ it.value==coupon.value}){

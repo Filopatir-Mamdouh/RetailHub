@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -39,8 +38,9 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
             collapsedPageName.visibility = View.GONE
             pageName.text = requireContext().getString(R.string.favorites)
             backButton.setOnClickListener {
-                findNavController().navigateUp()
+                activity?.onBackPressed()
             }
+            imageButton.setOnClickListener { findNavController().navigate(R.id.producSearchFragment) }
         }
     }
     override fun onCreateView(

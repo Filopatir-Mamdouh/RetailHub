@@ -18,17 +18,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.shop.search.adapter.GridViewAdapter
 import com.iti4.retailhub.features.shop.search.adapter.ListViewAdapter
 import com.iti4.retailhub.features.shop.search.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.abs
@@ -36,6 +40,8 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class SearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: SearchViewModel by viewModels()
+    private val favoritesViewModel by viewModels<FavoritesViewModel>()
+    private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0
     private lateinit var binding: FragmentSearchBinding
@@ -60,15 +66,15 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        favoritesViewModel.getFavorites()
         currencyCode = viewModel.getCurrencyCode()
         conversionRate = viewModel.getConversionRates(currencyCode)
         listViewAdapter = ListViewAdapter(this, currencyCode, conversionRate)
         gridViewAdapter = GridViewAdapter(this, currencyCode, conversionRate)
+        onSwitchViewClicked()
         filterQuery = arguments?.getString("query") ?: ""
         typeQuery = arguments?.getString("type") ?: ""
         binding.filterGroup.setOnClickListener { findNavController().navigate(R.id.filterFragment) }
-        onSwitchViewClicked()
         setupDataListener()
         setupChipGroup()
         if (filterQuery.isNotEmpty()){
@@ -81,7 +87,9 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     private fun setupDataListener() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchList.collect {
+                viewModel.searchList.combine(favoritesViewModel.savedFavortes){
+                        products,favorites->
+                    handleProductsAndFavoritesCombination(products,favorites) }.collect {
                     when (it) {
                         is ApiState.Success<*> -> {
                             handleDataResult(it.data as List<HomeProducts>)
@@ -103,6 +111,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
     }
 
     private fun handleDataResult(data: List<HomeProducts>) {
+        Log.d("Filo", "handleDataResult: ${data.size}")
         if (isListView) {
             binding.searchRV.apply {
                 adapter = listViewAdapter
@@ -152,15 +161,21 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         selectedImage: String,
         price: String
     ) {
-        // TODO("Not yet implemented")
+        productDetailsViewModel.saveToFavorites(
+            productId,productId,
+            productTitle,selectedImage,price
+        )
+        Toast.makeText(requireContext(), "Added to your favorites", Toast.LENGTH_SHORT).show()
     }
 
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
-//        TODO("Not yet implemented")
+        favoritesViewModel.deleteFavorites(pinFavorite)
+        Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
     }
 
+
     private fun search(){
-        val finalQuery = StringBuilder().append(filterQuery).append(" $query").append(" AND $typeQuery").toString()
+        val finalQuery = StringBuilder().append(query).append(" $filterQuery").append(" AND $typeQuery").toString()
         Log.d("Filo", "search: $finalQuery")
         viewModel.searchProducts(finalQuery)
     }
@@ -193,7 +208,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
             }
             editTextText.setOnKeyListener { _, key, _ ->
                 if (key == KeyEvent.KEYCODE_ENTER) {
-                    query = "title: ${editTextText.text}"
+                    query = if (editTextText.text.isEmpty()) "" else "title:${editTextText.text}"
                     search()
                     searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
                         collapsedPageName.alpha = 1f
@@ -235,5 +250,28 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
             filterQuery = ""
             search()
         }
+    }
+
+    private fun handleProductsAndFavoritesCombination(products: ApiState, favorites: ApiState): ApiState{
+        if (products is ApiState.Success<*> && favorites is ApiState.Success<*>){
+            val productsList = products.data as List<HomeProducts>
+            val data = favorites.data as GetCustomerFavoritesQuery.Customer
+            val favoritesList = data.metafields.nodes.filter { it.key == "favorites" }
+            val combinedList = productsList.map { product ->
+                favoritesList.forEach {
+                        node -> if(node.key == "favorites" && node.value == product.id){
+                    product.favID = node.id
+                    product.isFav = true
+                }
+                }
+                return@map product
+            }
+            return ApiState.Success(combinedList)
+        }
+        else if (products is ApiState.Loading || favorites is ApiState.Loading){
+            return ApiState.Loading
+        }
+        else
+            return if (products is ApiState.Error) products else favorites
     }
 }

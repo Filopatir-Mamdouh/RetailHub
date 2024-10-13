@@ -5,24 +5,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.INetworkUtils
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
+class MainActivityViewModel @Inject constructor(private val repository: IRepository, private val networkUtils: INetworkUtils) : ViewModel() {
     private val TAG: String = "MainActivityViewModel"
 
     val customerId by lazy { (repository.getUserShopLocalId()!!) }
     private val dispatcher = Dispatchers.IO
+
+    private val _isConnectedToNetwork = MutableStateFlow(false)
+    val isConnectedToNetwork =_isConnectedToNetwork.onStart { checkNetwork() }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     // used for addresses
     var indexOfLastDefaultAddress = 99
@@ -92,6 +100,15 @@ class MainActivityViewModel @Inject constructor(private val repository: IReposit
                 Log.i("here", "getDiscount: No Discounts ")
             }.collect {
                 usedDiscountCodesList = it
+            }
+        }
+    }
+
+    private fun checkNetwork() {
+        viewModelScope.launch {
+            while (true) {
+                _isConnectedToNetwork.emit(networkUtils.isNetworkAvailable())
+                delay(3000)
             }
         }
     }
