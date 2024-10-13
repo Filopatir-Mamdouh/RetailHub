@@ -115,7 +115,7 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
         }
     }
 
-    fun signInWithGoogle() {
+   /* fun signInWithGoogle() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             val intentSender = reposatory.signIn()
@@ -174,7 +174,7 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                 _authState.value = AuthState.Messages("Error: ${e.message}")
             }
         }
-    }
+    }*/
 
 
 
@@ -194,6 +194,50 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
        }else{
            return false
        }
+    }
+
+    fun signWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val user = reposatory.signWithGoogle(idToken)
+                if (user != null) {
+                    reposatory.addUserData(user.uid)
+                    Log.d("UserLocalProfileData", reposatory.getUserProfileData())
+
+
+                    reposatory.getCustomerIdByEmail(user.email.toString()).catch { e ->
+//                        _authState.emit(AuthState.Messages(e.message!!))
+                        Log.d("shopify", "getCustomerIdByEmail: ${e.message}")
+                    }.collect {
+                        Log.d("shopify", "onViewCreated: ${it}")
+                        if (it.edges.isEmpty()) {
+                            reposatory.createUser(
+                                CustomerInput(
+                                    firstName = Optional.present(user.displayName),
+                                    email = Optional.Present(user.email)
+                                )
+                            ).catch { e ->
+                                _authState.emit(AuthState.Messages(e.message!!))
+                                Log.d("shopify", "catch: ${e.message}")
+                            }.collect {
+                                Log.d("shopify", "onViewCreated: ${it}")
+                                reposatory.setLoginStatus("login")
+                                reposatory.addUserShopLocalId(it.customer?.id)
+                                _authState.value = AuthState.Success(user)
+                            }
+                        } else {
+                            reposatory.addUserShopLocalId(it.edges[0].node.id)
+                            _authState.value = AuthState.Success(user)
+                        }
+                    }
+                } else {
+                    _authState.value = AuthState.Messages("Google sign-in failed")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Messages("Error: ${e.message}")
+            }
+        }
     }
 
 }

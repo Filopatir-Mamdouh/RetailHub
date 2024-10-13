@@ -37,6 +37,7 @@ import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter
+import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter.ViewHolder
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.ButtomDialogOnClickListn
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
@@ -145,7 +146,11 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
         getReviewes()
 
-
+        binding.addtocard.setOnClickListener {
+            if (userAuthViewModel.isguestMode()) {
+                showGuestAlert("login to add to your bag")
+            }
+        }
         binding.cardView3.setOnClickListener {
             if (!userAuthViewModel.isguestMode()) {
                 if (addToFavoritsFirstClick) {
@@ -216,7 +221,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                             allColors = productVariants!!
                                 .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
                                 .distinct()
-                            binding.spinnercolor.text = allColors[0]
+                            setColor(allColors[0])
+//                            binding.spinnercolor.text = allColors[0]
                             selectedProductColor = allColors[0]
 
 
@@ -362,11 +368,11 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                             if (!productVariantInBag.isNullOrEmpty()) {
 
                                 isVariantInCustomerDraftOrders = true
-                                binding.addtocard.text = "Open In Your Bag"
+//                                binding.addtocard.text = "Open In Your Bag"
                                 addToBagButtonClickListner(true)
                             }
                         } else {
-                            binding.addtocard.text = "Add To Bag"
+//                            binding.addtocard.text = "Add To Bag"
                             addToBagButtonClickListner(false)
                         }
                     }
@@ -428,17 +434,16 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         }
     }
 
-
+//---------------
     private fun addToBagButtonClickListner(isAdd:Boolean){
         binding.addtocard.setOnClickListener {
             if (!userAuthViewModel.isguestMode()) {
                 if (isAdd) {
-                    findNavController().navigate(com.iti4.retailhub.R.id.myBagFragment)
+//                    findNavController().navigate(com.iti4.retailhub.R.id.myBagFragment)
+                    Toast.makeText(requireContext(), "Item is in your bag", Toast.LENGTH_SHORT).show()
                 } else {
                     addToBag()
                 }
-            }else{
-                showGuestAlert("login to add to your bag")
             }
         }
     }
@@ -479,8 +484,9 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                     when (item) {
                         is ApiState.Success<*> -> {
 //                            val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
-                            binding.addtocard.text = "Open In Your Bag"
+//                            binding.addtocard.text = "Open In Your Bag"
                             addToBagButtonClickListner(true)
+                            Toast.makeText(requireContext(), "Item add to your bag", Toast.LENGTH_SHORT).show()
                         }
                         is ApiState.Error -> {
                             Toast.makeText(requireContext(),"Can't add to bag, try again", Toast.LENGTH_SHORT)
@@ -534,7 +540,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
         }else{
             selectedProductColor=item.toString()
-            binding.spinnercolor.text=item.toString()
+            setColor(item.toString())
+//            binding.spinnercolor.text=item.toString()
             /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id
             Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id} ")
         */
@@ -549,7 +556,19 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         }
         dialog.dismiss()
     }
-
+    private fun setColor(color: String) {
+        when (color.toLowerCase()) {
+            "burgandy" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.burgandy))
+            "red" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.red_color))
+            "white" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.white))
+            "blue" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.blue))
+            "black" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.black))
+            "gray" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.gray))
+            "light_brown" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.light_brown))
+            "beige" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.beige))
+            "yellow" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.yellow))
+        }
+    }
 }
 
 

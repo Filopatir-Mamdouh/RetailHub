@@ -3,6 +3,7 @@ package com.iti4.retailhub.features.login_and_signup.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
@@ -81,7 +85,8 @@ class SignUpFragment : Fragment() {
             userAuthViewModel.createUser(userName, email, password)
         }
         signUpBinding.googleCard.setOnClickListener {
-            userAuthViewModel.signInWithGoogle()
+//            userAuthViewModel.signInWithGoogle()
+            googleSignIn()
         }
 
         signUpBinding.guest.setOnClickListener {
@@ -115,30 +120,55 @@ class SignUpFragment : Fragment() {
                             }else {
                                 Toast.makeText(
                                     requireContext(),
-                                    authResultState.error,
+                                    "No internet connection",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
                         }
                     }
-                    is AuthState.SignInIntent -> {
+                  /*  is AuthState.SignInIntent -> {
                         customLoadingDialog.dismiss()
                         val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
                         signInResultLauncher.launch(request)
-                    }
+                    }*/
 
                 }
             }
         }
     }
     }
-    private val signInResultLauncher = registerForActivityResult(
+   /* private val signInResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             if (result.data != null){
             userAuthViewModel.handleSignInResult(result.data!!)
                 }
+        }
+    }*/
+   private fun googleSignIn(){
+       val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+           .requestIdToken(getString(R.string.default_web_client_id))
+           .requestEmail()
+           .build()
+       val client = GoogleSignIn.getClient(requireActivity(), options)
+       val signInIntent = client.signInIntent
+       startActivityForResult(signInIntent, 1234)
+   }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 1234 && resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                account?.idToken?.let { idToken ->
+                    userAuthViewModel.signWithGoogle(idToken)
+                }
+            } catch (e: ApiException) {
+                Log.e("LoginInFragment", "Google sign-in failed", e)
+            }
         }
     }
 

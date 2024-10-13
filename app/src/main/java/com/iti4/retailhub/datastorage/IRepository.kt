@@ -65,8 +65,8 @@ interface IRepository {
     suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult?
      fun loginOut(): Boolean
     suspend fun sendEmailVerification(user: FirebaseUser): Boolean
-    suspend fun signIn(): IntentSender?
-    suspend fun signInWithIntent(intent: Intent): AuthResult?
+   /* suspend fun signIn(): IntentSender?
+    suspend fun signInWithIntent(intent: Intent): AuthResult?*/
 
     fun addUserName(name: String): Int
     fun addUserData(userID: String): Int
@@ -125,4 +125,5 @@ interface IRepository {
     fun getOrderDetails(id: String): Flow<OrderDetails>
     abstract fun setLoginStatus(loginStatus: String)
     fun getLoginStatus(): String?
+    suspend fun signWithGoogle(idToken: String): FirebaseUser?
 }

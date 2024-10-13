@@ -155,13 +155,13 @@ class Repository @Inject constructor(
         return userAuthuntication.sendEmailVerification(user)
     }
 
-    override suspend fun signIn(): IntentSender? {
+    /*override suspend fun signIn(): IntentSender? {
         return userAuthuntication.signIn()
     }
 
     override suspend fun signInWithIntent(intent: Intent): AuthResult? {
         return userAuthuntication.signInWithIntent(intent)
-    }
+    }*/
 
     override fun addUserName(name: String): Int {
         return UserLocalProfileData.addUserName(name)
@@ -321,6 +321,9 @@ class Repository @Inject constructor(
 
     override fun getOrderDetails(id: String): Flow<OrderDetails> {
         return remoteDataSource.getOrderDetails(id)
+    }
+    override suspend fun signWithGoogle(idToken:String): FirebaseUser? {
+        return userAuthuntication.signWithGoogle(idToken)
     }
 
 }
