@@ -16,14 +16,8 @@ import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.address.AddressViewModel
-import com.iti4.retailhub.logic.NetworkUtils
 import com.iti4.retailhub.models.CurrencyResponse
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -31,7 +25,6 @@ import retrofit2.Response
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val _isConnectedToNetwork = MutableStateFlow(false)
     private val sharedViewModel: AddressViewModel by viewModels()
     private val viewModel by viewModels<MainActivityViewModel>()
 
@@ -46,7 +39,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val isConnectedToNetwork =_isConnectedToNetwork.onStart { checkNetwork() }.stateIn(lifecycleScope, SharingStarted.Eagerly, false)
         binding.navigationView.apply {
             setOnItemSelectedListener { menuItem ->
                 val navController = Navigation.findNavController(this@MainActivity, R.id.fragmentContainerView2)
@@ -62,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         }
         val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
         lifecycleScope.launch {
-            isConnectedToNetwork.collect{ networkState ->
+            viewModel.isConnectedToNetwork.collect{ networkState ->
                 if(networkState){
                     fragments?.forEach{
                         it.view?.isEnabled = true
@@ -121,15 +113,6 @@ class MainActivity : AppCompatActivity() {
 
     fun showBottomNavBar() {
         binding.navigationView.visibility = View.VISIBLE;
-    }
-
-    private fun checkNetwork() {
-        lifecycleScope.launch {
-            while (true) {
-                _isConnectedToNetwork.emit(NetworkUtils.isNetworkAvailable(this@MainActivity))
-                delay(3000)
-            }
-        }
     }
 
     fun initCurrencyRatesListen() {

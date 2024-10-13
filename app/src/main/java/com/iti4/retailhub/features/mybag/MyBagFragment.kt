@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iti4.retailhub.MainActivityViewModel
@@ -156,6 +157,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             backButton.setOnClickListener {
                 activity?.onBackPressed()
             }
+            imageButton.setOnClickListener { findNavController().navigate(R.id.producSearchFragment) }
         }
     }
 

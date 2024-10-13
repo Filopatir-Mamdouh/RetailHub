@@ -15,13 +15,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProducSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.home.OnClickGoToDetails
-import com.iti4.retailhub.models.Discount
+import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -29,6 +32,9 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private val viewModel: ProductSEarchViewModel by viewModels()
     private lateinit var binding: FragmentProducSearchBinding
     private var currentList = emptyList<HomeProducts>()
+    private val favoritesViewModel by viewModels<FavoritesViewModel>()
+    private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
+
 
     //    private var isListView = true
     var isratingbarevisible = false
@@ -48,6 +54,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        favoritesViewModel.getFavorites()
         Log.d("search", "onViewCreated:${arguments} ")
         if (arguments != null) {
             viewModel.searchProducts(arguments?.getString("query").toString())
@@ -121,7 +128,9 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private fun setupDataListener() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchList.collect {
+                viewModel.searchList.combine(favoritesViewModel.savedFavortes){
+                        products,favorites->
+                    handleProductsAndFavoritesCombination(products,favorites) }.collect {
                     when (it) {
                         is ApiState.Success<*> -> {
                             Log.d("search", "setupDataListener:${it} ")
@@ -145,6 +154,29 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
                 }
             }
         }
+    }
+
+    private fun handleProductsAndFavoritesCombination(products: ApiState, favorites: ApiState): ApiState{
+        if (products is ApiState.Success<*> && favorites is ApiState.Success<*>){
+            val productsList = products.data as List<HomeProducts>
+            val data = favorites.data as GetCustomerFavoritesQuery.Customer
+            val favoritesList = data.metafields.nodes.filter { it.key == "favorites" }
+            val combinedList = productsList.map { product ->
+                favoritesList.forEach {
+                        node -> if(node.key == "favorites" && node.value == product.id){
+                    product.favID = node.id
+                    product.isFav = true
+                }
+                }
+                return@map product
+            }
+            return ApiState.Success(combinedList)
+        }
+        else if (products is ApiState.Loading || favorites is ApiState.Loading){
+            return ApiState.Loading
+        }
+        else
+            return if (products is ApiState.Error) products else favorites
     }
 
     /*private fun handleDataResult(data: List<HomeProducts>){
@@ -192,11 +224,16 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         selectedImage: String,
         price: String
     ) {
-
+        productDetailsViewModel.saveToFavorites(
+            productId,productId,
+            productTitle,selectedImage,price
+        )
+        Toast.makeText(requireContext(), "Added to your favorites", Toast.LENGTH_SHORT).show()
     }
 
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
-
+        favoritesViewModel.deleteFavorites(pinFavorite)
+        Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
     }
 
 }
