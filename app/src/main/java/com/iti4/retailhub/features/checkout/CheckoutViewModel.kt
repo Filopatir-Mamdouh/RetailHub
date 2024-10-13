@@ -99,31 +99,31 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         } else null
     }
 
-    fun createCheckoutDraftOrder(
-        listOfCartProduct: List<CartProduct>,
-        isCard: Boolean,
-        checkoutAddress: CustomerAddressV2?,
-        checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
-    ) {
-        viewModelScope.launch(dispatcher) {
-            try {
-                val draftOrderInputModel = createDraftOrderInputModel(
-                    listOfCartProduct,
-                    checkoutAddress,
-                    checkoutDefaultAddress
-                )
+        fun createCheckoutDraftOrder(
+            listOfCartProduct: List<CartProduct>,
+            isCard: Boolean,
+            checkoutAddress: CustomerAddressV2?,
+            checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
+        ) {
+            viewModelScope.launch(dispatcher) {
+                try {
+                    val draftOrderInputModel = createDraftOrderInputModel(
+                        listOfCartProduct,
+                        checkoutAddress,
+                        checkoutDefaultAddress
+                    )
 
-                // Delete items from the bag
-                deleteCartItems(listOfCartProduct)
+                    // Delete items from the bag
+                    deleteCartItems(listOfCartProduct)
 
-                // Create the draft order and handle checkout
-                handleCheckoutProcess(draftOrderInputModel, isCard)
+                    // Create the draft order and handle checkout
+                    handleCheckoutProcess(draftOrderInputModel, isCard)
 
-            } catch (e: Exception) {
-                _checkoutDraftOrderCreated.emit(ApiState.Error(e))
+                } catch (e: Exception) {
+                    _checkoutDraftOrderCreated.emit(ApiState.Error(e))
+                }
             }
         }
-    }
 
     // creates an input for the main method
     fun createDraftOrderInputModel(
@@ -175,7 +175,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     }
 
 
-    private suspend fun handleCheckoutProcess(
+    suspend fun handleCheckoutProcess(
         draftOrderInputModel: DraftOrderInputModel,
         isCard: Boolean
     ) {
@@ -188,7 +188,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
             }
     }
 
-    private suspend fun completeCheckout(
+    suspend fun completeCheckout(
         draftOrderId: String,
         isCard: Boolean
     ) {
@@ -205,7 +205,6 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
             }
     }
 
-    // 7. Apply discount if available
     suspend fun setCustomerUsedDiscount() {
         selectedDiscount?.let {
             repository.setCustomerUsedDiscounts(customerId, selectedDiscount!!.title)
@@ -224,7 +223,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
     }
 
     // 9. Finalize the order and emit success
-    private suspend fun finalizeOrder(orderId: String) {
+    suspend fun finalizeOrder(orderId: String) {
         repository.deleteMyBagItem(orderId)
             .catch { e -> _checkoutDraftOrderCreated.emit(ApiState.Error(e)) }.collect {
                 _checkoutDraftOrderCreated.emit(ApiState.Success(it))

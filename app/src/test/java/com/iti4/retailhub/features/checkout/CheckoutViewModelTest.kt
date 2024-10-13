@@ -1,7 +1,10 @@
 package com.iti4.retailhub.features.checkout
 
 import com.iti4.retailhub.AddTagsMutation
+import com.iti4.retailhub.CompleteDraftOrderMutation
+import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
+import com.iti4.retailhub.DraftOrderInvoiceSendMutation
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.MarkAsPaidMutation
@@ -12,9 +15,13 @@ import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.CustomerInputModel
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DiscountInput
+import com.iti4.retailhub.models.DraftOrderInputModel
+import io.mockk.MockKAnnotations
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
@@ -23,6 +30,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -30,13 +38,17 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withTimeout
+import okhttp3.ResponseBody
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
+import retrofit2.Response
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -49,6 +61,7 @@ class CheckoutViewModelTest {
 
     @Before
     fun setup() {
+        MockKAnnotations.init(this)
         every { repository.getUserShopLocalId() } returns "123"
         Dispatchers.setMain(testDispatcher)
         viewModel = CheckoutViewModel(repository)
@@ -357,13 +370,7 @@ class CheckoutViewModelTest {
         assertEquals("123", draftOrderInputModel.customer!!.id)
         assertEquals("ahmed@gmail.com", draftOrderInputModel.email)
     }
-    /*    private suspend fun setCustomerUsedDiscount() {
-        selectedDiscount?.let {
-            repository.setCustomerUsedDiscounts(customerId, selectedDiscount!!.title)
-                .catch { }
-                .collect { }
-        }
-    }*/
+
 
     @Test
     fun `setCustomerUsedDiscount, discount is set successfully`() = runTest {
@@ -380,6 +387,7 @@ class CheckoutViewModelTest {
         viewModel.setCustomerUsedDiscount()
         coVerify { repository.setCustomerUsedDiscounts(viewModel.customerId, discountTitle) }
     }
+
     @Test
     fun `setCustomerUsedDiscount, handles exception when discount setting fails`() = runTest {
         val discountTitle = "test"
@@ -387,7 +395,12 @@ class CheckoutViewModelTest {
             every { title } returns discountTitle
         }
 
-        coEvery { repository.setCustomerUsedDiscounts(any(), any()) } throws Exception("Network error")
+        coEvery {
+            repository.setCustomerUsedDiscounts(
+                any(),
+                any()
+            )
+        } throws Exception("Network error")
         try {
             viewModel.setCustomerUsedDiscount()
         } catch (e: Exception) {
@@ -405,72 +418,288 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun `finalizeOrder emits success when deleteMyBagItem succeeds`()  = runTest {
+    fun `finalizeOrder emits success when deleteMyBagItem succeeds`() = runTest {
         val orderId = "testOrderId"
         viewModel.markAsPaidIfCard(orderId, false)
         coVerify(exactly = 0) { repository.markOrderAsPaid(orderId) }
     }
 
 
-//    @Test
-//    fun `deleteMyBagItem, Valid Item Id  ,(api state is Success)`() = runTest {
-//        val draftOrderDeleteMock = mockk<DeleteDraftOrderMutation.DraftOrderDelete>()
-//        coEvery { repository.deleteMyBagItem(any()) } returns flow {
-//            emit(
-//                draftOrderDeleteMock
-//            )
-//        }
-//        var collectedState = mutableListOf<ApiState>()
-//        val completionSignal = CompletableDeferred<Unit>()
-//        val job = launch {
-//            viewModel.myBagProductsRemove.collect {
-//                collectedState.add(it)
-//                if (it is ApiState.Success<*>)
-//                    completionSignal.complete(Unit)
-//            }
-//        }
-//
-//        assertTrue(collectedState.isEmpty())
-//        testDispatcher.scheduler.advanceUntilIdle()
-//        assertTrue(collectedState[0] is ApiState.Loading)
-//
-//        viewModel.deleteMyBagItem("fake id")
-//        testDispatcher.scheduler.advanceUntilIdle()
-//        completionSignal.await()
-//
-//        assertThat(collectedState[1], `is`(instanceOf(ApiState.Success::class.java)))
-//        val result = collectedState[1] as ApiState.Success<*>
-//        val retrivedData = result.data as DeleteDraftOrderMutation.DraftOrderDelete
-//        assertThat(
-//            retrivedData,
-//            `is`(instanceOf(DeleteDraftOrderMutation.DraftOrderDelete::class.java))
-//        )
-//        job.cancel()
-//    }
-//
-//    @Test
-//    fun `finalizeOrder does not emit success when deleteMyBagItem fails`()= runTest {
-//        val draftOrderDeleteMock = mockk<DeleteDraftOrderMutation.DraftOrderDelete>()
-//        coEvery { repository.deleteMyBagItem(any()) } returns flow {
-//            throw Exception("Network error or Invalid Item Id")
-//        }
-//        var collectedState = mutableListOf<ApiState>()
-//        val completionSignal = CompletableDeferred<Unit>()
-//        val job = launch {
-//            viewModel.myBagProductsRemove.collect {
-//                collectedState.add(it)
-//                if (it is ApiState.Error)
-//                    completionSignal.complete(Unit)
-//            }
-//        }
-//        viewModel.deleteMyBagItem("fake id")
-//        testDispatcher.scheduler.advanceUntilIdle()
-//        completionSignal.await()
-//        assertTrue(collectedState[0] is ApiState.Loading)
-//        job.cancel()
-//    }
+    @Test
+    fun `finalizeOrder, Valid Item Id  ,(api state is Success)`() = runTest {
+        val draftOrderDeleteMock = mockk<DeleteDraftOrderMutation.DraftOrderDelete>()
+        coEvery { repository.deleteMyBagItem(any()) } returns flow {
+            emit(
+                draftOrderDeleteMock
+            )
+        }
+        var collectedState = mutableListOf<ApiState>()
+        val completionSignal = CompletableDeferred<Unit>()
+        val job = launch {
+            viewModel.checkoutDraftOrderCreated.collect {
+                collectedState.add(it)
+                if (it is ApiState.Success<*>)
+                    completionSignal.complete(Unit)
+            }
+        }
+
+        assertTrue(collectedState.isEmpty())
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(collectedState[0] is ApiState.Loading)
+
+        viewModel.finalizeOrder("fake id")
+        testDispatcher.scheduler.advanceUntilIdle()
+        completionSignal.await()
+
+        assertThat(collectedState[1], `is`(instanceOf(ApiState.Success::class.java)))
+        val result = collectedState[1] as ApiState.Success<*>
+        val retrivedData = result.data as DeleteDraftOrderMutation.DraftOrderDelete
+        assertThat(
+            retrivedData,
+            `is`(instanceOf(DeleteDraftOrderMutation.DraftOrderDelete::class.java))
+        )
+        job.cancel()
+    }
+
+    @Test
+    fun `finalizeOrder does not emit success when deleteMyBagItem fails`() = runTest {
+        coEvery { repository.deleteMyBagItem(any()) } returns flow {
+            throw Exception("Network error or Invalid Item Id")
+        }
+        var collectedState = mutableListOf<ApiState>()
+        val completionSignal = CompletableDeferred<Unit>()
+        val job = launch {
+            viewModel.checkoutDraftOrderCreated.collect {
+                collectedState.add(it)
+                if (it is ApiState.Error)
+                    completionSignal.complete(Unit)
+            }
+        }
+        viewModel.finalizeOrder("fake id")
+        testDispatcher.scheduler.advanceUntilIdle()
+        completionSignal.await()
+        assertTrue(collectedState[0] is ApiState.Loading)
+        job.cancel()
+    }
+
+    @Test
+    fun `completeCheckout should call finalizeOrder on successful checkout`() = runTest {
+
+        every { repository.emailCheckoutDraftOrder(any()) } returns flow {
+            emit(DraftOrderInvoiceSendMutation.DraftOrder("order"))
+        }
+        every { repository.completeCheckoutDraftOrder(any()) } returns flow {
+            emit(
+                CompleteDraftOrderMutation.DraftOrder(
+                    "orderid",
+                    mockk<CompleteDraftOrderMutation.Order>() {
+                        every { id } returns "id"
+                    })
+            )
+        }
+        every { repository.markOrderAsPaid(any()) } returns flow {
+            emit(mockk<MarkAsPaidMutation.OrderMarkAsPaid>())
+        }
+        every { repository.deleteMyBagItem(any()) } returns flow {
+            emit(mockk<DeleteDraftOrderMutation.DraftOrderDelete>())
+        }
+
+        viewModel.completeCheckout("id", true)
+        coVerify(exactly = 1) { repository.emailCheckoutDraftOrder(any()) }
+        coVerify(exactly = 1) { repository.completeCheckoutDraftOrder(any()) }
+    }
 
 
+    @Test
+    fun `completeCheckout, will not call finalizeOrder on successful checkout and an exception is thrown`() =
+        runTest {
 
+            every { repository.emailCheckoutDraftOrder(any()) } returns flow {
+                throw Exception("Network error")
+            }
+            every { repository.completeCheckoutDraftOrder(any()) } returns flow {
+                emit(
+                    CompleteDraftOrderMutation.DraftOrder(
+                        "orderid",
+                        mockk<CompleteDraftOrderMutation.Order>() {
+                            every { id } returns "id"
+                        })
+                )
+            }
+            every { repository.markOrderAsPaid(any()) } returns flow {
+                emit(mockk<MarkAsPaidMutation.OrderMarkAsPaid>())
+            }
+            every { repository.deleteMyBagItem(any()) } returns flow {
+                emit(mockk<DeleteDraftOrderMutation.DraftOrderDelete>())
+            }
+
+
+            try {
+                viewModel.completeCheckout("id", true)
+            } catch (e: Exception) {
+                assert(e.message == "Network error")
+            }
+            coVerify(exactly = 0) { viewModel.finalizeOrder(any()) }
+        }
+
+    @Test
+    fun `handleCheckoutProcess calls no error state change  on success`() = runTest {
+
+        val listOfCartProduct = listOf(mockk<CartProduct>() {
+            every { itemQuantity } returns 4
+            every { itemId } returns "123"
+        })
+        viewModel.customerEmail = "ahmed@gmail.com"
+        val checkoutAddress = mockk<CustomerAddressV2> {
+            every { name } returns "ahmed"
+            every { phone } returns "123871231"
+            every { address1 } returns "addr1"
+            every { address2 } returns "addr2"
+            every { city } returns "Alexandria"
+            every { country } returns "Cairo"
+        }
+        val draftOrderInputModel = viewModel.createDraftOrderInputModel(
+            listOfCartProduct,
+            checkoutAddress,
+            null
+        )
+
+        coEvery { repository.createCheckoutDraftOrder(draftOrderInputModel) } returns flow {
+            emit(mockk<CreateDraftOrderMutation.DraftOrderCreate>() {
+                every { draftOrder } returns mockk<CreateDraftOrderMutation.DraftOrder>() {
+                    every { id } returns "123"
+                }
+            })
+        }
+
+        every { repository.emailCheckoutDraftOrder(any()) } returns flow {
+            emit(DraftOrderInvoiceSendMutation.DraftOrder("123"))
+        }
+        every { repository.completeCheckoutDraftOrder(any()) } returns flow {
+            emit(
+                CompleteDraftOrderMutation.DraftOrder(
+                    "123",
+                    mockk<CompleteDraftOrderMutation.Order>() {
+                        every { id } returns "123"
+                    })
+            )
+        }
+        every { repository.markOrderAsPaid(any()) } returns flow {
+            emit(mockk<MarkAsPaidMutation.OrderMarkAsPaid>())
+        }
+        every { repository.deleteMyBagItem(any()) } returns flow {
+            emit(mockk<DeleteDraftOrderMutation.DraftOrderDelete>())
+        }
+        viewModel.handleCheckoutProcess(draftOrderInputModel, isCard = true)
+        val getData = viewModel.checkoutDraftOrderCreated
+        assertThat(
+            getData.value,
+            `not`(instanceOf(ApiState.Error::class.java))
+        )
+    }
+
+    @Test
+    fun `handleCheckoutProcess, state changes to error `() = runTest {
+
+        val listOfCartProduct = listOf(mockk<CartProduct>() {
+            every { itemQuantity } returns 4
+            every { itemId } returns "123"
+        })
+        viewModel.customerEmail = "ahmed@gmail.com"
+        val checkoutAddress = mockk<CustomerAddressV2> {
+            every { name } returns "ahmed"
+            every { phone } returns "123871231"
+            every { address1 } returns "addr1"
+            every { address2 } returns "addr2"
+            every { city } returns "Alexandria"
+            every { country } returns "Cairo"
+        }
+        val draftOrderInputModel = viewModel.createDraftOrderInputModel(
+            listOfCartProduct,
+            checkoutAddress,
+            null
+        )
+
+        coEvery { repository.createCheckoutDraftOrder(draftOrderInputModel) } returns flow {
+            throw Exception("Network Error")
+        }
+
+        every { repository.emailCheckoutDraftOrder(any()) } returns flow {
+            throw Exception("Network Error")
+        }
+
+        every { repository.completeCheckoutDraftOrder(any()) } returns flow {
+            throw Exception("Network Error")
+        }
+
+        every { repository.markOrderAsPaid(any()) } returns flow {
+            throw Exception("Network Error")
+        }
+
+        every { repository.deleteMyBagItem(any()) } returns flow {
+            throw Exception("Network Error")
+        }
+
+
+        val collectedState = mutableListOf<ApiState>()
+        val completionSignal = CompletableDeferred<Unit>()
+        val job = launch {
+            viewModel.checkoutDraftOrderCreated.collect {
+                collectedState.add(it)
+                if (it is ApiState.Error) completionSignal.complete(Unit)
+            }
+        }
+        viewModel.handleCheckoutProcess(draftOrderInputModel, isCard = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        completionSignal.await()
+        val getData = viewModel.checkoutDraftOrderCreated
+
+        assertThat(
+            getData.value,
+            `is`(instanceOf(ApiState.Error::class.java))
+        )
+        job.cancel()
+    }
+
+    @Test
+    fun `createCheckoutDraftOrder should emit success state on successful checkout`() = runTest {
+        val listOfCartProduct =
+            listOf(CartProduct("123", "123", 4, 4, "123", "123", "123", "123", "123"))
+        val checkoutAddress = GetAddressesDefaultIdQuery.DefaultAddress(
+            id = "sfasd",
+            name = "ahmed",
+            phone = "123871231",
+            address1 = "addr1",
+            address2 = "addr2",
+            city = "Alexandria",
+            country = "Cairo"
+        )
+        viewModel.customerEmail = "ahmed@gmail.com"
+        val draftOrderInputModel = mockk<DraftOrderInputModel>() // Mock your DraftOrderInputModel
+        coEvery {
+            viewModel.createDraftOrderInputModel(
+                listOfCartProduct,
+                null,
+                checkoutAddress
+            )
+        } returns draftOrderInputModel
+        coEvery { viewModel.deleteCartItems(listOfCartProduct) } just Runs
+        coEvery { viewModel.handleCheckoutProcess(draftOrderInputModel, true) } just Runs
+        val emittedStates = mutableListOf<ApiState>()
+        val job = launch {
+            viewModel.checkoutDraftOrderCreated.collect { state ->
+                emittedStates.add(state)
+            }
+        }
+        viewModel.createCheckoutDraftOrder(listOfCartProduct, true, null, checkoutAddress)
+        withTimeout(2000) {
+            while (emittedStates.isEmpty()) {
+                delay(50)
+            }
+        }
+        assertTrue(emittedStates.isNotEmpty())
+        job.cancel()
+    }
 
 }
+
