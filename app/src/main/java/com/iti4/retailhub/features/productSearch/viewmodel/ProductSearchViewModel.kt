@@ -24,12 +24,9 @@ class ProductSearchViewModel @Inject constructor(private val repository: IReposi
 
     fun searchProducts(query: String) {
         viewModelScope.launch(dispatcher){
-            Log.d("search", "viewModelScope: start")
             repository.getProducts(query).catch {
-                    e ->Log.d("search", "viewModelScope error: ${e.message}")
-                _searchList.emit(ApiState.Error(e))
+                e -> _searchList.emit(ApiState.Error(e))
             }.collect{
-                Log.d("search", "viewModelScope collect: ${it}")
                 _searchList.emit(ApiState.Success(it))
             }
         }

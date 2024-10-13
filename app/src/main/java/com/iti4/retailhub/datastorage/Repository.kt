@@ -220,7 +220,7 @@ class Repository @Inject constructor(
     }
 
 
-    override fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
+    override fun getDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
         return remoteDataSource.getDraftOrdersByCustomer(customerId)
 
     }

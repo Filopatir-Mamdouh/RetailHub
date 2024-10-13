@@ -14,10 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -30,11 +28,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.iti4.retailhub.CreateDraftOrderMutation
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
-import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
@@ -45,7 +41,6 @@ import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.But
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
-import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -351,7 +346,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         dialog.show()
     }
     private fun searcheInBag() {
-        productDetailsViewModel.GetDraftOrdersByCustomer("${productTitle} - $selectedProductColor / $selectedProductSize")
+        productDetailsViewModel.getDraftOrdersByCustomer("${productTitle} - $selectedProductColor / $selectedProductSize")
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
             productDetailsViewModel.customerDraftOrders.collect { item ->
