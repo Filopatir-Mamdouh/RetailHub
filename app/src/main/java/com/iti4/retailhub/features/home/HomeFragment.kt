@@ -1,9 +1,9 @@
 package com.iti4.retailhub.features.home
 
+import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -89,15 +89,18 @@ lateinit var adapter: NewItemAdapter
                 Navigation.findNavController(view).navigate(R.id.homeFragment)
             }*/
 
-
-        if (!userAuthViewModel.isguestMode()) {
-            favoritesViewModel.getFavorites()
-        }
         currencyCode = viewModel.getCurrencyCode()
         conversionRate = viewModel.getConversionRates(currencyCode)
-        adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate)
+        if (!userAuthViewModel.isguestMode()) {
+            adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate,false)
+            favoritesViewModel.getFavorites()
+            getUserHomeProducts()
+        }
+        else {
+            adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate,true)
+            getGuestHomeProducts()
+        }
         displayAds()
-        getHomeProducts()
         // viewModel.getFavorites()
         // lifecycleScope.launch {
         //     viewModel.savedFavortes.collect { item ->
@@ -193,7 +196,7 @@ lateinit var adapter: NewItemAdapter
 //        }
 //    }
 //}
-    private fun getHomeProducts() {
+    private fun getUserHomeProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.combine(favoritesViewModel.savedFavortes){
@@ -312,7 +315,6 @@ lateinit var adapter: NewItemAdapter
         selectedImage: String,
         price: String
     ) {
-        if (!userAuthViewModel.isguestMode()){
         productDetailsViewModel.saveToFavorites(
             productId,productId,
             productTitle,selectedImage,price
@@ -348,9 +350,7 @@ lateinit var adapter: NewItemAdapter
 //                }
 //            }
 //        }
-        }else{
-                showGuestDialog()
-            }
+
     }
 
     override fun navigate(filter: String, productType: String) {
@@ -360,6 +360,7 @@ lateinit var adapter: NewItemAdapter
         )
     }
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
+        if (!userAuthViewModel.isguestMode()){
         favoritesViewModel.deleteFavorites(pinFavorite)
 //        favoritesViewModel.getFavorites()
         Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
@@ -391,6 +392,9 @@ lateinit var adapter: NewItemAdapter
 //                }
 //            }
 //        }
+        }else{
+            showGuestDialog()
+        }
     }
     override fun copyCoupon(coupon: Discount) {
         if(mainActivityViewModel.copiedCouponsList.none{ it.value==coupon.value}){
@@ -431,7 +435,29 @@ lateinit var adapter: NewItemAdapter
 
     dialog.show()
 }
-    
+    private fun getGuestHomeProducts(){
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.products.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            binding.animationView.visibility = View.GONE
+                            val data = item.data as List<HomeProducts>
+                            displayNewItemRowData(data)
+                        }
+                        is ApiState.Error -> {
+                            Toast.makeText(
+                                requireContext(),
+                                item.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         autoScrollJob?.cancel()

@@ -16,7 +16,8 @@ import com.iti4.retailhub.models.HomeProducts
 class GridViewAdapter(
     private val handleAction: OnClickGoToDetails,
     val currencyCodes: CountryCodes,
-    val conversionRate: Double
+    val conversionRate: Double,
+    private val isGuest: Boolean
 ) : ListAdapter<HomeProducts, GridViewAdapter.ListViewHolder>(
     HomeProductsDiffUtils()
 ) {
@@ -51,7 +52,7 @@ class GridViewAdapter(
                 favBtn.setImageResource(R.drawable.baseline_favorite_border_24)
             }
             favBtn.setOnClickListener {
-                if (!item.isFav) {
+                if (!item.isFav && !isGuest) {
                     item.isFav = true
                     handleAction.saveToFavorites(
                         item.id!!,

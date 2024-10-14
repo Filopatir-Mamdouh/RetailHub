@@ -17,7 +17,7 @@ import com.iti4.retailhub.models.HomeProducts
 
 class NewItemAdapter(
     val handleAction: OnClickGoToDetails,
-    val currencyCodes: CountryCodes, val conversionRate: Double
+    val currencyCodes: CountryCodes, val conversionRate: Double, private val isGuest: Boolean
 ) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
 
@@ -40,7 +40,7 @@ class NewItemAdapter(
             holder.binding.favBtn.setImageResource(R.drawable.baseline_favorite_border_24)
         }
         holder.binding.favBtn.setOnClickListener{
-                if(!item.isFav) {
+                if(!item.isFav && !isGuest) {
                     item.isFav = true
                     handleAction.saveToFavorites(
                         item.id!!,
