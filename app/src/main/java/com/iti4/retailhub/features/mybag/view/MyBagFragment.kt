@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.mybag.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,7 +12,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +22,8 @@ import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.mybag.OnClickMyBag
+import com.iti4.retailhub.features.mybag.viewmodel.MyBagViewModel
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,7 +52,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             binding.guestb.visibility = View.VISIBLE
             binding.btnOkayb.setOnClickListener {
                 val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-                intent.putExtra("guest","guest")
+                intent.putExtra("guest", "guest")
                 startActivity(intent)
                 requireActivity().finish()
             }
@@ -61,10 +62,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                 MyBagProductRecyclerViewAdapter(this, viewModel.getCurrencyCode(), conversionRate!!)
             lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                    viewModel.products.collect { item ->
+                    viewModel.myBagProductsState.collect { item ->
                         when (item) {
                             is ApiState.Success<*> -> {
-
                                 val data = item.data as List<CartProduct>
                                 if (!data.isNullOrEmpty()) {
                                     cartProductList = data.toMutableList()
@@ -107,6 +107,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             )
         }
     }
+
     override fun deleteMyBagItem(cartProduct: CartProduct) {
         viewModel.deleteMyBagItem(cartProduct.draftOrderId)
         cartProductList?.remove(cartProduct)
@@ -163,7 +164,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onStart() {
         super.onStart()
-        if(!userAuthViewModel.isguestMode()) {
+        if (!userAuthViewModel.isguestMode()) {
             viewModel.getMyBagProducts()
         }
         binding.mybagAppbar.apply {

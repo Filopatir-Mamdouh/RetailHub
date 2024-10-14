@@ -29,8 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
+    private val TAG = "CheckoutViewModel"
     private val dispatcher = Dispatchers.IO
-    private lateinit var customerEmail: String
+    lateinit var customerEmail: String
     private lateinit var customerName: String
     var selectedDiscount: Discount? = null
 
@@ -61,7 +62,7 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
                 }
                 .collect {
                     if (it.email.isNullOrEmpty())
-                        _customerDataResponse.emit(ApiState.Error(throw Exception("Customer not found")))
+                        _customerDataResponse.emit(ApiState.Error(Exception("invalid data")))
                     else {
                         customerName = it.firstName + it.lastName
                         customerEmail = it.email!!
@@ -81,95 +82,154 @@ class CheckoutViewModel @Inject constructor(private val repository: IRepository)
         }
     }
 
-
-    fun createCheckoutDraftOrder(
-        listOfCartProduct: List<CartProduct>,
-        isCard: Boolean,
-        checkoutAddress: CustomerAddressV2?,
-        checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
-    ) {
-        //    val customerData = CustomerInput("customer_id:6945540800554")
-
-        viewModelScope.launch(dispatcher) {
-            val lineItems = listOfCartProduct.map { it.toLineItem() }
-            var discount: DiscountInput? = null
-            if (selectedDiscount != null) {
-                discount = DiscountInput(
-                    selectedDiscount!!.getDiscountAsDouble(), selectedDiscount!!.title
-                )
-            }
-            val customerInputModel =
-                CustomerInputModel(
-                    customerId,
-                    customerEmail
-                )
-            val addressInputModel = if (checkoutAddress != null) {
-                customerInputModel.firstName = checkoutAddress.name
-                customerInputModel.phone = checkoutAddress.phone
-                AddressInputModel(
-                    checkoutAddress.address1!!,
-                    checkoutAddress.address2!!,
-                    checkoutAddress.city!!,
-                    checkoutAddress.country!!,
-                    ""
-                )
-            } else {
-                customerInputModel.firstName = checkoutDefaultAddress!!.name
-                customerInputModel.phone = checkoutDefaultAddress!!.phone
-                AddressInputModel(
-                    checkoutDefaultAddress!!.address1!!,
-                    checkoutDefaultAddress!!.address2!!,
-                    checkoutDefaultAddress!!.city!!,
-                    checkoutDefaultAddress!!.country!!,
-                    ""
-                )
-            }
-            val draftOrderInputModel = DraftOrderInputModel(
-                lineItems, customerInputModel, addressInputModel, customerEmail, discount, false
-            )
-            listOfCartProduct.forEach {
-                repository.deleteMyBagItem(it.draftOrderId).catch {
-                    Log.i("here", "deleteMyBagItem: " + it.message)
-                }.collect {
-                    Log.i("here", "deleteMyBagItem: " + it.deletedId)
-                }
-            }
-            repository.createCheckoutDraftOrder(draftOrderInputModel)
-                .catch { e ->
-                    Log.i("here", "he big one:: " + e)
-                    _checkoutDraftOrderCreated.emit(ApiState.Error(e))
-                }.collect { draftId ->
-                    Log.i("here", "the big one: " + draftId)
-                    repository.emailCheckoutDraftOrder(draftId.draftOrder!!.id).collect {
-                        Log.i("here", "emailCheckoutDraftOrder: " + it.id)
-                        repository.completeCheckoutDraftOrder(draftId.draftOrder.id)
-                            .collect { responseFromComplete ->
-                                Log.i("here", "completeCheckoutDraftOrder: ")
-                                if (discount != null) {
-                                    repository.setCustomerUsedDiscounts(
-                                        customerId,
-                                        discount.valueType
-                                    )
-                                        .collect {
-                                            Log.i("here", "setCustomerUsedDiscounts: ")
-                                        }
-                                }
-                                if (isCard) {
-                                    repository.markOrderAsPaid(responseFromComplete.order!!.id)
-                                        .collect {
-                                            Log.i("here", "markOrderAsPaid: ")
-                                        }
-                                }
-                                repository.deleteMyBagItem(responseFromComplete.id).collect {
-                                    Log.i("here", "deleteMyBagItem: ")
-                                    _checkoutDraftOrderCreated.emit(ApiState.Success(it))
-                                }
-                            }
-                    }
-                }
-
+    // part 1
+    suspend fun deleteCartItems(listOfCartProduct: List<CartProduct>) {
+        listOfCartProduct.forEach {
+            repository.deleteMyBagItem(it.draftOrderId)
+                .catch { e -> Log.i(TAG, "deleteCartItems: +${e.message}") }.collect {}
         }
     }
+
+    // initlises a discount
+    fun getDiscountInput(): DiscountInput? {
+        return if (selectedDiscount != null) {
+            DiscountInput(
+                selectedDiscount!!.getDiscountAsDouble(), selectedDiscount!!.title
+            )
+        } else null
+    }
+
+        fun createCheckoutDraftOrder(
+            listOfCartProduct: List<CartProduct>,
+            isCard: Boolean,
+            checkoutAddress: CustomerAddressV2?,
+            checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
+        ) {
+            viewModelScope.launch(dispatcher) {
+                try {
+                    val draftOrderInputModel = createDraftOrderInputModel(
+                        listOfCartProduct,
+                        checkoutAddress,
+                        checkoutDefaultAddress
+                    )
+
+                    // Delete items from the bag
+                    deleteCartItems(listOfCartProduct)
+
+                    // Create the draft order and handle checkout
+                    handleCheckoutProcess(draftOrderInputModel, isCard)
+
+                } catch (e: Exception) {
+                    _checkoutDraftOrderCreated.emit(ApiState.Error(e))
+                }
+            }
+        }
+
+    // creates an input for the main method
+    fun createDraftOrderInputModel(
+        listOfCartProduct: List<CartProduct>,
+        checkoutAddress: CustomerAddressV2?,
+        checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?
+    ): DraftOrderInputModel {
+        val lineItems = listOfCartProduct.map { it.toLineItem() }
+        val discount = getDiscountInput()
+        val customerInputModel = CustomerInputModel(customerId, customerEmail)
+        val addressInputModel =
+            getAddressInputModel(checkoutAddress, checkoutDefaultAddress, customerInputModel)
+        return DraftOrderInputModel(
+            lineItems,
+            customerInputModel,
+            addressInputModel,
+            customerEmail,
+            discount,
+            false
+        )
+    }
+
+    fun getAddressInputModel(
+        checkoutAddress: CustomerAddressV2?,
+        checkoutDefaultAddress: GetAddressesDefaultIdQuery.DefaultAddress?,
+        customerInputModel: CustomerInputModel
+    ): AddressInputModel {
+        return if (checkoutAddress != null) {
+            customerInputModel.firstName = checkoutAddress.name
+            customerInputModel.phone = checkoutAddress.phone
+            AddressInputModel(
+                checkoutAddress.address1!!,
+                checkoutAddress.address2!!,
+                checkoutAddress.city!!,
+                checkoutAddress.country!!,
+                ""
+            )
+        } else {
+            customerInputModel.firstName = checkoutDefaultAddress!!.name
+            customerInputModel.phone = checkoutDefaultAddress!!.phone
+            AddressInputModel(
+                checkoutDefaultAddress!!.address1!!,
+                checkoutDefaultAddress!!.address2!!,
+                checkoutDefaultAddress!!.city!!,
+                checkoutDefaultAddress!!.country!!,
+                ""
+            )
+        }
+    }
+
+
+    suspend fun handleCheckoutProcess(
+        draftOrderInputModel: DraftOrderInputModel,
+        isCard: Boolean
+    ) {
+        repository.createCheckoutDraftOrder(draftOrderInputModel)
+            .catch { e ->
+                _checkoutDraftOrderCreated.emit(ApiState.Error(e))
+            }
+            .collect { draftId ->
+                completeCheckout(draftId.draftOrder!!.id, isCard)
+            }
+    }
+
+    suspend fun completeCheckout(
+        draftOrderId: String,
+        isCard: Boolean
+    ) {
+        repository.emailCheckoutDraftOrder(draftOrderId)
+            .catch { }
+            .collect {
+                repository.completeCheckoutDraftOrder(draftOrderId)
+                    .catch { }
+                    .collect { response ->
+                        setCustomerUsedDiscount()
+                        markAsPaidIfCard(response.order!!.id, isCard)
+                        finalizeOrder(response.id)
+                    }
+            }
+    }
+
+    suspend fun setCustomerUsedDiscount() {
+        selectedDiscount?.let {
+            repository.setCustomerUsedDiscounts(customerId, selectedDiscount!!.title)
+                .catch { }
+                .collect { }
+        }
+    }
+
+    // 8. Mark order as paid if card payment is selected
+    suspend fun markAsPaidIfCard(orderId: String, isCard: Boolean) {
+        if (isCard) {
+            repository.markOrderAsPaid(orderId)
+                .catch { }
+                .collect { }
+        }
+    }
+
+    // 9. Finalize the order and emit success
+    suspend fun finalizeOrder(orderId: String) {
+        repository.deleteMyBagItem(orderId)
+            .catch { e -> _checkoutDraftOrderCreated.emit(ApiState.Error(e)) }.collect {
+                _checkoutDraftOrderCreated.emit(ApiState.Success(it))
+            }
+    }
+
 
     fun createPaymentIntent(orderPrice: Int) {
         viewModelScope.launch(dispatcher) {
