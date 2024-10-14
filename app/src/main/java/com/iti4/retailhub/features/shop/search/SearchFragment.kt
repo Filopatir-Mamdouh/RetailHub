@@ -21,6 +21,7 @@ import com.google.android.material.chip.Chip
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
+import com.iti4.retailhub.constants.SortBy
 import com.iti4.retailhub.databinding.FragmentSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
@@ -28,6 +29,8 @@ import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.shop.search.adapter.GridViewAdapter
 import com.iti4.retailhub.features.shop.search.adapter.ListViewAdapter
+import com.iti4.retailhub.features.shop.search.sortby.SortByBottomSheetFragment
+import com.iti4.retailhub.features.shop.search.sortby.SortByListener
 import com.iti4.retailhub.features.shop.search.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
@@ -38,7 +41,7 @@ import java.util.Locale
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class SearchFragment : Fragment(), OnClickGoToDetails {
+class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
     private val viewModel: SearchViewModel by viewModels()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
@@ -102,7 +105,6 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-
                         is ApiState.Loading -> {}
                     }
                 }
@@ -218,6 +220,9 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                     true
                 } else false
             }
+            sortGroup.setOnClickListener {
+                SortByBottomSheetFragment(this@SearchFragment).show(childFragmentManager, "sort")
+            }
         }
     }
 
@@ -273,5 +278,38 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         }
         else
             return if (products is ApiState.Error) products else favorites
+    }
+
+    override fun onSortBySelected(sortBy: SortBy) {
+        Log.d("Filo", "onSortBySelected: $sortBy")
+        when(sortBy){
+            SortBy.PRICE_ASC -> {
+                binding.textView15.text = getString(R.string.price_low_to_high)
+                if (isListView){
+                    listViewAdapter.submitList(listViewAdapter.currentList.sortedBy { it.maxPrice.toDouble() })
+                } else {
+                    gridViewAdapter.submitList(gridViewAdapter.currentList.sortedBy { it.maxPrice.toDouble() })
+                }
+            }
+            SortBy.PRICE_DESC -> {
+                binding.textView15.text = getString(R.string.price_high_to_low)
+                if (isListView){
+                    listViewAdapter.submitList(listViewAdapter.currentList.sortedByDescending { it.maxPrice.toDouble() })
+                } else {
+                    gridViewAdapter.submitList(gridViewAdapter.currentList.sortedByDescending { it.maxPrice.toDouble() })
+                }
+            }
+            SortBy.TITLE -> {
+                binding.textView15.text = getString(R.string.name_a_to_z)
+                if (isListView){
+                    listViewAdapter.submitList(listViewAdapter.currentList.sortedBy { it.title?.split(" | ")?.get(1) })
+                    Log.d("Filo", "onSortBySelected: ${listViewAdapter.currentList}")
+                } else {
+                    gridViewAdapter.submitList(gridViewAdapter.currentList.sortedBy { it.title?.split("|")?.get(1) })
+                }
+            }
+        }
+        listViewAdapter.notifyDataSetChanged()
+        gridViewAdapter.notifyDataSetChanged()
     }
 }

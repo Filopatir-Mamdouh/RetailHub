@@ -13,7 +13,7 @@
         android:backgroundTint="@color/transparent"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="Log out"
+        android:text="@string/log_out"
         android:textAlignment="viewStart"
         android:textColor="@color/red_color"
         android:textSize="16sp"
@@ -29,13 +29,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/profileImg"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/photo"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="profile_animation.json"
+        app:lottie_loop="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileAppbar" />
 
@@ -46,6 +48,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/metropolis_semibold"
+        android:text="@string/welcome_to_retail_hub"
         android:textColor="@color/black_variant"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/profileImg"
@@ -58,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/metropolis_medium"
+        android:text="@string/sign_in_to_unlock_more_features"
         android:textColor="@color/grey"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/profileName"
@@ -138,7 +142,7 @@
         android:drawableTint="@color/black_variant"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="Settings"
+        android:text="@string/settings"
         android:textAlignment="viewStart"
         android:textColor="@color/black_variant"
         android:textSize="16sp"
@@ -198,7 +202,7 @@
             android:textColor="@color/grey"
             app:layout_constraintBottom_toBottomOf="@+id/spinnerCurrency"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinnerCurrency"></TextView>
+            app:layout_constraintTop_toTopOf="@+id/spinnerCurrency"/>
 
         <Spinner
             android:id="@+id/spinnerCurrency"

@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
@@ -52,26 +54,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
         lifecycleScope.launch {
-            viewModel.isConnectedToNetwork.collect{ networkState ->
-                if(networkState){
-                    fragments?.forEach{
-                        it.view?.isEnabled = true
-                    }
-                    findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
-                    binding.apply{
-                        navigationView.menu.setGroupEnabled(R.id.navGroup, true)
-                        networkAnimView.visibility = View.GONE
-                    }
-                }else{
-                    fragments?.forEach{
-                        it.view?.isEnabled = false
-                    }
-                    findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
-                    binding.apply{
-                        navigationView.menu.setGroupEnabled(R.id.navGroup, false)
-                        networkAnimView.visibility = View.VISIBLE
+            val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.isConnectedToNetwork.collect{ networkState ->
+                    if(networkState){
+                        fragments?.forEach{
+                            it.view?.isEnabled = true
+                        }
+                        findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
+                        binding.apply{
+                            navigationView.menu.setGroupEnabled(R.id.navGroup, true)
+                            networkAnimView.visibility = View.GONE
+                        }
+                    }else{
+                        fragments?.forEach{
+                            it.view?.isEnabled = false
+                        }
+                        findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
+                        binding.apply{
+                            navigationView.menu.setGroupEnabled(R.id.navGroup, false)
+                            networkAnimView.visibility = View.VISIBLE
+                        }
                     }
                 }
             }

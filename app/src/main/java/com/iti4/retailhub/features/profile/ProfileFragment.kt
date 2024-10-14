@@ -2,6 +2,7 @@ package com.iti4.retailhub.features.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.AdapterView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.iti4.retailhub.R
@@ -19,6 +21,7 @@ import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencySpinnerItem
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
@@ -79,6 +82,17 @@ class ProfileFragment : Fragment() {
                 Intent(requireActivity(), LoginAuthinticationActivity::class.java)
             )
             requireActivity().finish()
+        }
+        lifecycleScope.launch {
+            viewModel.user.collect {
+                Log.d("Filo", "onViewCreated: $it")
+                binding.profileName.text = buildString {
+                    append(it["fName"])
+                    append(" ")
+                    append(it["lName"])
+                }
+                binding.profileMail.text = it["email"]
+            }
         }
     }
 
