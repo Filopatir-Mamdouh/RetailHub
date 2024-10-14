@@ -35,4 +35,10 @@ object ToolbarSetup {
             }
         }
     }
+    fun setToCollapse(appBarBinding: AppBarBinding){
+        appBarBinding.apply{
+
+
+        }
+    }
 }
