@@ -10,20 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.address.AddressViewModel
-import com.iti4.retailhub.logic.NetworkUtils
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.models.CurrencyResponse
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -31,22 +28,23 @@ import retrofit2.Response
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val _isConnectedToNetwork = MutableStateFlow(false)
     private val sharedViewModel: AddressViewModel by viewModels()
     private val viewModel by viewModels<MainActivityViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel.getDiscount()
-        viewModel.getUsedDiscounts()
+        if (!userAuthViewModel.isguestMode()){
+            viewModel.getUsedDiscounts()
+        }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val isConnectedToNetwork =_isConnectedToNetwork.onStart { checkNetwork() }.stateIn(lifecycleScope, SharingStarted.Eagerly, false)
         binding.navigationView.apply {
             setOnItemSelectedListener { menuItem ->
                 val navController = Navigation.findNavController(this@MainActivity, R.id.fragmentContainerView2)
@@ -60,26 +58,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
         lifecycleScope.launch {
-            isConnectedToNetwork.collect{ networkState ->
-                if(networkState){
-                    fragments?.forEach{
-                        it.view?.isEnabled = true
-                    }
-                    findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
-                    binding.apply{
-                        navigationView.menu.setGroupEnabled(R.id.navGroup, true)
-                        networkAnimView.visibility = View.GONE
-                    }
-                }else{
-                    fragments?.forEach{
-                        it.view?.isEnabled = false
-                    }
-                    findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
-                    binding.apply{
-                        navigationView.menu.setGroupEnabled(R.id.navGroup, false)
-                        networkAnimView.visibility = View.VISIBLE
+            val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.isConnectedToNetwork.collect{ networkState ->
+                    if(networkState){
+                        fragments?.forEach{
+                            it.view?.isEnabled = true
+                        }
+                        findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
+                        binding.apply{
+                            navigationView.menu.setGroupEnabled(R.id.navGroup, true)
+                            networkAnimView.visibility = View.GONE
+                        }
+                    }else{
+                        fragments?.forEach{
+                            it.view?.isEnabled = false
+                        }
+                        findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
+                        binding.apply{
+                            navigationView.menu.setGroupEnabled(R.id.navGroup, false)
+                            networkAnimView.visibility = View.VISIBLE
+                        }
                     }
                 }
             }
@@ -121,15 +121,6 @@ class MainActivity : AppCompatActivity() {
 
     fun showBottomNavBar() {
         binding.navigationView.visibility = View.VISIBLE;
-    }
-
-    private fun checkNetwork() {
-        lifecycleScope.launch {
-            while (true) {
-                _isConnectedToNetwork.emit(NetworkUtils.isNetworkAvailable(this@MainActivity))
-                delay(3000)
-            }
-        }
     }
 
     fun initCurrencyRatesListen() {

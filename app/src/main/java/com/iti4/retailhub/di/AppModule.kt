@@ -18,6 +18,8 @@ import com.iti4.retailhub.datastorage.reviews.ReviewsDataStore
 import com.iti4.retailhub.datastorage.reviews.ReviewsDataStoreInterface
 import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileData
 import com.iti4.retailhub.datastorage.userlocalprofiledata.UserLocalProfileDataInterface
+import com.iti4.retailhub.logic.INetworkUtils
+import com.iti4.retailhub.logic.NetworkUtils
 import com.iti4.retailhub.userauthuntication.UserAuthuntication
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import dagger.Module
@@ -126,6 +128,11 @@ class AppModule {
     @Singleton
     fun reviewsDataStore(): ReviewsDataStoreInterface {
         return ReviewsDataStore()
+    }
+
+    @Provides
+    fun provideNetworkUtils(@ApplicationContext context: Context) : INetworkUtils{
+        return NetworkUtils(context)
     }
 
 }

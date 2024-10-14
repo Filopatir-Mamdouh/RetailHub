@@ -146,21 +146,22 @@ class Repository @Inject constructor(
         return userAuthuntication.signInWithEmailAndPassword(email, password)
     }
 
-    override suspend fun loginOut(): Boolean {
-        return userAuthuntication.loginOut()
+    override  fun loginOut(): Boolean {
+        val out= userAuthuntication.loginOut()
+        return out
     }
 
     override suspend fun sendEmailVerification(user: FirebaseUser): Boolean {
         return userAuthuntication.sendEmailVerification(user)
     }
 
-    override suspend fun signIn(): IntentSender? {
+    /*override suspend fun signIn(): IntentSender? {
         return userAuthuntication.signIn()
     }
 
     override suspend fun signInWithIntent(intent: Intent): AuthResult? {
         return userAuthuntication.signInWithIntent(intent)
-    }
+    }*/
 
     override fun addUserName(name: String): Int {
         return UserLocalProfileData.addUserName(name)
@@ -219,7 +220,7 @@ class Repository @Inject constructor(
     }
 
 
-    override fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
+    override fun getDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders> {
         return remoteDataSource.getDraftOrdersByCustomer(customerId)
 
     }
@@ -320,6 +321,9 @@ class Repository @Inject constructor(
 
     override fun getOrderDetails(id: String): Flow<OrderDetails> {
         return remoteDataSource.getOrderDetails(id)
+    }
+    override suspend fun signWithGoogle(idToken:String): FirebaseUser? {
+        return userAuthuntication.signWithGoogle(idToken)
     }
 
 }

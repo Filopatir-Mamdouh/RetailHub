@@ -23,7 +23,6 @@ class LoginAuthinticationActivity : AppCompatActivity() {
         navController = navHostFragment.navController
         // Set up the ActionBar with the Navigation UI
         setupActionBarWithNavController(navController)
-
     }
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()

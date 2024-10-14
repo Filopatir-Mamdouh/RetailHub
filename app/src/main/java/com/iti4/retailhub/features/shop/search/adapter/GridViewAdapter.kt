@@ -16,7 +16,8 @@ import com.iti4.retailhub.models.HomeProducts
 class GridViewAdapter(
     private val handleAction: OnClickGoToDetails,
     val currencyCodes: CountryCodes,
-    val conversionRate: Double
+    val conversionRate: Double,
+    private val isGuest: Boolean
 ) : ListAdapter<HomeProducts, GridViewAdapter.ListViewHolder>(
     HomeProductsDiffUtils()
 ) {
@@ -42,6 +43,31 @@ class GridViewAdapter(
             newItemPrice.text = "$convertedPrice $currencyCodes"
             root.setOnClickListener {
                 handleAction.goToDetails(item.id!!)
+            }
+            if (item.isFav) {
+                favBtn.setImageResource(R.drawable.fav_filled)
+
+            }
+            else {
+                favBtn.setImageResource(R.drawable.baseline_favorite_border_24)
+            }
+            favBtn.setOnClickListener {
+                if (!item.isFav && !isGuest) {
+                    item.isFav = true
+                    handleAction.saveToFavorites(
+                        item.id!!,
+                        item.title!!, item.image,
+                        buildString {
+                            append(item.maxPrice)
+                            append(" ")
+                            append(item.currencyCode)
+                        }
+                    )
+                } else {
+                    item.isFav = false
+                    handleAction.deleteFromCustomerFavorites(item.favID.toString())
+                }
+                notifyItemChanged(position)
             }
         }
     }

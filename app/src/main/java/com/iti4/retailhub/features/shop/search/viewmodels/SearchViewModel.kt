@@ -2,6 +2,7 @@ package com.iti4.retailhub.features.shop.search.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti4.retailhub.constants.SortBy
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CountryCodes
@@ -35,4 +36,7 @@ class SearchViewModel @Inject constructor(private val repository: IRepository) :
         return repository.getCurrencyCode()
     }
 
+    fun sortBy(sortBy: SortBy){
+
+    }
 }
