@@ -12,14 +12,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
-    val viewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val viewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
     lateinit var receivedString:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

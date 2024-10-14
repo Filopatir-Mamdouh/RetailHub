@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
 import com.iti4.retailhub.databinding.FragmentReviewsBinding
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
 import com.iti4.retailhub.models.Review

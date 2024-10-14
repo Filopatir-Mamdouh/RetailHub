@@ -22,7 +22,7 @@ import androidx.navigation.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProfileBinding
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencySpinnerItem
@@ -34,7 +34,7 @@ class ProfileFragment : Fragment() {
     private var isExpanded: Boolean = false;
     private lateinit var binding: FragmentProfileBinding
     private val viewModel: ProfileViewModel by viewModels()
-    private val authuntication: UserAuthunticationViewModelViewModel by viewModels()
+    private val authuntication: UserAuthunticationViewModel by viewModels()
 
 lateinit var intent:Intent
 

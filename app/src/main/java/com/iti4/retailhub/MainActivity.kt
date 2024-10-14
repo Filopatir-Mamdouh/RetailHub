@@ -18,7 +18,7 @@ import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.address.AddressViewModel
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.models.CurrencyResponse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val sharedViewModel: AddressViewModel by viewModels()
     private val viewModel by viewModels<MainActivityViewModel>()
-    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

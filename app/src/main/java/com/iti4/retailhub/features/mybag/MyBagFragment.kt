@@ -12,7 +12,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +21,7 @@ import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,7 +30,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MyBagFragment : Fragment(), OnClickMyBag {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
-    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
     private var conversionRate: Double? = null
     private lateinit var binding: FragmentMyBagBinding
     private val viewModel by viewModels<MyBagViewModel>()

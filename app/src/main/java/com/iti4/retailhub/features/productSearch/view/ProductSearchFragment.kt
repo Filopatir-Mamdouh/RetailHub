@@ -29,7 +29,7 @@ import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.home.OnClickGoToDetails
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.features.productSearch.viewmodel.ProductSearchViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.models.CountryCodes
@@ -45,7 +45,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private var currentList = emptyList<HomeProducts>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
-    private val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    private val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0
 

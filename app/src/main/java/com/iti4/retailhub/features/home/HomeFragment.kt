@@ -38,7 +38,7 @@ import com.iti4.retailhub.features.home.adapter.BrandAdapter
 import com.iti4.retailhub.features.home.adapter.DotsIndicatorDecoration
 import com.iti4.retailhub.features.home.adapter.NewItemAdapter
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.shop.adapter.OnClickNavigate
 import com.iti4.retailhub.models.Brands
@@ -58,7 +58,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
-    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
 lateinit var adapter: NewItemAdapter
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0

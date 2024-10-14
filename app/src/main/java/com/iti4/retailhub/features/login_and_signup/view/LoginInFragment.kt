@@ -14,8 +14,6 @@ import android.view.Window
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -23,12 +21,10 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentLoginInBinding
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -36,7 +32,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LoginInFragment : Fragment() {
 
-    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
     lateinit var loginUpBinding: FragmentLoginInBinding
     lateinit var customLoadingDialog : CustomLoadingDialog
     lateinit var customMesssageDialog : CustomMessageDialog
@@ -111,6 +107,7 @@ class LoginInFragment : Fragment() {
                         val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
                       *//*  signInResultLauncher.launch(request)*//*
                     }*/
+                    is AuthState.Error -> {}
                 }
             }
         }

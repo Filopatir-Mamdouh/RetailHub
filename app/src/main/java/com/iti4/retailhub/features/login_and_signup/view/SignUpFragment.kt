@@ -8,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -17,10 +15,13 @@ import androidx.navigation.Navigation.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 class SignUpFragment : Fragment() {
     private var isLaunched = false
     lateinit var signUpBinding: FragmentSignUpBinding
-    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
     lateinit var customMesssageDialog : CustomMessageDialog
     lateinit var customLoadingDialog : CustomLoadingDialog
     val EMAIL_REGEX: String = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
@@ -81,8 +82,10 @@ class SignUpFragment : Fragment() {
                 signUpBinding.passowrdTex.error = "Password must be at least 6 characters"
                 return@setOnClickListener
             }
-
-            userAuthViewModel.createUser(userName, email, password)
+            val name = userName.split(" ")
+            val firstName = name[0]
+            val lastName = if (name.size > 1) name[1] else ""
+            userAuthViewModel.createUserWithEmailAndPassword(firstName,lastName, email, password)
         }
         signUpBinding.googleCard.setOnClickListener {
 //            userAuthViewModel.signInWithGoogle()
@@ -112,40 +115,37 @@ class SignUpFragment : Fragment() {
                         if (authResultState.error!="Idle") {
                             customLoadingDialog.dismiss()
                             if (authResultState.error=="Verification email sent") {
-                                customMesssageDialog.setText(authResultState.error,"Chechout your email and login")
+                                customMesssageDialog.setText(authResultState.error,"Checkout your email and login again")
                                 customMesssageDialog.show()
                             }else if (authResultState.error=="Failed to send verification email") {
-                                customMesssageDialog.setText(authResultState.error,"Please try again")
-                                customMesssageDialog.show()
-                            }else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "No internet connection",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(requireContext(),"Failed to send verification email, try again",Toast.LENGTH_SHORT).show()
+                            }
+
+
+                        }
+                    }
+                    is AuthState.Error -> {
+                       when (authResultState.exception) {
+                            is FirebaseAuthWeakPasswordException -> {
+                                signUpBinding.passowrdTex.isErrorEnabled  = true
+                                signUpBinding.passowrdTex.error= "Weak password."
+                            }
+                            is FirebaseAuthUserCollisionException -> {
+                                Toast.makeText(requireContext(),"User already exists.",Toast.LENGTH_SHORT).show()
+                            }
+                            is FirebaseAuthInvalidUserException -> {
+                                Toast.makeText(requireContext(),"Invalid user, try again.",Toast.LENGTH_SHORT).show()
+                            }
+                            else -> {
+                                Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
-                  /*  is AuthState.SignInIntent -> {
-                        customLoadingDialog.dismiss()
-                        val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
-                        signInResultLauncher.launch(request)
-                    }*/
-
                 }
             }
         }
     }
     }
-   /* private val signInResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            if (result.data != null){
-            userAuthViewModel.handleSignInResult(result.data!!)
-                }
-        }
-    }*/
    private fun googleSignIn(){
        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
            .requestIdToken(getString(R.string.default_web_client_id))

@@ -98,7 +98,6 @@ class FavoritesViewModelTest{
         }
 
     //---------------------
-    @ExperimentalCoroutinesApi
     @Test
     fun `deleteFavorites emits loading and success state`() = runTest {
         // Mock repository to return a successful flow

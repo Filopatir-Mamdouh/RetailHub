@@ -27,7 +27,7 @@ import com.iti4.retailhub.features.favorits.view.adapter.FavoritsDiffUtilAdapter
 import com.iti4.retailhub.features.favorits.view.adapter.OnFavoritItemClocked
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -36,7 +36,7 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     lateinit var binding: FragmentFavoritsBinding
 lateinit var favoritesAdapter:FavoritsDiffUtilAdapter
-    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModel by viewModels<UserAuthunticationViewModel>()
 
     override fun onStart() {
         super.onStart()

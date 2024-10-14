@@ -178,6 +178,7 @@ android:background="@color/white"
                     android:id="@+id/spinnercolor"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:background="@drawable/gray_border"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="41dp" />
 

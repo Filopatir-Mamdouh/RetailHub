@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.iti4.retailhub.GetCustomerFavoritesQuery
@@ -35,9 +34,8 @@ import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
-import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModel
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter
-import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter.ViewHolder
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.ButtomDialogOnClickListn
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
@@ -52,7 +50,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private val reviewsViewModel by viewModels<ReviewsViewModel>()
-    private val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels()
+    private val userAuthViewModel: UserAuthunticationViewModel by viewModels()
 
     lateinit var dialog:Dialog
     private lateinit var currencyCode: CountryCodes
@@ -60,7 +58,6 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
     lateinit var binding: FragmentProductDetailsBinding
 
-    lateinit var produsctDetailsAdapter: ProductDetailsDiffUtilAdapter
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
 
