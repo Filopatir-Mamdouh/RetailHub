@@ -244,7 +244,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/metropolis_regular"
-                android:text="@string/price_lowest_to_high"
+                android:text="@string/sort_the_result"
                 android:textColor="@color/black_variant"
                 android:textSize="11sp"
                 app:layout_constraintBottom_toBottomOf="parent"

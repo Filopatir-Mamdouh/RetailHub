@@ -1,11 +1,18 @@
 package com.iti4.retailhub.features.shop.search
 
+import android.app.Dialog
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
@@ -21,13 +28,18 @@ import com.google.android.material.chip.Chip
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
+import com.iti4.retailhub.constants.SortBy
 import com.iti4.retailhub.databinding.FragmentSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.shop.search.adapter.GridViewAdapter
 import com.iti4.retailhub.features.shop.search.adapter.ListViewAdapter
+import com.iti4.retailhub.features.shop.search.sortby.SortByBottomSheetFragment
+import com.iti4.retailhub.features.shop.search.sortby.SortByListener
 import com.iti4.retailhub.features.shop.search.viewmodels.SearchViewModel
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.HomeProducts
@@ -38,10 +50,11 @@ import java.util.Locale
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class SearchFragment : Fragment(), OnClickGoToDetails {
+class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
     private val viewModel: SearchViewModel by viewModels()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
+    private val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0
     private lateinit var binding: FragmentSearchBinding
@@ -66,16 +79,23 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        favoritesViewModel.getFavorites()
         currencyCode = viewModel.getCurrencyCode()
         conversionRate = viewModel.getConversionRates(currencyCode)
-        listViewAdapter = ListViewAdapter(this, currencyCode, conversionRate)
-        gridViewAdapter = GridViewAdapter(this, currencyCode, conversionRate)
         onSwitchViewClicked()
         filterQuery = arguments?.getString("query") ?: ""
         typeQuery = arguments?.getString("type") ?: ""
         binding.filterGroup.setOnClickListener { findNavController().navigate(R.id.filterFragment) }
-        setupDataListener()
+        if (!userAuthViewModel.isguestMode()) {
+            listViewAdapter = ListViewAdapter(this, currencyCode, conversionRate, false)
+            gridViewAdapter = GridViewAdapter(this, currencyCode, conversionRate, false)
+            favoritesViewModel.getFavorites()
+            setupUserDataListener()
+        }
+        else {
+            listViewAdapter = ListViewAdapter(this, currencyCode, conversionRate,true)
+            gridViewAdapter = GridViewAdapter(this, currencyCode, conversionRate,true)
+            setupGuestDataListener()
+        }
         setupChipGroup()
         if (filterQuery.isNotEmpty()){
             search()
@@ -84,7 +104,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         clearFilters()
     }
 
-    private fun setupDataListener() {
+    private fun setupUserDataListener() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchList.combine(favoritesViewModel.savedFavortes){
@@ -102,7 +122,28 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
 
+    private fun setupGuestDataListener() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchList.collect {
+                    when (it) {
+                        is ApiState.Success<*> -> {
+                            handleDataResult(it.data as List<HomeProducts>)
+                        }
+                        is ApiState.Error -> {
+                            Toast.makeText(
+                                requireContext(),
+                                it.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         is ApiState.Loading -> {}
                     }
                 }
@@ -161,16 +202,24 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         selectedImage: String,
         price: String
     ) {
-        productDetailsViewModel.saveToFavorites(
-            productId,productId,
-            productTitle,selectedImage,price
-        )
-        Toast.makeText(requireContext(), "Added to your favorites", Toast.LENGTH_SHORT).show()
+        if (userAuthViewModel.isguestMode()){
+            showGuestDialog()
+        } else {
+            productDetailsViewModel.saveToFavorites(
+                productId, productId,
+                productTitle, selectedImage, price
+            )
+            Toast.makeText(requireContext(), "Added to your favorites", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
-        favoritesViewModel.deleteFavorites(pinFavorite)
-        Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
+        if (userAuthViewModel.isguestMode()){
+            showGuestDialog()
+        } else {
+            favoritesViewModel.deleteFavorites(pinFavorite)
+            Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -217,6 +266,9 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
                     }.start()
                     true
                 } else false
+            }
+            sortGroup.setOnClickListener {
+                SortByBottomSheetFragment(this@SearchFragment).show(childFragmentManager, "sort")
             }
         }
     }
@@ -273,5 +325,65 @@ class SearchFragment : Fragment(), OnClickGoToDetails {
         }
         else
             return if (products is ApiState.Error) products else favorites
+    }
+
+    override fun onSortBySelected(sortBy: SortBy) {
+        Log.d("Filo", "onSortBySelected: $sortBy")
+        when(sortBy){
+            SortBy.PRICE_ASC -> {
+                binding.textView15.text = getString(R.string.price_low_to_high)
+                if (isListView){
+                    listViewAdapter.submitList(listViewAdapter.currentList.sortedBy { it.maxPrice.toDouble() })
+                } else {
+                    gridViewAdapter.submitList(gridViewAdapter.currentList.sortedBy { it.maxPrice.toDouble() })
+                }
+            }
+            SortBy.PRICE_DESC -> {
+                binding.textView15.text = getString(R.string.price_high_to_low)
+                if (isListView){
+                    listViewAdapter.submitList(listViewAdapter.currentList.sortedByDescending { it.maxPrice.toDouble() })
+                } else {
+                    gridViewAdapter.submitList(gridViewAdapter.currentList.sortedByDescending { it.maxPrice.toDouble() })
+                }
+            }
+            SortBy.TITLE -> {
+                binding.textView15.text = getString(R.string.name_a_to_z)
+                if (isListView){
+                    listViewAdapter.submitList(listViewAdapter.currentList.sortedBy { it.title?.split(" | ")?.get(1) })
+                    Log.d("Filo", "onSortBySelected: ${listViewAdapter.currentList}")
+                } else {
+                    gridViewAdapter.submitList(gridViewAdapter.currentList.sortedBy { it.title?.split("|")?.get(1) })
+                }
+            }
+        }
+        listViewAdapter.notifyDataSetChanged()
+        gridViewAdapter.notifyDataSetChanged()
+    }
+    private fun showGuestDialog(){
+        val dialog = Dialog(requireContext())
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+
+        dialog.setContentView(R.layout.guest_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
+        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
+        val messag=dialog.findViewById<TextView>(R.id.messaged)
+        messag.text="login to add to your favorites"
+        btnYes.setOnClickListener {
+            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+            intent.putExtra("guest","guest")
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

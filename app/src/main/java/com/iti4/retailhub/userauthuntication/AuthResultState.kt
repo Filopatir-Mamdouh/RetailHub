@@ -19,5 +19,5 @@ sealed class AuthState {
     object Loading : AuthState()
     data class Success(val user: FirebaseUser?) : AuthState()
     data class Messages(val error: String) : AuthState()
-    data class SignInIntent(val intentSender: IntentSender) : AuthState()
+ /*   data class SignInIntent(val intentSender: IntentSender) : AuthState()*/
 }

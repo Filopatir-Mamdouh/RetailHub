@@ -10,12 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.address.AddressViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.models.CurrencyResponse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,13 +30,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val sharedViewModel: AddressViewModel by viewModels()
     private val viewModel by viewModels<MainActivityViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel.getDiscount()
-        viewModel.getUsedDiscounts()
+        if (!userAuthViewModel.isguestMode()){
+            viewModel.getUsedDiscounts()
+        }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -52,26 +58,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
         lifecycleScope.launch {
-            viewModel.isConnectedToNetwork.collect{ networkState ->
-                if(networkState){
-                    fragments?.forEach{
-                        it.view?.isEnabled = true
-                    }
-                    findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
-                    binding.apply{
-                        navigationView.menu.setGroupEnabled(R.id.navGroup, true)
-                        networkAnimView.visibility = View.GONE
-                    }
-                }else{
-                    fragments?.forEach{
-                        it.view?.isEnabled = false
-                    }
-                    findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
-                    binding.apply{
-                        navigationView.menu.setGroupEnabled(R.id.navGroup, false)
-                        networkAnimView.visibility = View.VISIBLE
+            val fragments = supportFragmentManager.findFragmentById(R.id.fragmentContainerView2)?.childFragmentManager?.fragments
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.isConnectedToNetwork.collect{ networkState ->
+                    if(networkState){
+                        fragments?.forEach{
+                            it.view?.isEnabled = true
+                        }
+                        findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
+                        binding.apply{
+                            navigationView.menu.setGroupEnabled(R.id.navGroup, true)
+                            networkAnimView.visibility = View.GONE
+                        }
+                    }else{
+                        fragments?.forEach{
+                            it.view?.isEnabled = false
+                        }
+                        findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
+                        binding.apply{
+                            navigationView.menu.setGroupEnabled(R.id.navGroup, false)
+                            networkAnimView.visibility = View.VISIBLE
+                        }
                     }
                 }
             }

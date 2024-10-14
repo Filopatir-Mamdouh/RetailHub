@@ -3,6 +3,7 @@ package com.iti4.retailhub.features.login_and_signup.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
@@ -45,6 +49,9 @@ class SignUpFragment : Fragment() {
             findNavController(view).navigate(R.id.action_signUpFragment_to_loginInFragment)
         }
         signUpBinding.sigInBtn.setOnClickListener {
+            signUpBinding.nameTextInput.isErrorEnabled  = false // Clear error message
+            signUpBinding.emailTextInput.isErrorEnabled  = false // Clear error message
+            signUpBinding.passowrdTex.isErrorEnabled  = false
             signUpBinding.nameTextInput.error = null // Clear error message
             signUpBinding.emailTextInput.error = null // Clear error message
             signUpBinding.passowrdTex.error = null // Clear error message
@@ -52,20 +59,25 @@ class SignUpFragment : Fragment() {
             val email = signUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
             val password = signUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
             if (userName.isEmpty()) {
+                signUpBinding.nameTextInput.isErrorEnabled  = true
                 signUpBinding.nameTextInput.error = "Please enter your name"
                 return@setOnClickListener
             }
             if (email.isEmpty()) {
+                signUpBinding.emailTextInput.isErrorEnabled  = true
                 signUpBinding.emailTextInput.error = "Please enter your email"
                 return@setOnClickListener
             } else if (!email.matches(EMAIL_REGEX.toRegex())) {
+                signUpBinding.emailTextInput.isErrorEnabled  = true
                 signUpBinding.emailTextInput.error = "Invalid email format"
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
+                signUpBinding.passowrdTex.isErrorEnabled  = true
                 signUpBinding.passowrdTex.error = "Please enter your password"
                 return@setOnClickListener
             } else if (password.length < 6) {
+                signUpBinding.passowrdTex.isErrorEnabled  = true
                 signUpBinding.passowrdTex.error = "Password must be at least 6 characters"
                 return@setOnClickListener
             }
@@ -73,13 +85,15 @@ class SignUpFragment : Fragment() {
             userAuthViewModel.createUser(userName, email, password)
         }
         signUpBinding.googleCard.setOnClickListener {
-            userAuthViewModel.signInWithGoogle()
+//            userAuthViewModel.signInWithGoogle()
+            googleSignIn()
         }
 
         signUpBinding.guest.setOnClickListener {
             userAuthViewModel.setLoginStatus("guest")
             val intent= Intent(requireContext(), MainActivity::class.java)
             startActivity(intent)
+            requireActivity().finish()
         }
         if (!isLaunched) {
             isLaunched = true
@@ -98,38 +112,63 @@ class SignUpFragment : Fragment() {
                         if (authResultState.error!="Idle") {
                             customLoadingDialog.dismiss()
                             if (authResultState.error=="Verification email sent") {
-                                customMesssageDialog.setText(authResultState.error)
+                                customMesssageDialog.setText(authResultState.error,"Chechout your email and login")
                                 customMesssageDialog.show()
                             }else if (authResultState.error=="Failed to send verification email") {
-                                customMesssageDialog.setText(authResultState.error)
+                                customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
                             }else {
                                 Toast.makeText(
                                     requireContext(),
-                                    authResultState.error,
+                                    "No internet connection",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
                         }
                     }
-                    is AuthState.SignInIntent -> {
+                  /*  is AuthState.SignInIntent -> {
                         customLoadingDialog.dismiss()
                         val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
                         signInResultLauncher.launch(request)
-                    }
+                    }*/
 
                 }
             }
         }
     }
     }
-    private val signInResultLauncher = registerForActivityResult(
+   /* private val signInResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             if (result.data != null){
             userAuthViewModel.handleSignInResult(result.data!!)
                 }
+        }
+    }*/
+   private fun googleSignIn(){
+       val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+           .requestIdToken(getString(R.string.default_web_client_id))
+           .requestEmail()
+           .build()
+       val client = GoogleSignIn.getClient(requireActivity(), options)
+       val signInIntent = client.signInIntent
+       startActivityForResult(signInIntent, 1234)
+   }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 1234 && resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                account?.idToken?.let { idToken ->
+                    userAuthViewModel.signWithGoogle(idToken)
+                }
+            } catch (e: ApiException) {
+                Log.e("LoginInFragment", "Google sign-in failed", e)
+            }
         }
     }
 

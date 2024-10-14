@@ -1,7 +1,9 @@
 package com.iti4.retailhub.features.productdetails.view
 
+import android.annotation.SuppressLint
 import com.iti4.retailhub.R
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -11,34 +13,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.LinearLayout
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.weathercast.alarmandnotification.view.ProductDetailsDiffUtilAdapter
-import com.iti4.retailhub.CreateDraftOrderMutation
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.ProductDetailsQuery
-import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.databinding.FragmentProductDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
-import com.iti4.retailhub.features.productdetails.ViewAdapter
+import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter
+import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter.ViewHolder
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.ButtomDialogOnClickListn
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
-import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -49,6 +52,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
     private val reviewsViewModel by viewModels<ReviewsViewModel>()
+    private val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels()
 
     lateinit var dialog:Dialog
     private lateinit var currencyCode: CountryCodes
@@ -57,7 +61,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     lateinit var binding: FragmentProductDetailsBinding
 
     lateinit var produsctDetailsAdapter: ProductDetailsDiffUtilAdapter
-
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
 
     var productId = ""
 
@@ -93,10 +98,18 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewPager = view.findViewById(R.id.viewPager)
+        tabLayout = view.findViewById(R.id.tabLayout)
+
+
+
         currencyCode = productDetailsViewModel.getCurrencyCode()
         conversionRate = productDetailsViewModel.getConversionRates(currencyCode)
+
+
         binding.sesMoreReviews.setOnClickListener {
             findNavController().navigate(R.id.reviewsFragment)
         }
@@ -114,80 +127,14 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
        /*val viewAdapter= ViewAdapter(requireContext(), emptyList())
         binding.viewPager.setAdapter(viewAdapter);
         binding.dot1.setViewPager(viewPager);*/
-        produsctDetailsAdapter = ProductDetailsDiffUtilAdapter(requireContext())
+        /*produsctDetailsAdapter = ProductDetailsDiffUtilAdapter(requireContext())
         binding.productImages.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.productImages.adapter = produsctDetailsAdapter
+        binding.productImages.adapter = produsctDetailsAdapter*/
 
 
 
-
-        productDetailsViewModel.getProductDetails(productId)
-        lifecycleScope.launch {
-            productDetailsViewModel.productDetails.collect { item ->
-                when (item) {
-                    is ApiState.Success<*> -> {
-
-                        val data = item.data as ProductDetailsQuery.OnProduct
-
-                        //get all variant that inventory>0
-                        productVariants =
-                            data.variants.edges.filter {  it.node.inventoryQuantity!! > 0 }
-
-                        //set product details
-                        productTitle = data.title
-
-                        //productvariant
-                        selectedProductVariantId = productVariants!!.get(0).node.id
-                        //get favorites
-                        searchInCustomerFavorites()
-
-                        searcheInBag()
-
-                        val productTitleList = productTitle.split("|")
-                        binding.prand.text = productTitleList[0]
-                        binding.title.text = productTitleList.drop(1).joinToString(" | ")
-                        produsctDetailsAdapter.submitList(data.images.edges)
-                        seelectedImage = data.images.edges[0].node.url.toString()
-                        binding.productDescription.text = data.description
-                        binding.productPrice.text =
-                            "${productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount} ${
-                                productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.currencyCode
-                            }"
-                        binding.inInventory.text =
-                            "In Inventory: ${productVariants!![0].node.inventoryQuantity}"
-
-
-
-
-                        //get all colors and sizes from variant
-                        allSizes = productVariants!!
-                            .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
-                            .distinct()
-                        binding.spinnersize.text=allSizes[0]
-                        selectedProductSize=allSizes[0]
-                         allColors = productVariants!!
-                            .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
-                            .distinct()
-                        binding.spinnercolor.text=allColors[0]
-                        selectedProductColor=allColors[0]
-
-
-                    }
-
-                    is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Can't get product details, please reload page",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-
-                    is ApiState.Loading -> {}
-                }
-            }
-        }
+        showProductDetails()
         binding.frameLayout3.setOnClickListener{
             setupBottomDialog(allSizes,"size",selectedProductSize)
         }
@@ -199,16 +146,102 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
         getReviewes()
 
-        binding.cardView3.setOnClickListener {
-            if (addToFavoritsFirstClick) {
-                addToFavoritsFirstClick = false
-                addToFavorits()
-            } else {
-                addToFavoritsFirstClick = true
-                deleteFromFavorites()
+        binding.addtocard.setOnClickListener {
+            if (userAuthViewModel.isguestMode()) {
+                showGuestAlert("login to add to your bag")
             }
         }
+        binding.cardView3.setOnClickListener {
+            if (!userAuthViewModel.isguestMode()) {
+                if (addToFavoritsFirstClick) {
+                    addToFavoritsFirstClick = false
+                    addToFavorits()
+                } else {
+                    showDeleteAlert()
 
+                }
+            }else{
+                showGuestAlert("login to add to your favorites")
+            }
+        }
+    }
+
+    private fun showProductDetails() {
+        productDetailsViewModel.getProductDetails(productId)
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                productDetailsViewModel.productDetails.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+
+                            val data = item.data as ProductDetailsQuery.OnProduct
+
+                            //get all variant that inventory>0
+                            productVariants =
+                                data.variants.edges.filter { it.node.inventoryQuantity!! > 0 }
+
+                            //set product details
+                            productTitle = data.title
+
+                            //productvariant
+                            selectedProductVariantId = productVariants!!.get(0).node.id
+                            //get favorites
+                            if (!userAuthViewModel.isguestMode()) {
+                                searchInCustomerFavorites()
+                                searcheInBag()
+                            }
+
+                            val productTitleList = productTitle.split("|")
+                            binding.prand.text = productTitleList[0]
+                            binding.title.text = productTitleList.drop(1).joinToString(" | ")
+
+                            //images
+//                            produsctDetailsAdapter.submitList(data.images.edges)
+                            seelectedImage = data.images.edges[0].node.url.toString()
+                            // Set up your adapter
+                            val adapter = ProductDetailsAdapter(data.images.edges)
+                            viewPager.adapter = adapter
+                            binding.circular.setViewPager(viewPager)
+                            // Link TabLayout with ViewPager2
+                            TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
+
+
+                            binding.productDescription.text = data.description
+                            binding.productPrice.text =
+                                productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount.toString() + " " + productVariants!![0].node.presentmentPrices.edges[0].node.price.currencyCode
+                            "In Inventory: ${productVariants!![0].node.inventoryQuantity}".also { binding.inInventory.text = it }
+
+
+                            //get all colors and sizes from variant
+                            allSizes = productVariants!!
+                                .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
+                                .distinct()
+                            binding.spinnersize.text = allSizes[0]
+                            selectedProductSize = allSizes[0]
+                            allColors = productVariants!!
+                                .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
+                                .distinct()
+                            setColor(allColors[0])
+//                            binding.spinnercolor.text = allColors[0]
+                            selectedProductColor = allColors[0]
+
+
+                        }
+
+                        is ApiState.Error -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Can't get product details, please reload page",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
     }
 
     private fun deleteFromFavorites() {
@@ -221,7 +254,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
                     is ApiState.Success<*> -> {
                         searchInCustomerFavorites()
-                        binding.imageView5oFavorits.setImageResource(com.iti4.retailhub.R.drawable.baseline_favorite_border_24)
+                        binding.imageView5oFavorits.setImageResource(R.drawable.baseline_favorite_border_24)
+                        addToFavoritsFirstClick = true
                         Toast.makeText(
                             requireContext(),
                             "Product Is Deleted",
@@ -292,10 +326,35 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         reviewsAdapter.submitList(allReviews)
         binding.ratingBar3.rating = allReviews.map { it.rate }.average().toFloat()
     }
+     fun showDeleteAlert() {
+        val dialog = Dialog(requireContext())
 
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+
+        dialog.setContentView(R.layout.favorit_delete_alert)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btnYes)
+        val btnNo: Button = dialog.findViewById(R.id.btnNo)
+        val tvmessage=dialog.findViewById<TextView>(R.id.tvMessage)
+        tvmessage.text="Are you sure you want to delete this product?"
+        btnYes.setOnClickListener {
+            deleteFromFavorites()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
     private fun searcheInBag() {
-        productDetailsViewModel.GetDraftOrdersByCustomer("${productTitle} - $selectedProductColor / $selectedProductSize")
+        productDetailsViewModel.getDraftOrdersByCustomer("${productTitle} - $selectedProductColor / $selectedProductSize")
         lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
             productDetailsViewModel.customerDraftOrders.collect { item ->
                 when (item) {
                     is ApiState.Success<*> -> {
@@ -306,14 +365,14 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                         if (data.nodes.isNotEmpty()) {
                             val productVariantInBag = data.nodes[0].lineItems.nodes[0].variant?.id
 
-                            if(!productVariantInBag.isNullOrEmpty()){
+                            if (!productVariantInBag.isNullOrEmpty()) {
 
-                                isVariantInCustomerDraftOrders=true
-                                binding.addtocard.text = "Open In Your Bag"
+                                isVariantInCustomerDraftOrders = true
+//                                binding.addtocard.text = "Open In Your Bag"
                                 addToBagButtonClickListner(true)
                             }
                         } else {
-                            binding.addtocard.text = "Add To Bag"
+//                            binding.addtocard.text = "Add To Bag"
                             addToBagButtonClickListner(false)
                         }
                     }
@@ -333,6 +392,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                 }
             }
         }
+        }
     }
 
     private fun addToFavorits() {
@@ -345,7 +405,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                 when (item) {
                     is ApiState.Success<*> -> {
 
-                        val data = item.data as  UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
+//                        val data = item.data as  UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate
 
                         searchInCustomerFavorites()
 
@@ -374,17 +434,46 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         }
     }
 
-
+//---------------
     private fun addToBagButtonClickListner(isAdd:Boolean){
-        if(isAdd){
-            binding.addtocard.setOnClickListener {
-                findNavController().navigate(com.iti4.retailhub.R.id.myBagFragment)
-            }
-        } else {
-            binding.addtocard.setOnClickListener {
-                addToBag()
+        binding.addtocard.setOnClickListener {
+            if (!userAuthViewModel.isguestMode()) {
+                if (isAdd) {
+//                    findNavController().navigate(com.iti4.retailhub.R.id.myBagFragment)
+                    Toast.makeText(requireContext(), "Item is in your bag", Toast.LENGTH_SHORT).show()
+                } else {
+                    addToBag()
+                }
             }
         }
+    }
+    private fun showGuestAlert(message: String) {
+        val dialog = Dialog(requireContext())
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+
+        dialog.setContentView(R.layout.guest_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val messag=dialog.findViewById<TextView>(R.id.messaged)
+        messag.text=message
+        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
+        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
+        btnYes.setOnClickListener {
+            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+            intent.putExtra("guest","guest")
+            startActivity(intent)
+            requireActivity().finish()
+            requireActivity().finish()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun addToBag(){
@@ -394,9 +483,10 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
                 productDetailsViewModel.createDraftOrder.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
-                            binding.addtocard.text = "Open In Your Bag"
+//                            val data = item.data as CreateDraftOrderMutation.DraftOrderCreate
+//                            binding.addtocard.text = "Open In Your Bag"
                             addToBagButtonClickListner(true)
+                            Toast.makeText(requireContext(), "Item add to your bag", Toast.LENGTH_SHORT).show()
                         }
                         is ApiState.Error -> {
                             Toast.makeText(requireContext(),"Can't add to bag, try again", Toast.LENGTH_SHORT)
@@ -409,11 +499,6 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         }
 
 
-    override fun onResume() {
-        super.onResume()
-        searchInCustomerFavorites()
-        Log.d("details", "onResume:$productId ")
-    }
 
 
     private fun setupBottomDialog(List: List<String>,type:String,selected:String) {
@@ -446,18 +531,44 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
             Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id} ")
 
             binding.spinnersize.text=item.toString()
-            selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id
+            /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id
+            */
+            selectedProductVariantId = productVariants!!.find { variant ->
+                variant.node.selectedOptions.any { option -> option.name == "Size" && option.value == item } &&
+                        variant.node.selectedOptions.any { option -> option.name == "Color" && option.value == selectedProductColor }
+            }?.node?.id.toString()
 
         }else{
             selectedProductColor=item.toString()
-            binding.spinnercolor.text=item.toString()
-//            selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id
-//            Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id} ")
+            setColor(item.toString())
+//            binding.spinnercolor.text=item.toString()
+            /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id
+            Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id} ")
+        */
+            selectedProductVariantId = productVariants!!.find { variant ->
+                variant.node.selectedOptions.any { option -> option.name == "Size" && option.value == selectedProductSize } &&
+                        variant.node.selectedOptions.any { option -> option.name == "Color" && option.value == item }
+            }?.node?.id.toString()
         }
-        searcheInBag()
+        binding.inInventory.text= "In Inventory: ${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.inventoryQuantity}".also { binding.inInventory.text = it }
+        if(!userAuthViewModel.isguestMode()) {
+            searcheInBag()
+        }
         dialog.dismiss()
     }
-
+    private fun setColor(color: String) {
+        when (color.toLowerCase()) {
+            "burgandy" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.burgandy))
+            "red" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.red_color))
+            "white" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.white))
+            "blue" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.blue))
+            "black" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.black))
+            "gray" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.gray))
+            "light_brown" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.light_brown))
+            "beige" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.beige))
+            "yellow" -> binding.spinnercolor.setBackgroundColor(binding.root.context.getColor(com.iti4.retailhub.R.color.yellow))
+        }
+    }
 }
 
 

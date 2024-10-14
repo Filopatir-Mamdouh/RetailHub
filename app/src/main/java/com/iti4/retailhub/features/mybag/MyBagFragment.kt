@@ -1,5 +1,6 @@
 package com.iti4.retailhub.features.mybag
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,8 @@ import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CartProduct
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +31,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MyBagFragment : Fragment(), OnClickMyBag {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
     private var conversionRate: Double? = null
     private lateinit var binding: FragmentMyBagBinding
     private val viewModel by viewModels<MyBagViewModel>()
@@ -42,57 +47,66 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        conversionRate = viewModel.getConversionRates(viewModel.getCurrencyCode())
-        adapter =
-            MyBagProductRecyclerViewAdapter(this, viewModel.getCurrencyCode(), conversionRate!!)
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.products.collect { item ->
-                    when (item) {
-                        is ApiState.Success<*> -> {
+        if (userAuthViewModel.isguestMode()) {
+            binding.guestb.visibility = View.VISIBLE
+            binding.btnOkayb.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+                intent.putExtra("guest","guest")
+                startActivity(intent)
+                requireActivity().finish()
+            }
+        } else {
+            conversionRate = viewModel.getConversionRates(viewModel.getCurrencyCode())
+            adapter =
+                MyBagProductRecyclerViewAdapter(this, viewModel.getCurrencyCode(), conversionRate!!)
+            lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                    viewModel.products.collect { item ->
+                        when (item) {
+                            is ApiState.Success<*> -> {
 
-                            val data = item.data as List<CartProduct>
-                            if (!data.isNullOrEmpty()) {
-                                cartProductList = data.toMutableList()
-                                updateTotalPrice()
-                                adapter.submitList(data)
-                                binding.lottibagAnimation.visibility = View.GONE
-                            } else
-                                binding.lottibagAnimation.visibility = View.VISIBLE
-                        }
+                                val data = item.data as List<CartProduct>
+                                if (!data.isNullOrEmpty()) {
+                                    cartProductList = data.toMutableList()
+                                    updateTotalPrice()
+                                    adapter.submitList(data)
+                                    binding.lottibagAnimation.visibility = View.GONE
+                                } else
+                                    binding.lottibagAnimation.visibility = View.VISIBLE
+                            }
 
-                        is ApiState.Error -> {
-                            Log.d("Filo", "onViewCreated: ${item.exception}")
-                        }
+                            is ApiState.Error -> {
+                                Log.d("Filo", "onViewCreated: ${item.exception}")
+                            }
 
-                        is ApiState.Loading -> {
-                            Log.d("Filo", "onViewCreated: Loading")
+                            is ApiState.Loading -> {
+                                Log.d("Filo", "onViewCreated: Loading")
+                            }
                         }
                     }
                 }
             }
-        }
-        binding.btnCheckout.setOnClickListener {
-            if (!cartProductList.isNullOrEmpty()) {
-                val bundle = Bundle().apply {
-                    putParcelableArrayList("data", cartProductList as ArrayList<CartProduct>)
-                    putDouble("totalprice", totalPrice ?: 0.0)
+            binding.btnCheckout.setOnClickListener {
+                if (!cartProductList.isNullOrEmpty()) {
+                    val bundle = Bundle().apply {
+                        putParcelableArrayList("data", cartProductList as ArrayList<CartProduct>)
+                        putDouble("totalprice", totalPrice ?: 0.0)
+                    }
+                    requireActivity().findNavController(R.id.fragmentContainerView2)
+                        .navigate(R.id.checkoutFragment, bundle)
                 }
-                requireActivity().findNavController(R.id.fragmentContainerView2)
-                    .navigate(R.id.checkoutFragment, bundle)
             }
-        }
 
-        val manager = LinearLayoutManager(requireContext())
-        manager.setOrientation(RecyclerView.VERTICAL)
-        binding.rvMyBag.layoutManager = manager
-        binding.rvMyBag.adapter = adapter
-        adapter.submitList(
-            listOf(
+            val manager = LinearLayoutManager(requireContext())
+            manager.setOrientation(RecyclerView.VERTICAL)
+            binding.rvMyBag.layoutManager = manager
+            binding.rvMyBag.adapter = adapter
+            adapter.submitList(
+                listOf(
+                )
             )
-        )
+        }
     }
-
     override fun deleteMyBagItem(cartProduct: CartProduct) {
         viewModel.deleteMyBagItem(cartProduct.draftOrderId)
         cartProductList?.remove(cartProduct)
@@ -149,7 +163,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getMyBagProducts()
+        if(!userAuthViewModel.isguestMode()) {
+            viewModel.getMyBagProducts()
+        }
         binding.mybagAppbar.apply {
             appBar.setExpanded(false)
             collapsedPageName.visibility = View.GONE
@@ -163,7 +179,9 @@ class MyBagFragment : Fragment(), OnClickMyBag {
 
 
     override fun onStop() {
-        updateQuantity()
+        if (!userAuthViewModel.isguestMode()) {
+            updateQuantity()
+        }
         super.onStop()
     }
 }

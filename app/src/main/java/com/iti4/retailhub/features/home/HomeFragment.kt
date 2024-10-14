@@ -1,12 +1,19 @@
 package com.iti4.retailhub.features.home
 
+import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -30,6 +37,8 @@ import com.iti4.retailhub.features.home.adapter.AdsViewPagerAdapter
 import com.iti4.retailhub.features.home.adapter.BrandAdapter
 import com.iti4.retailhub.features.home.adapter.DotsIndicatorDecoration
 import com.iti4.retailhub.features.home.adapter.NewItemAdapter
+import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.shop.adapter.OnClickNavigate
 import com.iti4.retailhub.models.Brands
@@ -49,7 +58,8 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
     private val viewModel by viewModels<HomeViewModel>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
     private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
-    lateinit var adapter: NewItemAdapter
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
+lateinit var adapter: NewItemAdapter
     private lateinit var currencyCode: CountryCodes
     private var conversionRate: Double = 0.0
     private var currentPosition = 0
@@ -69,13 +79,28 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+           /* binding.guest.visibility=View.VISIBLE
+            binding.messagef.text="login first to see your favorites"
+            binding.btnOkayp.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+                startActivity(intent)
+            }
+            binding.btnCancelp.setOnClickListener {
+                Navigation.findNavController(view).navigate(R.id.homeFragment)
+            }*/
 
-        favoritesViewModel.getFavorites()
         currencyCode = viewModel.getCurrencyCode()
         conversionRate = viewModel.getConversionRates(currencyCode)
-        adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate)
+        if (!userAuthViewModel.isguestMode()) {
+            adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate,false)
+            favoritesViewModel.getFavorites()
+            getUserHomeProducts()
+        }
+        else {
+            adapter = NewItemAdapter(this@HomeFragment,currencyCode,conversionRate,true)
+            getGuestHomeProducts()
+        }
         displayAds()
-        getHomeProducts()
         // viewModel.getFavorites()
         // lifecycleScope.launch {
         //     viewModel.savedFavortes.collect { item ->
@@ -171,7 +196,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
 //        }
 //    }
 //}
-    private fun getHomeProducts() {
+    private fun getUserHomeProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.combine(favoritesViewModel.savedFavortes){
@@ -325,6 +350,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
 //                }
 //            }
 //        }
+
     }
 
     override fun navigate(filter: String, productType: String) {
@@ -334,6 +360,7 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
         )
     }
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
+        if (!userAuthViewModel.isguestMode()){
         favoritesViewModel.deleteFavorites(pinFavorite)
 //        favoritesViewModel.getFavorites()
         Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
@@ -365,6 +392,9 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
 //                }
 //            }
 //        }
+        }else{
+            showGuestDialog()
+        }
     }
     override fun copyCoupon(coupon: Discount) {
         if(mainActivityViewModel.copiedCouponsList.none{ it.value==coupon.value}){
@@ -378,6 +408,56 @@ class HomeFragment : Fragment(), OnClickGoToDetails , OnClickAddCopyCoupon, OnCl
         }
     }
 
+    private fun showGuestDialog(){
+    val dialog = Dialog(requireContext())
+
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+    dialog.setCancelable(true)
+
+    dialog.setContentView(R.layout.guest_dialog)
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+    val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
+    val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
+    val messag=dialog.findViewById<TextView>(R.id.messaged)
+    messag.text="login to add to your favorites"
+    btnYes.setOnClickListener {
+        val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+        intent.putExtra("guest","guest")
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+    btnNo.setOnClickListener {
+        dialog.dismiss()
+    }
+
+    dialog.show()
+}
+    private fun getGuestHomeProducts(){
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.products.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            binding.animationView.visibility = View.GONE
+                            val data = item.data as List<HomeProducts>
+                            displayNewItemRowData(data)
+                        }
+                        is ApiState.Error -> {
+                            Toast.makeText(
+                                requireContext(),
+                                item.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         autoScrollJob?.cancel()

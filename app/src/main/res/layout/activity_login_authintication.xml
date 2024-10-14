@@ -16,6 +16,7 @@
         android:layout_gravity="center_horizontal"
         app:contentInsetEnd="0dp"
         app:contentInsetStart="0dp"
+        android:visibility="gone"
         app:layout_collapseMode="pin"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleMarginStart="88dp"

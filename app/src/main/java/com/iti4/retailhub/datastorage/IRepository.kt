@@ -17,7 +17,6 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
-import com.iti4.retailhub.GetDiscountsQuery
 import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
 import com.iti4.retailhub.ProductDetailsQuery
@@ -30,7 +29,6 @@ import com.iti4.retailhub.models.CartProduct
 import com.iti4.retailhub.models.Category
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.CurrencyResponse
-import com.iti4.retailhub.models.CustomerAddress
 import com.iti4.retailhub.models.CustomerAddressV2
 import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.DraftOrderInputModel
@@ -65,10 +63,10 @@ interface IRepository {
 
     suspend fun createUserWithEmailAndPassword(email: String, password: String): AuthResult?
     suspend fun signInWithEmailAndPassword(email: String, password: String): AuthResult?
-    suspend fun loginOut(): Boolean
+     fun loginOut(): Boolean
     suspend fun sendEmailVerification(user: FirebaseUser): Boolean
-    suspend fun signIn(): IntentSender?
-    suspend fun signInWithIntent(intent: Intent): AuthResult?
+   /* suspend fun signIn(): IntentSender?
+    suspend fun signInWithIntent(intent: Intent): AuthResult?*/
 
     fun addUserName(name: String): Int
     fun addUserData(userID: String): Int
@@ -84,7 +82,7 @@ interface IRepository {
         varientId: String,
         customerId: String
     ): Flow<CreateDraftOrderMutation.DraftOrderCreate>
-    fun GetDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
+    fun getDraftOrdersByCustomer(customerId: String): Flow<GetDraftOrdersByCustomerQuery.DraftOrders>
 
     fun getAddressesById(customerId: String): Flow<GetAddressesByIdQuery.Customer>
     fun updateCustomerAddress(
@@ -127,4 +125,5 @@ interface IRepository {
     fun getOrderDetails(id: String): Flow<OrderDetails>
     abstract fun setLoginStatus(loginStatus: String)
     fun getLoginStatus(): String?
+    suspend fun signWithGoogle(idToken: String): FirebaseUser?
 }

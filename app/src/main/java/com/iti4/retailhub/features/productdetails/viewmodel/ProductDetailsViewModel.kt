@@ -1,6 +1,5 @@
 package com.iti4.retailhub.features.productdetails.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.api.Optional
@@ -31,7 +30,7 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
     val productInFavorites = _productInFavorites
     val customerId by lazy {repository.getUserShopLocalId()}
 
-     fun getProductDetails(id:String) {
+    fun getProductDetails(id:String) {
         viewModelScope.launch(Dispatchers.IO){
             repository.getProductDetails(id)
                 .catch {
@@ -42,13 +41,11 @@ class ProductDetailsViewModel @Inject constructor(private val repository: IRepos
             }
         }
     }
-fun  GetDraftOrdersByCustomer(productTitle:String){
-    /*val regex = """\/([^\/]+)$""".toRegex()
-    val matchResult = regex.find(customerId)
-    val customerIdNumberOnly = matchResult?.groupValues?.get(1)*/
+
+    fun  getDraftOrdersByCustomer(productTitle:String){
     val customerIdNumberOnly = extractNumbersFromString(customerId!!)
     viewModelScope.launch(Dispatchers.IO){
-        repository.GetDraftOrdersByCustomer("(customer_id:${customerIdNumberOnly}) ${productTitle}")
+        repository.getDraftOrdersByCustomer("(customer_id:${customerIdNumberOnly}) ${productTitle}")
             .catch {
                     e -> _customerDraftOrders.emit(ApiState.Error(e))
             }
@@ -57,20 +54,17 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
     }
 }
 }
+
     fun addToCart(selectedProductVariantId: String) {
 
         viewModelScope.launch(Dispatchers.IO){
-            Log.d("TAG", "addToCart:launch ")
             /*if (customerId != null) {*/
-                Log.d("TAG", "addToCart:if ")
                 repository.insertMyBagItem(selectedProductVariantId,customerId!!)
                     .catch { e ->
                         _createDraftOrder.emit(ApiState.Error(e))
-                        Log.d("TAG", "addToCart:catch ${e.message}")
                     }
                     .collect{
                         _createDraftOrder.emit(ApiState.Success(it))
-                        Log.d("TAG", "addToCart:collect ${it} ")
                     }
 //            }
         }
@@ -98,36 +92,35 @@ fun  GetDraftOrdersByCustomer(productTitle:String){
                     )
                 )))
                 .catch { e ->
-                    Log.d("fav", "saveToFavorites:${e.message} ")
                     _saveProductToFavortes.emit(ApiState.Error(e))
                 }
                 .collect{
-                    Log.d("fav", "saveToFavorites:${it} ")
                     _saveProductToFavortes.emit(ApiState.Success(it))
                 }
         }
     }
 
     fun searchProductInCustomerFavorites(selectedProductVariantId: String) {
-        val regex = """\/([^\/]+)$""".toRegex()
+        /*val regex = """\/([^\/]+)$""".toRegex()
         val matchResult = regex.find(selectedProductVariantId)
-        val id = selectedProductVariantId.split("/").last()
+        val id = selectedProductVariantId.split("/").last()*/
         viewModelScope.launch(Dispatchers.IO){
-            Log.d("TAG", "addToCart:launch ")
             /*if (customerId != null) {*/
-            Log.d("searchInCustomerFavorites", "gid://shopify/ProductVariant/${id}\"")
             repository.getCustomerFavoritesoById(customerId!!,selectedProductVariantId.toString())
                 .catch { e ->
                     _productInFavorites.emit(ApiState.Error(e))
-                    Log.d("TAG", "addToCart:catch ${e.message}")
                 }
                 .collect{
                     _productInFavorites.emit(ApiState.Success(it))
-                    Log.d("TAG", "addToCart:collect ${it} ")
                 }
 //            }
         }
     }
+
+
+
+
+
 
     fun getConversionRates(currencyCode: CountryCodes): Double {
         return repository.getConversionRates(currencyCode)
