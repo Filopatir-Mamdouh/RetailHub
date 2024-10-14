@@ -20,7 +20,6 @@ class NewItemAdapter(
     val currencyCodes: CountryCodes, val conversionRate: Double
 ) : ListAdapter<HomeProducts, NewItemAdapter.ViewHolder>(HomeProductsDiffUtils()) {
     lateinit var context: Context
-    var isAddToFavoritesFirstClick = true
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = NewCardItemBinding.bind(itemView)

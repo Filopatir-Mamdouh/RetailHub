@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.productSearch
+package com.iti4.retailhub.features.productSearch.view
 
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +21,7 @@ import com.iti4.retailhub.databinding.FragmentProducSearchBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.home.OnClickGoToDetails
+import com.iti4.retailhub.features.productSearch.viewmodel.ProductSearchViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductSearchFragment : Fragment(), OnClickGoToDetails {
-    private val viewModel: ProductSEarchViewModel by viewModels()
+    private val viewModel: ProductSearchViewModel by viewModels()
     private lateinit var binding: FragmentProducSearchBinding
     private var currentList = emptyList<HomeProducts>()
     private val favoritesViewModel by viewModels<FavoritesViewModel>()
@@ -42,6 +43,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
 
     override fun onStart() {
         super.onStart()
+
     }
 
     override fun onCreateView(
@@ -56,6 +58,8 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         super.onViewCreated(view, savedInstanceState)
         favoritesViewModel.getFavorites()
         Log.d("search", "onViewCreated:${arguments} ")
+
+        binding.toolbar2.navigationIcon
         if (arguments != null) {
             viewModel.searchProducts(arguments?.getString("query").toString())
         }
@@ -70,17 +74,22 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         binding.filter.setOnClickListener {
             if (isratingbarevisible) {
                 binding.rangeSlider.visibility = View.GONE
-                isratingbarevisible = false
-            } else {
-                binding.searchView.setQuery("", true)
+                binding.filter.setImageResource(R.drawable.baseline_filter_list_24)
+                isratingbarevisible=false
+            }else{
+                binding.searchView.setQuery("",true)
                 binding.rangeSlider.visibility = View.VISIBLE
                 productSearchListViewAdapter.submitList(emptyList())
-                isratingbarevisible = true
+                binding.filter.setImageResource(R.drawable.filter_list_off)
+                isratingbarevisible=true
             }
         }
-        binding.rangeSlider.addOnChangeListener { slider, minValue, maxValue ->
+        binding.rangeSlider2.addOnChangeListener { _, minValue, maxValue ->
             Log.d("search", "sliderAndFilterListner:${minValue} ${maxValue} ")
-            viewModel.searchProducts("price:>=${minValue}")
+//            binding.maxtool.text=maxValue.toString()
+            val formattedNumber = java.lang.String.format("%.1f", minValue)
+            binding.maxtool.text="Max price:${formattedNumber}"
+            viewModel.searchProducts("price:<=${minValue}")
         }
     }
 
@@ -97,7 +106,8 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
     private fun searchBarTextChangeListner() {
         binding.searchView.setOnClickListener {
             binding.rangeSlider.visibility = View.GONE
-            isratingbarevisible = false
+            binding.filter.setImageResource(R.drawable.filter_list_off)
+            isratingbarevisible=false
         }
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {

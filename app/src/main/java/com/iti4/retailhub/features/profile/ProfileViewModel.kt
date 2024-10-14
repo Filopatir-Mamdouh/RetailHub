@@ -10,6 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,20 +26,18 @@ class ProfileViewModel @Inject constructor(private val repository: IRepository) 
     fun getCurrencyCode(): CountryCodes {
         return repository.getCurrencyCode()
     }
-
-    fun logout(){
-        viewModelScope.launch {
-            repository.setLoginStatus("")
-            repository.loginOut()
-        }
+    fun signOut() {
+        repository.loginOut()
+        repository.deleteUserData()
     }
+
     fun getCustomer() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getCustomerInfoById(repository.getUserShopLocalId()!!).single().apply {
-                val map = mapOf("fName" to firstName, "lName" to lastName, "email" to email)
-                Log.d("Filo", "getCustomer: $map")
-                _user.emit(map)
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.getCustomerInfoById(repository.getUserShopLocalId()!!).single().apply {
+                    val map = mapOf("fName" to firstName, "lName" to lastName, "email" to email)
+                    Log.d("Filo", "getCustomer: $map")
+                    _user.emit(map)
+                }
             }
-        }
     }
 }

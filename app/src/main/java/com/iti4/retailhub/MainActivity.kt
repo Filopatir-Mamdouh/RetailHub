@@ -18,6 +18,7 @@ import androidx.navigation.Navigation
 import com.iti4.retailhub.databinding.ActivityMainBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.address.AddressViewModel
+import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.models.CurrencyResponse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,13 +30,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val sharedViewModel: AddressViewModel by viewModels()
     private val viewModel by viewModels<MainActivityViewModel>()
+    val userAuthViewModel: UserAuthunticationViewModelViewModel by viewModels<UserAuthunticationViewModelViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel.getDiscount()
-        viewModel.getUsedDiscounts()
+        if (!userAuthViewModel.isguestMode()){
+            viewModel.getUsedDiscounts()
+        }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
