@@ -29,7 +29,7 @@ class ProfileViewModel @Inject constructor(private val repository: IRepository) 
         repository.deleteUserData()
     }
 
-    fun getCustomer() {
+    private fun getCustomer() {
             viewModelScope.launch(Dispatchers.IO) {
                 repository.getCustomerInfoById(repository.getUserShopLocalId()!!).catch { _user.emit(mapOf("error" to it.message)) }.collect {
                     val map = mapOf("fName" to it.firstName, "lName" to it.lastName, "email" to it.email)
