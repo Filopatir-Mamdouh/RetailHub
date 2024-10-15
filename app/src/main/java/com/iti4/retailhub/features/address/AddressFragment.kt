@@ -20,6 +20,7 @@ import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentAddressBinding
 import com.iti4.retailhub.datastorage.network.ApiState
+import com.iti4.retailhub.logic.ToolbarSetup
 import com.iti4.retailhub.models.CustomerAddressV2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -151,6 +152,13 @@ class AddressFragment : Fragment(), OnClickAddress {
             Log.i("here", "onStart:  add " + "here")
         }
         (activity as MainActivity).hideBottomNavBar()
+        ToolbarSetup.setupToolbarMini(
+            binding.checkoutAppbar,
+            "Addresses",
+            resources,
+            { requireActivity().onBackPressed() }
+        )
+
     }
 
     override fun onStop() {

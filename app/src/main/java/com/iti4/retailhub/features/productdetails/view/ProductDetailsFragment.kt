@@ -42,6 +42,7 @@ import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.But
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
 import com.iti4.retailhub.features.reviwes.viewmodel.ReviewsViewModel
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -208,7 +209,8 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
                             binding.productDescription.text = data.description
                             binding.productPrice.text =
-                                productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount.toString() + " " + productVariants!![0].node.presentmentPrices.edges[0].node.price.currencyCode
+                                ((productVariants!!.get(0).node.presentmentPrices.edges[0].node.price.amount.toString().toDouble())
+                                        *(conversionRate)).toTwoDecimalPlaces() + " " + currencyCode.name
                             "In Inventory: ${productVariants!![0].node.inventoryQuantity}".also { binding.inInventory.text = it }
 
 

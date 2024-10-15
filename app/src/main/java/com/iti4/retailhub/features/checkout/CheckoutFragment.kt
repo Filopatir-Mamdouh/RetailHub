@@ -367,13 +367,13 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
             View.GONE
 
-        ToolbarSetup.setupToolbar(
+        ToolbarSetup.setupToolbarMini(
             binding.checkoutAppbar,
             "Checkout",
             resources,
             { requireActivity().onBackPressed() }
         )
-        ToolbarSetup.setToCollapse(binding.checkoutAppbar)
+
     }
 
     private fun checkDiscount(discountCode: String): Boolean {
