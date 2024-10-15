@@ -123,13 +123,12 @@
     <string name="welcome_to_retail_hub">Welcome to Retail Hub</string>
     <string name="log_out">Log out</string>
     <string name="settings">Settings</string>
-    <string name="sort_by_title">Sort by Title</string>
-    <string name="sort_from_high_price_to_low_price">Sort from high price to low Price</string>
-    <string name="sort_from_low_price_to_high_price">Sort from low price to high Price</string>
+    <string name="sort_by_relevance">Sort by Relevance</string>
+    <string name="sort_from_high_price_to_low_price">Sort from high price to low price</string>
+    <string name="sort_from_low_price_to_high_price">Sort from low price to high price</string>
     <string name="sort_from_newest_to_oldest">Sort from newest to oldest</string>
     <string name="sort_from_oldest_to_newest">Sort from oldest to newest</string>
     <string name="price_high_to_low">Price: High to Low</string>
-    <string name="name_a_to_z">Name: A to Z</string>
     <string name="newest">Newest</string>
     <string name="oldest">Oldest</string>
     <string name="sort_the_result">Sort the Result</string>

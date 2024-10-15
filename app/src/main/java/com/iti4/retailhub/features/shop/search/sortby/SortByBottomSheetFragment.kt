@@ -27,7 +27,7 @@ class SortByBottomSheetFragment(private val listener: SortByListener) :  BottomS
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
-            sortByTitle.setOnClickListener { listener.onSortBySelected(SortBy.TITLE); dismiss() }
+            sortByTitle.setOnClickListener { listener.onSortBySelected(SortBy.RELEVANCE); dismiss() }
             highPrice.setOnClickListener { listener.onSortBySelected(SortBy.PRICE_DESC); dismiss() }
             lowPrice.setOnClickListener { listener.onSortBySelected(SortBy.PRICE_ASC); dismiss() }
         }

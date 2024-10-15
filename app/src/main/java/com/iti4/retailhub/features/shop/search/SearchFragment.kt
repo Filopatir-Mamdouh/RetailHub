@@ -158,12 +158,14 @@ class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
                 adapter = listViewAdapter
                 layoutManager = LinearLayoutManager(requireContext())
                 listViewAdapter.submitList(data)
+                smoothScrollToPosition(0)
             }
         } else {
             binding.searchRV.apply {
                 adapter = gridViewAdapter
                 layoutManager = GridLayoutManager(requireContext(), 2)
                 gridViewAdapter.submitList(data)
+                smoothScrollToPosition(0)
             }
         }
     }
@@ -346,8 +348,8 @@ class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
                     gridViewAdapter.submitList(gridViewAdapter.currentList.sortedByDescending { it.maxPrice.toDouble() })
                 }
             }
-            SortBy.TITLE -> {
-                binding.textView15.text = getString(R.string.name_a_to_z)
+            SortBy.RELEVANCE -> {
+                binding.textView15.text = getString(R.string.sort_by_relevance)
                 if (isListView){
                     listViewAdapter.submitList(listViewAdapter.currentList.sortedBy { it.title?.split(" | ")?.get(1) })
                     Log.d("Filo", "onSortBySelected: ${listViewAdapter.currentList}")
@@ -356,8 +358,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
                 }
             }
         }
-        listViewAdapter.notifyDataSetChanged()
-        gridViewAdapter.notifyDataSetChanged()
+        binding.searchRV.smoothScrollToPosition(0)
     }
     private fun showGuestDialog(){
         val dialog = Dialog(requireContext())
