@@ -67,19 +67,13 @@ class MainActivity : AppCompatActivity() {
                             it.view?.isEnabled = true
                         }
                         findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
-                        binding.apply{
-                            navigationView.menu.setGroupEnabled(R.id.navGroup, true)
-                            networkAnimView.visibility = View.GONE
-                        }
+                        binding.networkAnimView.visibility = View.GONE
                     }else{
                         fragments?.forEach{
                             it.view?.isEnabled = false
                         }
                         findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
-                        binding.apply{
-                            navigationView.menu.setGroupEnabled(R.id.navGroup, false)
-                            networkAnimView.visibility = View.VISIBLE
-                        }
+                        binding.networkAnimView.visibility = View.VISIBLE
                     }
                 }
             }
