@@ -2,9 +2,12 @@ package com.iti4.retailhub.features.login_and_signup.view
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -98,12 +101,16 @@ class LoginInFragment : Fragment() {
                                 customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
                             }else if (authResultState.error=="Failed to send verification email") {
-
+                                Toast.makeText(
+                                    requireContext(),
+                                    authResultState.error,
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                             else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "No internet connection",
+                                    authResultState.error,
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
@@ -121,34 +128,38 @@ class LoginInFragment : Fragment() {
     }
 
     private fun loginClickListner(){
-        loginUpBinding.sigInBtn.setOnClickListener {
-            loginUpBinding.emailTextInput.isErrorEnabled  = false// Clear error message
-            loginUpBinding.passowrdTex.isErrorEnabled  = false
-            loginUpBinding.emailTextInput.error = null // Clear error message
-            loginUpBinding.passowrdTex.error = null // Clear error message
-            val email = loginUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
-            val password = loginUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
-            if (email.isEmpty()) {
-                loginUpBinding.emailTextInput.isErrorEnabled  = true
-                loginUpBinding.emailTextInput.error = "Please enter your email"
-                return@setOnClickListener
-            } else if (!email.matches(EMAIL_REGEX.toRegex())) {
-                loginUpBinding.emailTextInput.isErrorEnabled  = true
-                loginUpBinding.emailTextInput.error = "Invalid email format"
-                return@setOnClickListener
-            }
-            if (password.isEmpty()) {
-                loginUpBinding.passowrdTex.isErrorEnabled  = true
-                loginUpBinding.passowrdTex.error = "Please enter your password"
-                return@setOnClickListener
-            } else if (password.length < 6) {
-                loginUpBinding.passowrdTex.isErrorEnabled  = true
-                loginUpBinding.passowrdTex.error = "Password must be at least 6 characters"
-                return@setOnClickListener
+
+            loginUpBinding.sigInBtn.setOnClickListener {
+                loginUpBinding.emailTextInput.isErrorEnabled = false// Clear error message
+                loginUpBinding.passowrdTex.isErrorEnabled = false
+                loginUpBinding.emailTextInput.error = null // Clear error message
+                loginUpBinding.passowrdTex.error = null // Clear error message
+                val email =
+                    loginUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
+                val password =
+                    loginUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
+                if (email.isEmpty()) {
+                    loginUpBinding.emailTextInput.isErrorEnabled = true
+                    loginUpBinding.emailTextInput.error = "Please enter your email"
+                    return@setOnClickListener
+                } else if (!email.matches(EMAIL_REGEX.toRegex())) {
+                    loginUpBinding.emailTextInput.isErrorEnabled = true
+                    loginUpBinding.emailTextInput.error = "Invalid email format"
+                    return@setOnClickListener
+                }
+                if (password.isEmpty()) {
+                    loginUpBinding.passowrdTex.isErrorEnabled = true
+                    loginUpBinding.passowrdTex.error = "Please enter your password"
+                    return@setOnClickListener
+                } else if (password.length < 6) {
+                    loginUpBinding.passowrdTex.isErrorEnabled = true
+                    loginUpBinding.passowrdTex.error = "Password must be at least 6 characters"
+                    return@setOnClickListener
+                }
+
+                userAuthViewModel.signIn(email, password)
             }
 
-            userAuthViewModel.signIn(email, password)
-        }
     }
     /*private val signInResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -163,7 +174,12 @@ class LoginInFragment : Fragment() {
         }
     }*/
 
-
+    fun isInternetAvailable(): Boolean {
+        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
     private fun showGuestDialog(){
         val dialog = Dialog(requireContext())
 

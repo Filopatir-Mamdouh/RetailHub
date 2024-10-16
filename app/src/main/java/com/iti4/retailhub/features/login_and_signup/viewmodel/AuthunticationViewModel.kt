@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 
@@ -73,7 +74,10 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                 _authState.value = AuthState.Messages("Invalid email format")
             } catch (e: FirebaseAuthUserCollisionException) {
                 _authState.value = AuthState.Messages("Email is already in use")
-            } catch (e: Exception) {
+            }  catch (e: IOException) {
+                _authState.value = AuthState.Messages("No internet connection")
+            }
+            catch (e: Exception) {
                 _authState.value = AuthState.Messages("Error: ${e.message}")
             }
         }

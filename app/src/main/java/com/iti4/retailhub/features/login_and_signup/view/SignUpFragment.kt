@@ -135,6 +135,12 @@ class SignUpFragment : Fragment() {
                                     "Email is already in use",
                                     Toast.LENGTH_LONG
                                 ).show()
+                            }else if (authResultState.error=="No internet connection") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No internet connection",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                             else {
                                 Toast.makeText(
