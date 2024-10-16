@@ -5,6 +5,7 @@ import com.iti4.retailhub.AddTagsMutation
 import com.iti4.retailhub.CompleteDraftOrderMutation
 import com.iti4.retailhub.CreateCustomerMutation
 import com.iti4.retailhub.CreateDraftOrderMutation
+import com.iti4.retailhub.CustomerEmailSearchQuery
 import com.iti4.retailhub.CustomerUpdateDefaultAddressMutation
 import com.iti4.retailhub.DeleteDraftOrderMutation
 import com.iti4.retailhub.DraftOrderInvoiceSendMutation
@@ -12,8 +13,11 @@ import com.iti4.retailhub.GetAddressesByIdQuery
 import com.iti4.retailhub.GetAddressesDefaultIdQuery
 import com.iti4.retailhub.GetCustomerByIdQuery
 import com.iti4.retailhub.GetCustomerFavoritesQuery
+import com.iti4.retailhub.GetDraftOrdersByCustomerQuery
 import com.iti4.retailhub.MarkAsPaidMutation
+import com.iti4.retailhub.ProductDetailsQuery
 import com.iti4.retailhub.UpdateCustomerAddressesMutation
+import com.iti4.retailhub.UpdateCustomerFavoritesMetafieldsMutation
 import com.iti4.retailhub.UpdateDraftOrderMutation
 import com.iti4.retailhub.datastorage.network.RemoteDataSource
 import com.iti4.retailhub.datastorage.network.RetrofitDataSource
@@ -30,6 +34,7 @@ import com.iti4.retailhub.models.DraftOrderInputModel
 import com.iti4.retailhub.models.HomeProducts
 import com.iti4.retailhub.models.Order
 import com.iti4.retailhub.models.OrderDetails
+import com.iti4.retailhub.models.Review
 import com.iti4.retailhub.type.CustomerInput
 import com.iti4.retailhub.userauthuntication.UserAuthunticationInterface
 import io.mockk.coEvery
@@ -39,6 +44,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody
@@ -495,6 +502,83 @@ class RepositoryTest {
         actualDiscounts.collect {
             assertEquals(expectedDiscounts, it)
         }
+    }
+
+
+    @Test
+    fun `test getDraftOrdersByCustomer returns correct data`() = runBlocking {
+        // Arrange
+        val customerId = "customer123"
+        val expectedDraftOrders = mockk<GetDraftOrdersByCustomerQuery.DraftOrders>()
+        coEvery { remoteDataSource.getDraftOrdersByCustomer(customerId) } returns flowOf(expectedDraftOrders)
+
+        // Act
+        val result = repository.getDraftOrdersByCustomer(customerId).toList()
+
+        // Assert
+        assert(result.contains(expectedDraftOrders))
+        verify { remoteDataSource.getDraftOrdersByCustomer(customerId) }
+    }
+
+    @Test
+    fun `test saveProductToFavotes returns correct data`() = runBlocking {
+        // Arrange
+        val input = CustomerInput(/* mock data */)
+        val expectedUpdate = mockk<UpdateCustomerFavoritesMetafieldsMutation.CustomerUpdate>()
+        coEvery { remoteDataSource.saveProductToFavotes(input) } returns flowOf(expectedUpdate)
+
+        // Act
+        val result = repository.saveProductToFavotes(input).toList()
+
+        // Assert
+        assert(result.contains(expectedUpdate))
+        verify { remoteDataSource.saveProductToFavotes(input) }
+    }
+
+    @Test
+    fun `test getCustomerIdByEmail returns correct data`() = runBlocking {
+        // Arrange
+        val email = "test@example.com"
+        val expectedCustomers = mockk<CustomerEmailSearchQuery.Customers>()
+        coEvery { remoteDataSource.getCustomerIdByEmail(email) } returns flowOf(expectedCustomers)
+
+        // Act
+        val result = repository.getCustomerIdByEmail(email).toList()
+
+        // Assert
+        assert(result.contains(expectedCustomers))
+        verify { remoteDataSource.getCustomerIdByEmail(email) }
+    }
+
+    @Test
+    fun `test getProductDetails returns correct data`() = runBlocking {
+        // Arrange
+        val productId = "product123"
+        val expectedProductDetails = mockk<ProductDetailsQuery.OnProduct>()
+        coEvery { remoteDataSource.getProductDetails(productId) } returns flowOf(expectedProductDetails)
+
+        // Act
+        val result = repository.getProductDetails(productId).toList()
+
+        // Assert
+        assert(result.contains(expectedProductDetails))
+        verify { remoteDataSource.getProductDetails(productId) }
+    }
+
+
+    @Test
+    fun `test getAllReviews returns correct number of reviews`() {
+        // Arrange
+        val reviewsNumbers = 5
+        val expectedReviews = listOf(mockk<Review>(), mockk<Review>())
+        every { reviewsDataStore.getAllReviews(reviewsNumbers) } returns expectedReviews
+
+        // Act
+        val result = repository.getAllReviews(reviewsNumbers)
+
+        // Assert
+        assert(result == expectedReviews)
+        verify { reviewsDataStore.getAllReviews(reviewsNumbers) }
     }
 
 }
