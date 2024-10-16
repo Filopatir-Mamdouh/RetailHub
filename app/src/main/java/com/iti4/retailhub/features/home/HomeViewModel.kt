@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(private val repository: IRepository) : V
     private fun getProducts() {
         viewModelScope.launch(dispatcher) {
             repository.getProducts("").catch { e -> _products.emit(ApiState.Error(e)) }.collect {
-                _products.emit(ApiState.Success(it))
+                _products.emit(ApiState.Success(it.subList(0,9)))
             }
         }
     }

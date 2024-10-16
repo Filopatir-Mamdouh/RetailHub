@@ -1,11 +1,17 @@
 package com.iti4.retailhub.features.mybag.view
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,6 +22,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
@@ -41,7 +49,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     private var cartProductList: MutableList<CartProduct>? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMyBagBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,10 +57,11 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (userAuthViewModel.isguestMode()) {
-            binding.guestb.visibility = View.VISIBLE
-            binding.btnOkayb.setOnClickListener {
+            binding.guestb.visibility=View.VISIBLE
+           binding.tvMessage.text=getString(R.string.please_login_to_use_this_feature)
+            binding.btnOkayd.setOnClickListener {
                 val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-                intent.putExtra("guest", "guest")
+                intent.putExtra("guest","guest")
                 startActivity(intent)
                 requireActivity().finish()
             }

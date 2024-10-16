@@ -173,13 +173,22 @@ android:background="@color/white"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/color" />
-
-                <ImageView
-                    android:id="@+id/spinnercolor"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                <FrameLayout
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    tools:layout_editor_absoluteX="1dp"
+                    tools:layout_editor_absoluteY="81dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="41dp" />
+                    android:layout_marginStart="41dp"
+                    android:padding="2dp"
+                    android:background="@drawable/gray_border">
+                    <ImageView
+                        android:id="@+id/spinnercolor"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
+                </FrameLayout>
+
 
                 <ImageView
                     android:layout_width="15dp"
@@ -221,6 +230,8 @@ android:background="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

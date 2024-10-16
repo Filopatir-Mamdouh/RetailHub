@@ -37,7 +37,6 @@ import com.iti4.retailhub.features.favorits.viewmodel.FavoritesViewModel
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter
-import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.BottomDialogDiffUtilAdapter.ViewHolder
 import com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter.ButtomDialogOnClickListn
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
 import com.iti4.retailhub.features.reviwes.view.ReviewsDiffUtilAdapter
@@ -77,7 +76,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     var selectedProductColor: String = ""
     var selectedProductSize: String = ""
     lateinit var allColors: List<String>
-    lateinit var allSizes: List<String>
+    lateinit var sizesForSelectedColor: List<String>
     lateinit var productTitle: String
     lateinit var seelectedImage: String
     var isVariantInCustomerDraftOrders = false
@@ -137,7 +136,7 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
         showProductDetails()
         binding.frameLayout3.setOnClickListener{
-            setupBottomDialog(allSizes,"size",selectedProductSize)
+            setupBottomDialog(sizesForSelectedColor,"size",selectedProductSize)
         }
         binding.frameLayout4.setOnClickListener{
             setupBottomDialog(allColors,"color",selectedProductColor)
@@ -215,11 +214,11 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 
 
                             //get all colors and sizes from variant
-                            allSizes = productVariants!!
+                           /* sizesForSelectedColor = productVariants!!
                                 .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
                                 .distinct()
-                            binding.spinnersize.text = allSizes[0]
-                            selectedProductSize = allSizes[0]
+                            binding.spinnersize.text = sizesForSelectedColor[0]
+                            selectedProductSize = sizesForSelectedColor[0]*/
                             allColors = productVariants!!
                                 .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Color" }?.value }
                                 .distinct()
@@ -227,6 +226,19 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
 //                            binding.spinnercolor.text = allColors[0]
                             selectedProductColor = allColors[0]
 
+
+
+                            // Get all sizes for the first color
+                            val selectedColor = allColors[0]
+                             sizesForSelectedColor = productVariants!!
+                                .filter { variant ->
+                                    variant.node.selectedOptions.any { option -> option.name == "Color" && option.value == selectedColor }
+                                }
+                                .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
+                                .distinct()
+
+                            binding.spinnersize.text = sizesForSelectedColor[0]
+                            selectedProductSize = sizesForSelectedColor[0]
 
                         }
 
@@ -530,8 +542,6 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
     override fun choosedItem(position: Int, item: String?, type: String) {
         if(type=="size"){
             selectedProductSize=item.toString()
-            Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id} ")
-
             binding.spinnersize.text=item.toString()
             /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Size" }?.value == item }!!.node.id
             */
@@ -543,6 +553,12 @@ class ProductDetailsFragment : Fragment(), ButtomDialogOnClickListn {
         }else{
             selectedProductColor=item.toString()
             setColor(item.toString())
+            sizesForSelectedColor = productVariants!!
+                .filter { variant ->
+                    variant.node.selectedOptions.any { option -> option.name == "Color" && option.value == selectedProductColor }
+                }
+                .mapNotNull { it.node.selectedOptions.find { option -> option.name == "Size" }?.value }
+                .distinct()
 //            binding.spinnercolor.text=item.toString()
             /*selectedProductVariantId=productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id
             Log.d("choose", "choosedItem:${productVariants!!.find { it.node.selectedOptions.find { option -> option.name == "Color" }?.value == item }!!.node.id} ")

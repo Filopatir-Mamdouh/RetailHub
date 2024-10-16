@@ -73,15 +73,14 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
         currencyCode = viewModel.getCurrencyCode()
         conversionRate = viewModel.getConversionRates(currencyCode)
         if (!userAuthViewModel.isguestMode()) {
-            ProductSearchListViewAdapter(this,currencyCode,conversionRate,false)
+            productSearchListViewAdapter = ProductSearchListViewAdapter(this,currencyCode,conversionRate,false)
             favoritesViewModel.getFavorites()
             setupUserDataListener()
         }
         else {
-            ProductSearchListViewAdapter(this,currencyCode,conversionRate,true)
+            productSearchListViewAdapter = ProductSearchListViewAdapter(this,currencyCode,conversionRate,true)
             setupGuestDataListener()
         }
-        binding.toolbar2.navigationIcon
         if (arguments != null) {
             viewModel.searchProducts(arguments?.getString("query").toString())
         }
@@ -147,7 +146,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
                         //search by brand + product title
 //                   viewModel.search("title:${"vans"}* *${newText}*")
                         //search by products name
-                        viewModel.searchProducts("title:*${newText}*")
+                        viewModel.searchProducts("${newText}")
                     }
 
                 }

@@ -1,7 +1,7 @@
 package com.iti4.retailhub.features.profile
 
-import android.content.Intent
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.AdapterView
-import androidx.core.content.res.ResourcesCompat
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +21,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentProfileBinding
+import com.iti4.retailhub.features.login_and_signup.view.CustomMessageDialog
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.logic.ToolbarSetup
@@ -35,8 +36,8 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     private val viewModel: ProfileViewModel by viewModels()
     private val authuntication: UserAuthunticationViewModelViewModel by viewModels()
-
 lateinit var intent:Intent
+    lateinit var customMesssageDialog : CustomMessageDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +50,8 @@ lateinit var intent:Intent
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupSpinner()
+        customMesssageDialog = CustomMessageDialog(requireContext())
+
         ToolbarSetup.setupToolbar(
             binding.profileAppbar,
             "My Profile",
@@ -58,9 +61,15 @@ lateinit var intent:Intent
          intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
         binding.profileAppbar.collapsedPageName.visibility = View.GONE
         if (authuntication.isguestMode()) {
-            binding.guestpp.visibility = View.VISIBLE
-            binding.btnOkaypp.setOnClickListener {
-
+            binding.profileLogoutBtn.text="Login"
+            binding.profileOrderBtn.setOnClickListener {
+                showGuestDialog()
+            }
+            binding.profileShippingBtn.setOnClickListener {
+                showGuestDialog()
+            }
+            binding.profileLogoutBtn.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
                 intent.putExtra("guest","guest")
                 startActivity(intent)
                 requireActivity().finish()
@@ -70,21 +79,10 @@ lateinit var intent:Intent
             Navigation.findNavController(view)
                 .navigate(R.id.action_profileFragment_to_ordersFragment)
         }
-        binding.profileSettingsBtn.setOnClickListener {
-            if (!isExpanded) {
-                binding.apply{
-                    expandableLayout.visibility = View.VISIBLE
-                    profileSettingsBtn.setCompoundDrawables(null, null, ResourcesCompat.getDrawable(resources, R.drawable.baseline_keyboard_arrow_down_24, null), null)
-                }
 
-            } else {
-                binding.apply{
-                    expandableLayout.visibility = View.GONE
-                    profileSettingsBtn.setCompoundDrawables(null, null, ResourcesCompat.getDrawable(resources, R.drawable.baseline_arrow_forward_ios_24, null), null)
-                }
-            }
-            isExpanded = !isExpanded
-        }
+
+
+
 //--------------------------------------------------------
 binding.profileLogoutBtn.setOnClickListener {
     showLoginOutAlert()
@@ -100,15 +98,62 @@ binding.profileLogoutBtn.setOnClickListener {
         lifecycleScope.launch {
             viewModel.user.collect {
                 Log.d("Filo", "onViewCreated: $it")
-                binding.profileName.text = buildString {
-                    append(it["fName"])
-                    append(" ")
-                    append(it["lName"])
+                if (!it.containsKey("error")){
+                    binding.profileName.text = buildString {
+                        append(it["fName"])
+                        append(" ")
+                        append(it["lName"])
+                    }
+                    binding.profileMail.text = it["email"]
                 }
-                binding.profileMail.text = it["email"]
             }
         }
-    }}
+    }
+        binding.profileSettingsBtn.setOnClickListener {
+            if (!isExpanded) {
+                binding.apply{
+                    expandableLayout.visibility = View.VISIBLE
+                    profileSettingsBtn.setCompoundDrawables(null, null, ResourcesCompat.getDrawable(resources, R.drawable.baseline_keyboard_arrow_down_24, null), null)
+                }
+
+            } else {
+                binding.apply{
+                    expandableLayout.visibility = View.GONE
+                    profileSettingsBtn.setCompoundDrawables(null, null, ResourcesCompat.getDrawable(resources, R.drawable.baseline_arrow_forward_ios_24, null), null)
+                }
+            }
+            isExpanded = !isExpanded
+        }}
+
+
+    private fun showGuestDialog(){
+        val dialog = Dialog(requireContext())
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+
+        dialog.setContentView(R.layout.guest_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
+        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
+        val messag=dialog.findViewById<TextView>(R.id.messaged)
+        messag.text="You are guest, please login first"
+        btnYes.setOnClickListener {
+            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+            intent.putExtra("guest","guest")
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
     private fun showLoginOutAlert() {
         val dialog = Dialog(requireContext())
 
