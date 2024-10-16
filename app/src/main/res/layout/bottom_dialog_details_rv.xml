@@ -6,7 +6,8 @@
     app:cardCornerRadius="8dp"
     android:layout_margin="8dp"
     android:id="@+id/cardView3"
-    >
+    app:cardElevation="15dp">
+
 
     <TextView
         android:id="@+id/textView31"

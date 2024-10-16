@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.ApiException
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentSignUpBinding
+import com.iti4.retailhub.features.login_and_signup.NetworkUtils
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +49,82 @@ class SignUpFragment : Fragment() {
         signUpBinding.redArrowGoToLogin.setOnClickListener {
             findNavController(view).navigate(R.id.action_signUpFragment_to_loginInFragment)
         }
+        signUpOnClickListner()
+        signUpBinding.googleCard.setOnClickListener {
+//            userAuthViewModel.signInWithGoogle()
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                googleSignIn()
+            }else{
+                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        signUpBinding.guest.setOnClickListener {
+            userAuthViewModel.setLoginStatus("guest")
+            val intent= Intent(requireContext(), MainActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
+        if (!isLaunched) {
+            isLaunched = true
+        lifecycleScope.launch {
+            userAuthViewModel.authState.collect { authResultState ->
+                when (authResultState) {
+                    is AuthState.Loading -> {
+                        customLoadingDialog.show()
+                    }
+                    is AuthState.Success -> {
+                        customLoadingDialog.dismiss()
+                        val intent= Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    is AuthState.Messages -> {
+                        if (authResultState.error!="Idle") {
+                            customLoadingDialog.dismiss()
+                            if (authResultState.error=="Verification email is send") {
+                                customMesssageDialog.setText(authResultState.error,"Chechout your email and login")
+                                customMesssageDialog.show()
+                            }else if (authResultState.error=="Failed to send verification email") {
+                                customMesssageDialog.setText(authResultState.error,"Please try again")
+                                customMesssageDialog.show()
+                            }else if (authResultState.error=="Password is too weak") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Password is too weak",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }else if (authResultState.error=="Invalid email format") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Invalid email format",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }else if (authResultState.error=="Email is already in use") {
+                                signUpBinding.emailTextInput.isErrorEnabled = true
+                                signUpBinding.emailTextInput.error = authResultState.error
+                            }
+                            else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    authResultState.error,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
+                  /*  is AuthState.SignInIntent -> {
+                        customLoadingDialog.dismiss()
+                        val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
+                        signInResultLauncher.launch(request)
+                    }*/
+
+                }
+            }
+        }
+    }
+    }
+
+    private fun signUpOnClickListner() {
         signUpBinding.sigInBtn.setOnClickListener {
             signUpBinding.nameTextInput.isErrorEnabled  = false // Clear error message
             signUpBinding.emailTextInput.isErrorEnabled  = false // Clear error message
@@ -81,96 +158,23 @@ class SignUpFragment : Fragment() {
                 signUpBinding.passowrdTex.error = "Password must be at least 6 characters"
                 return@setOnClickListener
             }
-
-            userAuthViewModel.createUser(userName, email, password)
-        }
-        signUpBinding.googleCard.setOnClickListener {
-//            userAuthViewModel.signInWithGoogle()
-            googleSignIn()
-        }
-
-        signUpBinding.guest.setOnClickListener {
-            userAuthViewModel.setLoginStatus("guest")
-            val intent= Intent(requireContext(), MainActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
-        }
-        if (!isLaunched) {
-            isLaunched = true
-        lifecycleScope.launch {
-            userAuthViewModel.authState.collect { authResultState ->
-                when (authResultState) {
-                    is AuthState.Loading -> {
-                        customLoadingDialog.show()
-                    }
-                    is AuthState.Success -> {
-                        customLoadingDialog.dismiss()
-                        val intent= Intent(requireContext(), MainActivity::class.java)
-                        startActivity(intent)
-                    }
-                    is AuthState.Messages -> {
-                        if (authResultState.error!="Idle") {
-                            customLoadingDialog.dismiss()
-                            if (authResultState.error=="Verification email sent") {
-                                customMesssageDialog.setText(authResultState.error,"Chechout your email and login")
-                                customMesssageDialog.show()
-                            }else if (authResultState.error=="Failed to send verification email") {
-                                customMesssageDialog.setText(authResultState.error,"Please try again")
-                                customMesssageDialog.show()
-                            }else if (authResultState.error=="Password is too weak") {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Password is too weak",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }else if (authResultState.error=="Invalid email format") {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Invalid email format",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }else if (authResultState.error=="Email is already in use") {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Email is already in use",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }else if (authResultState.error=="No internet connection") {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "No internet connection",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                            else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    authResultState.error,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                    }
-                  /*  is AuthState.SignInIntent -> {
-                        customLoadingDialog.dismiss()
-                        val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
-                        signInResultLauncher.launch(request)
-                    }*/
-
-                }
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                userAuthViewModel.createUser(userName, email, password)
+            }else{
+                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG).show()
             }
         }
     }
-    }
-   /* private val signInResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            if (result.data != null){
-            userAuthViewModel.handleSignInResult(result.data!!)
-                }
-        }
-    }*/
+
+    /* private val signInResultLauncher = registerForActivityResult(
+         ActivityResultContracts.StartIntentSenderForResult()
+     ) { result ->
+         if (result.resultCode == Activity.RESULT_OK) {
+             if (result.data != null){
+             userAuthViewModel.handleSignInResult(result.data!!)
+                 }
+         }
+     }*/
    private fun googleSignIn(){
        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
            .requestIdToken(getString(R.string.default_web_client_id))

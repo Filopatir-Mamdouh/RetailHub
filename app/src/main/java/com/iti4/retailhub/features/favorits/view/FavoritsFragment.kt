@@ -112,7 +112,6 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
 
                         binding.favoritProgress.visibility = View.GONE
 
-                        Log.d("fav", "onViewCreated:${data} ")
 
 
                         val favoritList = data.metafields.nodes
@@ -148,37 +147,7 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         bundle.putString("productid", variantId)
         findNavController().navigate(R.id.productDetailsFragment, bundle)
     }
-    private fun showGuestDialog(){
-        val dialog = Dialog(requireContext())
 
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
-
-        dialog.setContentView(R.layout.guest_dialog)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-
-        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
-        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
-        val messag=dialog.findViewById<TextView>(R.id.messaged)
-        btnNo.setOnClickListener {
-            requireActivity().findNavController(R.id.fragmentContainerView2)
-                .navigate(R.id.homeFragment)
-            view?.findViewById<NavigationView>(R.id.navigationView)?.menu?.getItem(R.id.homeFragment)?.isChecked = true
-            dialog.dismiss()
-        }
-        messag.text="You are guest, please login first"
-        btnYes.setOnClickListener {
-            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-            intent.putExtra("guest","guest")
-            startActivity(intent)
-            requireActivity().finish()
-        }
-
-
-
-        dialog.show()
-    }
     override fun showDeleteAlert(id: String) {
         val dialog = Dialog(requireContext())
 
@@ -192,7 +161,7 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         val btnYes: Button = dialog.findViewById(R.id.btnYes)
         val btnNo: Button = dialog.findViewById(R.id.btnNo)
         val tvmessage = dialog.findViewById<TextView>(R.id.tvMessage)
-        tvmessage.text = "Are you sure you want to delete this product?"
+        tvmessage.text = getString(R.string.are_you_sure_you_want_to_delete_this_product)
         btnYes.setOnClickListener {
             deleteFavoritProduct(id)
             dialog.dismiss()

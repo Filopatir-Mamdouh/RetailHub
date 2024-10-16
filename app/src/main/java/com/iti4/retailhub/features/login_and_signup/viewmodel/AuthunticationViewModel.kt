@@ -33,6 +33,46 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
 
 
 
+    fun signIn(email: String, password: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val user = reposatory.signInWithEmailAndPassword(email, password)
+                if (user?.user?.isEmailVerified == true) {
+
+                    reposatory.addUserData(user.user!!.uid)
+
+                    reposatory.getCustomerIdByEmail(email)
+                        .catch { e ->
+                              _authState.emit(AuthState.Messages(e.message!!))
+                        }.collect {
+                              reposatory.addUserShopLocalId(it.edges[0].node.id)
+                              _authState.value = AuthState.Success(user.user)
+                        }
+
+
+                } else {
+                    _authState.value =AuthState.Messages("Email is not verified")
+                }
+            }
+
+
+            catch (e: FirebaseAuthInvalidCredentialsException) {
+                _authState.value = AuthState.Messages("Email account does not exist")
+            } catch (e: FirebaseAuthInvalidUserException) {
+                _authState.value = AuthState.Messages("email or password is incorrect.")
+
+            }
+            catch (e: Exception) {
+                _authState.value = AuthState.Messages("Error: ${e.message}")
+            }
+
+
+
+
+        }
+    }
+
     fun createUser(userName: String, email: String, password: String) {
         val name = userName.split(" ")
         val firstName = name[0]
@@ -52,13 +92,9 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                             )
                         ).catch { e ->
                             _authState.emit(AuthState.Messages(e.message!!))
-                            Log.d("shopify", "onViewCreated: ${e.message}")
                         }.collect {
-                            Log.d("shopify", "onViewCreated: ${it}")
                             reposatory.addUserShopLocalId(it.customer?.id)
-                            Log.d("shopify", reposatory.getUserProfileData())
-                            _authState.emit(AuthState.Messages("Verification email sent"))
-                            Log.d("shopify", "onViewCreated: ${reposatory.getUserShopLocalId()}")
+                            _authState.emit(AuthState.Messages("Verification email is send"))
                         }
 
 
@@ -74,111 +110,12 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                 _authState.value = AuthState.Messages("Invalid email format")
             } catch (e: FirebaseAuthUserCollisionException) {
                 _authState.value = AuthState.Messages("Email is already in use")
-            }  catch (e: IOException) {
-                _authState.value = AuthState.Messages("No internet connection")
             }
             catch (e: Exception) {
                 _authState.value = AuthState.Messages("Error: ${e.message}")
             }
         }
     }
-
-    fun signIn(email: String, password: String) {
-        viewModelScope.launch {
-            _authState.value = AuthState.Loading
-            try {
-                val user = reposatory.signInWithEmailAndPassword(email, password)
-                if (user?.user?.isEmailVerified == true) {
-                    reposatory.addUserData(user.user!!.uid)
-                    Log.d("UserLocalProfileData", reposatory.getUserProfileData())
-
-
-
-
-
-                    reposatory.getCustomerIdByEmail(email).catch { e ->
-                        _authState.emit(AuthState.Messages(e.message!!))
-                        Log.d("shopify", "onViewCreated: ${e.message}")
-                    }.collect {
-                        Log.d("shopify", "onViewCreated: ${it}")
-                        reposatory.addUserShopLocalId(it.edges[0].node.id)
-                        _authState.value = AuthState.Success(user.user)
-                    }
-
-
-                } else {
-                    _authState.value = AuthState.Messages("Email is not verified")
-                }
-            } catch (e: FirebaseAuthInvalidCredentialsException) {
-                _authState.value = AuthState.Messages("email or password is incorrect.")
-            } catch (e: FirebaseAuthInvalidUserException) {
-                _authState.value = AuthState.Messages("Email account does not exist")
-            } catch (e: Exception) {
-                _authState.value = AuthState.Messages("Error: ${e.message}")
-            }
-        }
-    }
-
-   /* fun signInWithGoogle() {
-        _authState.value = AuthState.Loading
-        viewModelScope.launch {
-            val intentSender = reposatory.signIn()
-            if (intentSender != null) {
-                _authState.value = AuthState.SignInIntent(intentSender)
-            } else {
-                _authState.value = AuthState.Messages("Unable to start Google Sign-In.")
-            }
-        }
-    }
-
-    fun handleSignInResult(intent: Intent) {
-        viewModelScope.launch {
-            try {
-                val user = reposatory.signInWithIntent(intent)
-                if (user != null) {
-                    reposatory.addUserData(user.user!!.uid)
-                    Log.d("UserLocalProfileData", reposatory.getUserProfileData())
-
-
-                    reposatory.getCustomerIdByEmail(user.user?.email.toString()).catch { e ->
-//                        _authState.emit(AuthState.Messages(e.message!!))
-                        Log.d("shopify", "getCustomerIdByEmail: ${e.message}")
-                    }.collect {
-                        Log.d("shopify", "onViewCreated: ${it}")
-                        if (it.edges.isEmpty()) {
-                            reposatory.createUser(
-                                CustomerInput(
-                                    firstName = Optional.present(user.user?.displayName),
-                                    email = Optional.Present(user.user?.email)
-                                )
-                            ).catch { e ->
-                                _authState.emit(AuthState.Messages(e.message!!))
-                                Log.d("shopify", "catch: ${e.message}")
-                            }.collect {
-                                Log.d("shopify", "onViewCreated: ${it}")
-                                reposatory.setLoginStatus("login")
-                                reposatory.addUserShopLocalId(it.customer?.id)
-                                _authState.value = AuthState.Success(user.user)
-                            }
-                        } else {
-                            reposatory.addUserShopLocalId(it.edges[0].node.id)
-                            _authState.value = AuthState.Success(user.user)
-                        }
-                    }
-
-
-                } else {
-                    _authState.value = AuthState.Messages("Unable to sign in with Google.")
-                }
-            } catch (e: ApiException) {
-                _authState.value = AuthState.Messages("Error: ${e.message}")
-            } catch (e: FirebaseAuthException) {
-                _authState.value = AuthState.Messages("Error: ${e.message}")
-            } catch (e: Exception) {
-                _authState.value = AuthState.Messages("Error: ${e.message}")
-            }
-        }
-    }*/
 
 
 
@@ -207,14 +144,11 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                 val user = reposatory.signWithGoogle(idToken)
                 if (user != null) {
                     reposatory.addUserData(user.uid)
-                    Log.d("UserLocalProfileData", reposatory.getUserProfileData())
 
 
                     reposatory.getCustomerIdByEmail(user.email.toString()).catch { e ->
 //                        _authState.emit(AuthState.Messages(e.message!!))
-                        Log.d("shopify", "getCustomerIdByEmail: ${e.message}")
                     }.collect {
-                        Log.d("shopify", "onViewCreated: ${it}")
                         if (it.edges.isEmpty()) {
                             reposatory.createUser(
                                 CustomerInput(
@@ -223,9 +157,7 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                                 )
                             ).catch { e ->
                                 _authState.emit(AuthState.Messages(e.message!!))
-                                Log.d("shopify", "catch: ${e.message}")
                             }.collect {
-                                Log.d("shopify", "onViewCreated: ${it}")
                                 reposatory.setLoginStatus("login")
                                 reposatory.addUserShopLocalId(it.customer?.id)
                                 _authState.value = AuthState.Success(user)

@@ -155,14 +155,6 @@ class Repository @Inject constructor(
         return userAuthuntication.sendEmailVerification(user)
     }
 
-    /*override suspend fun signIn(): IntentSender? {
-        return userAuthuntication.signIn()
-    }
-
-    override suspend fun signInWithIntent(intent: Intent): AuthResult? {
-        return userAuthuntication.signInWithIntent(intent)
-    }*/
-
     override fun addUserName(name: String): Int {
         return UserLocalProfileData.addUserName(name)
     }

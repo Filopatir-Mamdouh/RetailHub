@@ -24,7 +24,7 @@
     <string name="enter_password">Password</string>
     <string name="enter_email">Email</string>
     <string name="enter_name">Name</string>
-    <string name="or_login_in_with_social_account">Or login with</string>
+    <string name="or_login_in_with_social_account">Or continue with</string>
     <string name="login">Login</string>
     <string name="web_client_id">820047487372-bh211dcltqq130mtvhdm26qb1ru56eev.apps.googleusercontent.com</string>
     <string name="old_usd"><strike>%.2f $</strike></string>
@@ -134,4 +134,5 @@
     <string name="sort_the_result">Sort the Result</string>
     <string name="loginfirst">Guest User</string>
     <string name="please_login_to_use_this_feature">Please login to use this feature</string>
+    <string name="are_you_sure_you_want_to_delete_this_product">Are you sure you want to delete this product?</string>
 </resources>
