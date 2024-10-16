@@ -87,11 +87,6 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                 if (user?.user?.isEmailVerified == true) {
                     reposatory.addUserData(user.user!!.uid)
                     Log.d("UserLocalProfileData", reposatory.getUserProfileData())
-
-
-
-
-
                     reposatory.getCustomerIdByEmail(email).catch { e ->
                         _authState.emit(AuthState.Messages(e.message!!))
                         Log.d("shopify", "onViewCreated: ${e.message}")
@@ -100,8 +95,6 @@ class UserAuthunticationViewModelViewModel @Inject constructor(private val repos
                         reposatory.addUserShopLocalId(it.edges[0].node.id)
                         _authState.value = AuthState.Success(user.user)
                     }
-
-
                 } else {
                     _authState.value = AuthState.Messages("Email is not verified")
                 }

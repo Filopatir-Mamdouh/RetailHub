@@ -22,7 +22,7 @@ class OrdersViewModel @Inject constructor(private val repository: IRepository) :
     val orders = _orders.onStart { getOrders() }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
     val userId by lazy {repository.getUserShopLocalId()}
 
-    private fun getOrders(){
+    fun getOrders(){
         viewModelScope.launch(dispatcher){
             if (userId != null) {
                 repository.getOrders("customer_id:${extractNumbersFromString(userId!!)}").catch { e -> _orders.emit(ApiState.Error(e)) }.collect{
