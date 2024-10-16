@@ -58,20 +58,6 @@
                         android:text="@string/shop"
                         tools:visibility="visible" />
 
-                    <EditText
-                        android:id="@+id/editTextText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:alpha="0"
-                        android:ems="10"
-                        android:inputType="text"
-                        android:paddingStart="40dp"
-                        android:paddingEnd="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/searchBtn"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="AAAAAAA" />
-
                     <ImageButton
                         android:id="@+id/searchBtn"
                         android:layout_width="wrap_content"
@@ -117,23 +103,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <com.google.android.material.chip.Chip
+                android:id="@+id/allChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:checkable="true"
+                android:text="@string/all"
+                android:textColor="@color/product_text_chip_selector"
+                app:chipBackgroundColor="@color/product_type_chip_selector"
+                app:layout_constraintEnd_toStartOf="@+id/chipGroup"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:chipSpacingHorizontal="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/allChip"
                 app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/allChip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/all"
-                    android:textColor="@color/product_text_chip_selector"
-                    app:chipBackgroundColor="@color/product_type_chip_selector" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/Shoes"

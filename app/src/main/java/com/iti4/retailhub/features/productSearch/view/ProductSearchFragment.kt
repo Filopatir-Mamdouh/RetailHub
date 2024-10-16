@@ -81,7 +81,6 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
             productSearchListViewAdapter = ProductSearchListViewAdapter(this,currencyCode,conversionRate,true)
             setupGuestDataListener()
         }
-        binding.toolbar2.navigationIcon
         if (arguments != null) {
             viewModel.searchProducts(arguments?.getString("query").toString())
         }

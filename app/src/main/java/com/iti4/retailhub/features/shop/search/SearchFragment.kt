@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.iti4.retailhub.GetCustomerFavoritesQuery
-import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.constants.SortBy
 import com.iti4.retailhub.databinding.FragmentSearchBinding
@@ -249,25 +247,7 @@ class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
             }
             backButton.setOnClickListener { findNavController().navigateUp() }
             searchBtn.setOnClickListener {
-                searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
-                    collapsedPageName.alpha = 0f
-                    editTextText.animate().alpha(1f).translationX(-500f).setDuration(400)
-                        .withEndAction {
-                            editTextText.requestFocus()
-                        }.start()
-                }.start()
-            }
-            editTextText.setOnKeyListener { _, key, _ ->
-                if (key == KeyEvent.KEYCODE_ENTER) {
-                    query = if (editTextText.text.isEmpty()) "" else "title:${editTextText.text}"
-                    search()
-                    searchBtn.animate().translationX(0f).setDuration(400).withStartAction {
-                        collapsedPageName.alpha = 1f
-                        editTextText.animate().alpha(0f).translationX(0f).setDuration(400).start()
-                        (activity as MainActivity).hideKeyboard()
-                    }.start()
-                    true
-                } else false
+                findNavController().navigate(R.id.producSearchFragment)
             }
             sortGroup.setOnClickListener {
                 SortByBottomSheetFragment(this@SearchFragment).show(childFragmentManager, "sort")
@@ -285,16 +265,41 @@ class SearchFragment : Fragment(), OnClickGoToDetails, SortByListener {
         }
         binding.chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             typeQuery = ""
-            if(checkedIds.isNotEmpty()) {
+            Log.d("Filo", "setupChipGroup: ${checkedIds.size}")
+            if(checkedIds.isNotEmpty() && checkedIds.size!=3) {
                 typeQuery = view?.findViewById<Chip>(checkedIds[0])?.text.toString()
                 checkedIds.removeFirst()
                 checkedIds.map { id -> typeQuery += " OR " + view?.findViewById<Chip>(id)?.text.toString() }
+                binding.allChip.isChecked = false
             }
-            if (typeQuery.contains("All") || typeQuery.isEmpty()) {
+            else  {
                 typeQuery = ""
-                binding.allChip.isChecked = true
+                binding.apply{
+                    accsChip.isChecked = false
+                    Tops.isChecked = false
+                    Shoes.isChecked = false
+                    allChip.isChecked = true
+                }
+                binding.chipGroup.clearCheck()
             }
             search()
+        }
+        binding.allChip.setOnCheckedChangeListener{
+            _, isChecked ->
+                if (isChecked) {
+                    binding.apply{
+                        accsChip.isChecked = false
+                        Tops.isChecked = false
+                        Shoes.isChecked = false
+                    }
+                    typeQuery = ""
+                    search()
+                }
+            else{
+                if (binding.chipGroup.checkedChipIds.isEmpty()){
+                    binding.allChip.isChecked = true
+                }
+            }
         }
     }
 
