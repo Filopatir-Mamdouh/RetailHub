@@ -37,6 +37,7 @@ import com.iti4.retailhub.features.home.adapter.AdsViewPagerAdapter
 import com.iti4.retailhub.features.home.adapter.BrandAdapter
 import com.iti4.retailhub.features.home.adapter.DotsIndicatorDecoration
 import com.iti4.retailhub.features.home.adapter.NewItemAdapter
+import com.iti4.retailhub.features.login_and_signup.view.CustomLoadingDialog
 import com.iti4.retailhub.features.login_and_signup.view.LoginAuthinticationActivity
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.features.productdetails.viewmodel.ProductDetailsViewModel
@@ -154,6 +155,7 @@ lateinit var adapter: NewItemAdapter
 //    }
 //}
     private fun getUserHomeProducts() {
+        val loadingDialog = CustomLoadingDialog(requireContext())
     GlobalScope.launch(Dispatchers.Main)  {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.combine(favoritesViewModel.savedFavortes){
@@ -161,8 +163,9 @@ lateinit var adapter: NewItemAdapter
                     handleProductsAndFavoritesCombination(products,favorites) }.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            binding.animationView.visibility = View.GONE
+//                            binding.animationView.visibility = View.GONE
                             val data = item.data as List<HomeProducts>
+                            loadingDialog.dismiss()
                             displayNewItemRowData(data)
                         }
 
@@ -177,9 +180,12 @@ lateinit var adapter: NewItemAdapter
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
+                            loadingDialog.dismiss()
                         }
 
-                        is ApiState.Loading -> {}
+                        is ApiState.Loading -> {
+                            loadingDialog.show()
+                        }
                     }
                 }
             }
@@ -453,13 +459,15 @@ lateinit var adapter: NewItemAdapter
     dialog.show()
 }
     private fun getGuestHomeProducts(){
+        val loadingDialog = CustomLoadingDialog(requireContext())
         GlobalScope.launch(Dispatchers.Main)  {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.collect { item ->
                     when (item) {
                         is ApiState.Success<*> -> {
-                            binding.animationView.visibility = View.GONE
+//                            binding.animationView.visibility = View.GONE
                             val data = item.data as List<HomeProducts>
+                            loadingDialog.dismiss()
                             displayNewItemRowData(data)
                         }
                         is ApiState.Error -> {
@@ -473,8 +481,11 @@ lateinit var adapter: NewItemAdapter
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
+                            loadingDialog.dismiss()
                         }
-                        is ApiState.Loading -> {}
+                        is ApiState.Loading -> {
+                            loadingDialog.show()
+                        }
                     }
                 }
             }
