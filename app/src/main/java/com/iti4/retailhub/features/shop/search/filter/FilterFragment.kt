@@ -35,7 +35,7 @@ class FilterFragment : Fragment(), FilterBrandsCommunicator {
         setupToolbar()
         binding.apply {
             filterBrandsBtn.setOnClickListener {
-                BrandsBottomSheetFragment(this@FilterFragment).show(childFragmentManager, "BrandsBottomSheet")
+                BrandsBottomSheetFragment(this@FilterFragment).show(childFragmentManager, null)
             }
         }
         binding.applyBtn.setOnClickListener {

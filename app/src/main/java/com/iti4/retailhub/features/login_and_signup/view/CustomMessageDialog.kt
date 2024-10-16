@@ -2,6 +2,8 @@ package com.iti4.retailhub.features.login_and_signup.view
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.TextView
 import com.iti4.retailhub.R
@@ -12,6 +14,7 @@ class CustomMessageDialog(context: Context) : Dialog(context) {
 
     init {
         setContentView(R.layout.message_dialog)
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setCancelable(true)
         findViewById<View>(R.id.dialog_layout).setOnClickListener { dismiss() } // Dismiss on click
         findViewById<View>(R.id.button).setOnClickListener { dismiss() } // Dismiss on click

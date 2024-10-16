@@ -2,9 +2,12 @@ package com.iti4.retailhub.features.login_and_signup.view
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +31,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentLoginInBinding
+import com.iti4.retailhub.features.login_and_signup.NetworkUtils
 import com.iti4.retailhub.features.login_and_signup.viewmodel.UserAuthunticationViewModelViewModel
 import com.iti4.retailhub.userauthuntication.AuthState
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,7 +68,11 @@ class LoginInFragment : Fragment() {
 
         loginUpBinding.googleCard.setOnClickListener {
 //            userAuthViewModel.signInWithGoogle()
-            googleSignIn()
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                googleSignIn()
+            }else{
+                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG).show()
+            }
         }
 
         loginUpBinding.guest.setOnClickListener {
@@ -87,64 +95,86 @@ class LoginInFragment : Fragment() {
                         startActivity(intent)
                         requireActivity().finish()
                     }
+
                     is AuthState.Messages -> {
                         if (authResultState.error!="Idle") {
+
                             customLoadingDialog.dismiss()
+
                             if (authResultState.error=="Email is not verified") {
                                 customMesssageDialog.setText(authResultState.error,"Verify your email and login again")
                                 customMesssageDialog.show()
-                            }else if (authResultState.error=="Failed to send verification email") {
-                                customMesssageDialog.setText(authResultState.error,"Please try again")
-                                customMesssageDialog.show()
-                            }else {
+                            }else if (authResultState.error=="Email account does not exist") {
+                                loginUpBinding.emailTextInput.isErrorEnabled = true
+                                loginUpBinding.emailTextInput.error = authResultState.error
+                            }else if (authResultState.error=="email or password is incorrect.") {
                                 Toast.makeText(
                                     requireContext(),
-                                    "No internet connection",
+                                    authResultState.error,
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
-                        }
-                    }
-                   /* is AuthState.SignInIntent -> {
+                            else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    authResultState.error,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
 
-                        customLoadingDialog.dismiss()
-                        val request = IntentSenderRequest.Builder(authResultState.intentSender).build()
-                      *//*  signInResultLauncher.launch(request)*//*
-                    }*/
+
+
+
+
+                        }
+
+
+
+
+
+                    }
                 }
             }
         }
     }
 
     private fun loginClickListner(){
-        loginUpBinding.sigInBtn.setOnClickListener {
-            loginUpBinding.emailTextInput.isErrorEnabled  = false// Clear error message
-            loginUpBinding.passowrdTex.isErrorEnabled  = false
-            loginUpBinding.emailTextInput.error = null // Clear error message
-            loginUpBinding.passowrdTex.error = null // Clear error message
-            val email = loginUpBinding.emailTextInput.editText?.text.toString().removeSuffix(" ")
-            val password = loginUpBinding.passowrdTex.editText?.text.toString().removeSuffix(" ")
-            if (email.isEmpty()) {
-                loginUpBinding.emailTextInput.isErrorEnabled  = true
-                loginUpBinding.emailTextInput.error = "Please enter your email"
-                return@setOnClickListener
-            } else if (!email.matches(EMAIL_REGEX.toRegex())) {
-                loginUpBinding.emailTextInput.isErrorEnabled  = true
-                loginUpBinding.emailTextInput.error = "Invalid email format"
-                return@setOnClickListener
-            }
-            if (password.isEmpty()) {
-                loginUpBinding.passowrdTex.isErrorEnabled  = true
-                loginUpBinding.passowrdTex.error = "Please enter your password"
-                return@setOnClickListener
-            } else if (password.length < 6) {
-                loginUpBinding.passowrdTex.isErrorEnabled  = true
-                loginUpBinding.passowrdTex.error = "Password must be at least 6 characters"
-                return@setOnClickListener
+
+            loginUpBinding.sigInBtn.setOnClickListener {
+                loginUpBinding.emailTextInput.isErrorEnabled = false// Clear error message
+                loginUpBinding.passowrdTex.isErrorEnabled = false
+                loginUpBinding.emailTextInput.error = null // Clear error message
+                loginUpBinding.passowrdTex.error = null // Clear error message
+                val email =
+                    loginUpBinding.emailTextInput.editText?.text.toString().trim()
+                val password =
+                    loginUpBinding.passowrdTex.editText?.text.toString().trim()
+                if (email.isEmpty()) {
+                    loginUpBinding.emailTextInput.isErrorEnabled = true
+                    loginUpBinding.emailTextInput.error = "Please enter your email"
+                    return@setOnClickListener
+                } else if (!email.matches(EMAIL_REGEX.toRegex())) {
+                    loginUpBinding.emailTextInput.isErrorEnabled = true
+                    loginUpBinding.emailTextInput.error = "Invalid email format"
+                    return@setOnClickListener
+                }
+                if (password.isEmpty()) {
+                    loginUpBinding.passowrdTex.isErrorEnabled = true
+                    loginUpBinding.passowrdTex.error = "Please enter your password"
+                    return@setOnClickListener
+                } /*else if (password.length < 6) {
+                    loginUpBinding.passowrdTex.isErrorEnabled = true
+                    loginUpBinding.passowrdTex.error = "Password must be at least 6 characters"
+                    return@setOnClickListener
+                }*/
+
+                if (NetworkUtils.isInternetAvailable(requireContext())) {
+                    userAuthViewModel.signIn(email, password)
+                }else{
+                    Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_LONG).show()
+                }
             }
 
-            userAuthViewModel.signIn(email, password)
-        }
     }
     /*private val signInResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -160,33 +190,7 @@ class LoginInFragment : Fragment() {
     }*/
 
 
-    private fun showGuestDialog(){
-        val dialog = Dialog(requireContext())
 
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(true)
-
-        dialog.setContentView(R.layout.guest_dialog)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-
-        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
-        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
-        val messag=dialog.findViewById<TextView>(R.id.messaged)
-        messag.text="login to add to your favorites"
-        btnYes.setOnClickListener {
-            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-            intent.putExtra("guest","guest")
-            startActivity(intent)
-            requireActivity().finish()
-        }
-
-        btnNo.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
 
 
 

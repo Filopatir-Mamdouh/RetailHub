@@ -47,6 +47,7 @@ import com.iti4.retailhub.models.Discount
 import com.iti4.retailhub.models.HomeProducts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -64,8 +65,7 @@ lateinit var adapter: NewItemAdapter
     private var conversionRate: Double = 0.0
     private var currentPosition = 0
     private var autoScrollJob: Job? = null // Job for the coroutine
-
-
+    private var networkState: Boolean = true
     private lateinit var adsAdapter: AdsViewPagerAdapter
     private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
@@ -101,6 +101,8 @@ lateinit var adapter: NewItemAdapter
             getGuestHomeProducts()
         }
         displayAds()
+        brandsSetup()
+        couponsSetup()
         // viewModel.getFavorites()
         // lifecycleScope.launch {
         //     viewModel.savedFavortes.collect { item ->
@@ -124,51 +126,6 @@ lateinit var adapter: NewItemAdapter
         //     }
         // }
 
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
-                viewModel.brands.collect { item ->
-                    when (item) {
-                        is ApiState.Success<*> -> {
-                            val data = item.data as List<Brands>
-                            displayBrandsRowData(data)
-                        }
-
-                        is ApiState.Error -> {
-                            Toast.makeText(
-                                requireContext(),
-                                item.exception.message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        is ApiState.Loading -> {}
-                    }
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewModel.couponsState.collect { item ->
-                when (item) {
-                    is ApiState.Success<*> -> {
-                        val data = item.data as List<Discount>
-                        adsAdapter.setData(data)
-
-                    }
-
-                    is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            item.exception.message,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-
-                    is ApiState.Loading -> {}
-                }
-            }
-        }
     }
 //private fun getFavorites(){
 //    favoritesViewModel.getFavorites()
@@ -197,7 +154,7 @@ lateinit var adapter: NewItemAdapter
 //    }
 //}
     private fun getUserHomeProducts() {
-        lifecycleScope.launch {
+    GlobalScope.launch(Dispatchers.Main)  {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.combine(favoritesViewModel.savedFavortes){
                     products,favorites->
@@ -210,15 +167,75 @@ lateinit var adapter: NewItemAdapter
                         }
 
                         is ApiState.Error -> {
+                            if (item.exception.message == "Something went wrong"){
+                                networkState = false
+                            }
+                            if (networkState){
+                                Toast.makeText(
+                                    requireContext(),
+                                    item.exception.message,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun brandsSetup(){
+        GlobalScope.launch(Dispatchers.Main)  {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.brands.collect { item ->
+                    when (item) {
+                        is ApiState.Success<*> -> {
+                            val data = item.data as List<Brands>
+                            displayBrandsRowData(data)
+                        }
+                        is ApiState.Error -> {
+                            if (item.exception.message == "Something went wrong"){
+                                networkState = false
+                            }
+                            if (networkState){
+                                Toast.makeText(
+                                    requireContext(),
+                                    item.exception.message,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                        is ApiState.Loading -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun couponsSetup(){
+        GlobalScope.launch(Dispatchers.Main) {
+            viewModel.couponsState.collect { item ->
+                when (item) {
+                    is ApiState.Success<*> -> {
+                        val data = item.data as List<Discount>
+                        adsAdapter.setData(data)
+
+                    }
+                    is ApiState.Error -> {
+                        if (item.exception.message == "Something went wrong"){
+                            networkState = false
+                        }
+                        if (networkState){
                             Toast.makeText(
                                 requireContext(),
                                 item.exception.message,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-
-                        is ApiState.Loading -> {}
                     }
+                    is ApiState.Loading -> {}
                 }
             }
         }
@@ -319,8 +336,8 @@ lateinit var adapter: NewItemAdapter
             productId,productId,
             productTitle,selectedImage,price
         )
-//        favoritesViewModel.getFavorites()
         Toast.makeText(requireContext(), "Added to your favorites", Toast.LENGTH_SHORT).show()
+//        favoritesViewModel.getFavorites()
 //        lifecycleScope.launch {
 //            productDetailsViewModel.saveProductToFavortes.collect { item ->
 //                when (item) {u
@@ -361,9 +378,12 @@ lateinit var adapter: NewItemAdapter
     }
     override fun deleteFromCustomerFavorites(pinFavorite: String) {
         if (!userAuthViewModel.isguestMode()){
-        favoritesViewModel.deleteFavorites(pinFavorite)
+            favoritesViewModel.deleteFavorites(pinFavorite)
+            Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
+        }else{
+            showGuestDialog()
+        }
 //        favoritesViewModel.getFavorites()
-        Toast.makeText(requireContext(), "Deleted from Favorites", Toast.LENGTH_SHORT).show()
 //        lifecycleScope.launch {
 //            favoritesViewModel.deletedFavortes.collect { item ->
 //
@@ -392,9 +412,6 @@ lateinit var adapter: NewItemAdapter
 //                }
 //            }
 //        }
-        }else{
-            showGuestDialog()
-        }
     }
     override fun copyCoupon(coupon: Discount) {
         if(mainActivityViewModel.copiedCouponsList.none{ it.value==coupon.value}){
@@ -436,7 +453,7 @@ lateinit var adapter: NewItemAdapter
     dialog.show()
 }
     private fun getGuestHomeProducts(){
-        lifecycleScope.launch {
+        GlobalScope.launch(Dispatchers.Main)  {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.products.collect { item ->
                     when (item) {
@@ -446,11 +463,16 @@ lateinit var adapter: NewItemAdapter
                             displayNewItemRowData(data)
                         }
                         is ApiState.Error -> {
-                            Toast.makeText(
-                                requireContext(),
-                                item.exception.message,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            if (item.exception.message == "Something went wrong"){
+                                networkState = false
+                            }
+                            if (networkState){
+                                Toast.makeText(
+                                    requireContext(),
+                                    item.exception.message,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                         is ApiState.Loading -> {}
                     }

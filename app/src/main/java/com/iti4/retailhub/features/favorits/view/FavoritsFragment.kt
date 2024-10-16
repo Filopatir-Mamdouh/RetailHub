@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,13 +71,14 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
 
         currencyCode = favoritesViewModel.getCurrencyCode()
         conversionRate = favoritesViewModel.getConversionRates(currencyCode)
-
-        if (userAuthViewModel.isguestMode()) {
-            binding.guestf.visibility = View.VISIBLE
-            binding.btnOkayf.setOnClickListener {
+        if (userAuthViewModel.isguestMode()){
+            binding.guestf.visibility=View.VISIBLE
+            binding.tvMessage.text=getString(R.string.please_login_to_use_this_feature)
+            binding.btnOkayd.setOnClickListener {
                 val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-                intent.putExtra("guest", "guest")
+                intent.putExtra("guest","guest")
                 startActivity(intent)
+                requireActivity().finish()
             }
         } else {
             favoritesAdapter = FavoritsDiffUtilAdapter(
@@ -110,7 +110,6 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
 
                         binding.favoritProgress.visibility = View.GONE
 
-                        Log.d("fav", "onViewCreated:${data} ")
 
 
                         val favoritList = data.metafields.nodes
@@ -126,12 +125,8 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
                     }
 
                     is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            /* item.exception.message*/"Error can't delete product, try again",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                        if(item.exception.message != "Something went wrong")
+                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
                     }
 
                     is ApiState.Loading -> {
@@ -160,7 +155,7 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         val btnYes: Button = dialog.findViewById(R.id.btnYes)
         val btnNo: Button = dialog.findViewById(R.id.btnNo)
         val tvmessage = dialog.findViewById<TextView>(R.id.tvMessage)
-        tvmessage.text = "Are you sure you want to delete this product?"
+        tvmessage.text = getString(R.string.are_you_sure_you_want_to_delete_this_product)
         btnYes.setOnClickListener {
             deleteFavoritProduct(id)
             dialog.dismiss()

@@ -56,6 +56,8 @@ import com.iti4.retailhub.type.MetafieldDeleteInput
 import com.iti4.retailhub.type.OrderMarkAsPaidInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
+import okio.IOException
 import javax.inject.Inject
 
 
@@ -68,7 +70,7 @@ class RemoteDataSourceImpl @Inject constructor(private val apolloClient: ApolloC
         } else {
             throw Exception(response.errors?.get(0)?.message ?: "Something went wrong")
         }
-    }
+    }.retryWhen { cause, _ -> cause.message != "Something went wrong" }
 
     override fun getCustomerIdByEmail(email: String): Flow<CustomerEmailSearchQuery.Customers> =
         flow {
