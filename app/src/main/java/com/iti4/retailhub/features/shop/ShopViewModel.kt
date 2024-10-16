@@ -22,7 +22,7 @@ class ShopViewModel @Inject constructor(private val repository: IRepository) : V
     val categoriesList = _categoriesList.onStart { getCategoriesList() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
-    private fun getCategoriesList() {
+    fun getCategoriesList() {
         viewModelScope.launch(dispatcher) {
             repository.getProductTypesOfCollection()
                 .catch { e -> _categoriesList.emit(ApiState.Error(e)) }.collect {
