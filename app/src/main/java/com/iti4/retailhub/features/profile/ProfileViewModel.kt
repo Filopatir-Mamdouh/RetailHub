@@ -8,10 +8,8 @@ import com.iti4.retailhub.models.CountryCodes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,10 +29,10 @@ class ProfileViewModel @Inject constructor(private val repository: IRepository) 
         repository.deleteUserData()
     }
 
-    fun getCustomer() {
+    private fun getCustomer() {
             viewModelScope.launch(Dispatchers.IO) {
-                repository.getCustomerInfoById(repository.getUserShopLocalId()!!).single().apply {
-                    val map = mapOf("fName" to firstName, "lName" to lastName, "email" to email)
+                repository.getCustomerInfoById(repository.getUserShopLocalId()!!).catch { _user.emit(mapOf("error" to it.message)) }.collect {
+                    val map = mapOf("fName" to it.firstName, "lName" to it.lastName, "email" to it.email)
                     Log.d("Filo", "getCustomer: $map")
                     _user.emit(map)
                 }

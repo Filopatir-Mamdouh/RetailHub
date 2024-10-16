@@ -1,7 +1,7 @@
 package com.iti4.retailhub.features.profile
 
-import android.content.Intent
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.AdapterView
-import androidx.core.content.res.ResourcesCompat
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -60,7 +60,6 @@ lateinit var intent:Intent
         if (authuntication.isguestMode()) {
             binding.guestpp.visibility = View.VISIBLE
             binding.btnOkaypp.setOnClickListener {
-
                 intent.putExtra("guest","guest")
                 startActivity(intent)
                 requireActivity().finish()
@@ -100,12 +99,14 @@ binding.profileLogoutBtn.setOnClickListener {
         lifecycleScope.launch {
             viewModel.user.collect {
                 Log.d("Filo", "onViewCreated: $it")
-                binding.profileName.text = buildString {
-                    append(it["fName"])
-                    append(" ")
-                    append(it["lName"])
+                if (!it.containsKey("error")){
+                    binding.profileName.text = buildString {
+                        append(it["fName"])
+                        append(" ")
+                        append(it["lName"])
+                    }
+                    binding.profileMail.text = it["email"]
                 }
-                binding.profileMail.text = it["email"]
             }
         }
     }}
