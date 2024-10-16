@@ -45,14 +45,14 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background_color"
-        android:scaleType="fitCenter"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="home_loading_animation.json"
-        app:lottie_loop="true" />
+<!--    <com.airbnb.lottie.LottieAnimationView-->
+<!--        android:id="@+id/animationView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@color/background_color"-->
+<!--        android:scaleType="fitCenter"-->
+<!--        app:lottie_autoPlay="true"-->
+<!--        app:lottie_fileName="home_loading_animation.json"-->
+<!--        app:lottie_loop="true" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:lottie_fileName="home_loading_animation.json"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        android:id="@+id/animationView"/>
-</FrameLayout>
+        app:lottie_loop="false" />
+</androidx.constraintlayout.widget.ConstraintLayout>
