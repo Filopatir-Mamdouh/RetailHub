@@ -60,7 +60,6 @@ class AddressViewModel @Inject constructor(private val repository: IRepository) 
                         "AddressViewModel : getAddressesById: on error ${e.message}"
                     )
                 }.collect {
-                    Log.i(TAG, "getAddressesById: collecting empty list ? $addressesList")
                     addressesList =
                         it.toCustomerAddressList()
                     getDefaultAddress()
