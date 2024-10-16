@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.navigation.NavigationView
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentFavoritsBinding
@@ -127,12 +125,8 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
                     }
 
                     is ApiState.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            /* item.exception.message*/"Error can't delete product, try again",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
+                        if(item.exception.message != "Something went wrong")
+                            Toast.makeText(requireContext(), item.exception.message, Toast.LENGTH_SHORT).show()
                     }
 
                     is ApiState.Loading -> {

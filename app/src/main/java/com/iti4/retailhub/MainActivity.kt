@@ -66,12 +66,14 @@ class MainActivity : AppCompatActivity() {
                         fragments?.forEach{
                             it.view?.isEnabled = true
                         }
+                        binding.navigationView.visibility = View.VISIBLE
                         findViewById<View>(R.id.fragmentContainerView2).visibility = View.VISIBLE
                         binding.networkAnimView.visibility = View.GONE
                     }else{
                         fragments?.forEach{
                             it.view?.isEnabled = false
                         }
+                        binding.navigationView.visibility = View.GONE
                         findViewById<View>(R.id.fragmentContainerView2).visibility = View.GONE
                         binding.networkAnimView.visibility = View.VISIBLE
                     }

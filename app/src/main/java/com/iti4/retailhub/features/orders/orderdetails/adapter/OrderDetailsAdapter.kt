@@ -1,13 +1,10 @@
 package com.iti4.retailhub.features.orders.orderdetails.adapter
 
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.RvOrderDetailsItemBinding
 import com.iti4.retailhub.logic.toTwoDecimalPlaces
 import com.iti4.retailhub.models.CountryCodes
@@ -44,7 +41,6 @@ class OrderDetailsAdapter(private val conversionRate:Double , private val curren
                 append(" ")
                 append(currencyCode.name)
             }
-            root.setOnClickListener { Navigation.findNavController(it).navigate(R.id.productDetailsFragment, bundleOf("productid" to item.id)) }
         }
     }
 }

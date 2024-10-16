@@ -2,13 +2,13 @@ package com.iti4.retailhub.features.favorits.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo.api.Optional
 import com.iti4.retailhub.datastorage.IRepository
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.type.MetafieldDeleteInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -38,6 +38,7 @@ class FavoritesViewModel @Inject constructor(private val repository: IRepository
     }
     fun  deleteFavorites(id:String){
         viewModelScope.launch(Dispatchers.IO){
+            delay(1000)
             repository.deleteCustomerFavoritItem(MetafieldDeleteInput(
                 id = id
             ))
