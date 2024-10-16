@@ -22,6 +22,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import com.iti4.retailhub.MainActivity
 import com.iti4.retailhub.MainActivityViewModel
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentMyBagBinding
@@ -56,7 +58,13 @@ class MyBagFragment : Fragment(), OnClickMyBag {
         super.onViewCreated(view, savedInstanceState)
         if (userAuthViewModel.isguestMode()) {
             binding.guestb.visibility=View.VISIBLE
-            showGuestDialog()
+           binding.tvMessage.text=getString(R.string.please_login_to_use_this_feature)
+            binding.btnOkayd.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+                intent.putExtra("guest","guest")
+                startActivity(intent)
+                requireActivity().finish()
+            }
         } else {
             conversionRate = viewModel.getConversionRates(viewModel.getCurrencyCode())
             adapter =
@@ -108,36 +116,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
             )
         }
     }
-    private fun showGuestDialog(){
-        val dialog = Dialog(requireContext())
 
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
-
-        dialog.setContentView(R.layout.guest_dialog)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-
-        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
-        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
-        val messag=dialog.findViewById<TextView>(R.id.messaged)
-        btnNo.setOnClickListener {
-            requireActivity().findNavController(R.id.fragmentContainerView2)
-                .navigate(R.id.homeFragment)
-            dialog.dismiss()
-        }
-        messag.text="You are guest, please login first"
-        btnYes.setOnClickListener {
-            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-            intent.putExtra("guest","guest")
-            startActivity(intent)
-            requireActivity().finish()
-        }
-
-
-
-        dialog.show()
-    }
     override fun deleteMyBagItem(cartProduct: CartProduct) {
         viewModel.deleteMyBagItem(cartProduct.draftOrderId)
         cartProductList?.remove(cartProduct)

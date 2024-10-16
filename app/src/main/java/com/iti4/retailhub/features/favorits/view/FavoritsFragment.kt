@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.navigation.NavigationView
 import com.iti4.retailhub.GetCustomerFavoritesQuery
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.FragmentFavoritsBinding
@@ -74,8 +75,12 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         conversionRate = favoritesViewModel.getConversionRates(currencyCode)
         if (userAuthViewModel.isguestMode()){
             binding.guestf.visibility=View.VISIBLE
-            showGuestDialog()
-
+            binding.tvMessage.text=getString(R.string.please_login_to_use_this_feature)
+            binding.btnOkayd.setOnClickListener {
+                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+                intent.putExtra("guest","guest")
+                startActivity(intent)
+                requireActivity().finish()
             }
         } else {
             favoritesAdapter = FavoritsDiffUtilAdapter(
@@ -159,6 +164,7 @@ class FavoritsFragment : Fragment(), OnFavoritItemClocked {
         btnNo.setOnClickListener {
             requireActivity().findNavController(R.id.fragmentContainerView2)
                 .navigate(R.id.homeFragment)
+            view?.findViewById<NavigationView>(R.id.navigationView)?.menu?.getItem(R.id.homeFragment)?.isChecked = true
             dialog.dismiss()
         }
         messag.text="You are guest, please login first"

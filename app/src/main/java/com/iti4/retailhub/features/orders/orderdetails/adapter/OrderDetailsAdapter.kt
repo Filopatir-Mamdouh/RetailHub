@@ -9,10 +9,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.iti4.retailhub.R
 import com.iti4.retailhub.databinding.RvOrderDetailsItemBinding
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.OrderDetailsItem
 
 
-class OrderDetailsAdapter : ListAdapter<OrderDetailsItem, OrderDetailsAdapter.OrderDetailsViewHolder>(OrderDetailsItemUtils()) {
+class OrderDetailsAdapter(private val conversionRate:Double , private val currencyCode: CountryCodes)  : ListAdapter<OrderDetailsItem, OrderDetailsAdapter.OrderDetailsViewHolder>(OrderDetailsItemUtils()) {
     class OrderDetailsViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         val binding = RvOrderDetailsItemBinding.bind(itemView)
     }
@@ -38,9 +40,9 @@ class OrderDetailsAdapter : ListAdapter<OrderDetailsItem, OrderDetailsAdapter.Or
             orderSize.text = item.size
             orderQuantity.text = item.quantity
             orderPrice.text = buildString {
-                append(item.price)
+                append((item.price.toDouble()*conversionRate).toTwoDecimalPlaces())
                 append(" ")
-                append(item.currency)
+                append(currencyCode.name)
             }
             root.setOnClickListener { Navigation.findNavController(it).navigate(R.id.productDetailsFragment, bundleOf("productid" to item.id)) }
         }

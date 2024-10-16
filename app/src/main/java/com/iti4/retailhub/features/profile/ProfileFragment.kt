@@ -61,8 +61,6 @@ lateinit var intent:Intent
          intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
         binding.profileAppbar.collapsedPageName.visibility = View.GONE
         if (authuntication.isguestMode()) {
-            binding.profileName.text ="Guest user"
-            binding.profileMail.text = "Sign in to unlock more features"
             binding.profileLogoutBtn.text="Login"
             binding.profileOrderBtn.setOnClickListener {
                 showGuestDialog()

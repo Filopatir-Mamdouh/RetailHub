@@ -52,8 +52,7 @@
         android:textColor="@color/black_variant"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/profileImg"
-        app:layout_constraintTop_toTopOf="@+id/profileImg"
-        tools:text="John Doe" />
+        app:layout_constraintTop_toTopOf="@+id/profileImg" />
 
     <TextView
         android:id="@+id/profileMail"
@@ -63,9 +62,9 @@
         android:fontFamily="@font/metropolis_medium"
         android:textColor="@color/grey"
         android:textSize="14sp"
+        android:text="@string/sign_in_to_unlock_more_features"
         app:layout_constraintStart_toStartOf="@+id/profileName"
-        app:layout_constraintTop_toBottomOf="@+id/profileName"
-        tools:text="john.doe@gmail.com" />
+        app:layout_constraintTop_toBottomOf="@+id/profileName" />
 
     <Button
         android:id="@+id/profileOrderBtn"

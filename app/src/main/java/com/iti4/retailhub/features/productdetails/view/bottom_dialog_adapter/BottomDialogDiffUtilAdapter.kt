@@ -2,6 +2,7 @@ package com.iti4.retailhub.features.productdetails.view.bottom_dialog_adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -33,7 +34,7 @@ class BottomDialogDiffUtilAdapter(
             if (type=="size") {
                 holder.binding.textView31.text = item
                 if(selectedItem==item) {
-                    holder.binding.textView31.setTextColor(R.color.white)
+                    holder.binding.textView31.setTextColor(holder.itemView.context.getColor(R.color.white))
                     holder.binding.cardView3.setCardBackgroundColor(
                         holder.binding.root.context.getColor(
                            R.color.red_color

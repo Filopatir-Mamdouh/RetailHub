@@ -17,6 +17,8 @@ import com.iti4.retailhub.databinding.FragmentOrderDetailsBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.orders.orderdetails.adapter.OrderDetailsAdapter
 import com.iti4.retailhub.logic.ToolbarSetup
+import com.iti4.retailhub.logic.toTwoDecimalPlaces
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.OrderDetails
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,7 +27,8 @@ import kotlinx.coroutines.launch
 class OrderDetailsFragment : Fragment() {
     private lateinit var binding: FragmentOrderDetailsBinding
     private val viewModel: OrderDetailsViewModel by viewModels()
-
+    private lateinit var currencyCode: CountryCodes
+    private var conversionRate: Double = 0.0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -39,6 +42,8 @@ class OrderDetailsFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        currencyCode = viewModel.getCurrencyCode()
+        conversionRate = viewModel.getConversionRates(currencyCode)
         val orderID = arguments?.getString("orderID")
         Log.d("Filo", "onViewCreated: $orderID")
         if (orderID != null){
@@ -63,7 +68,7 @@ class OrderDetailsFragment : Fragment() {
 
     private fun setupData(orderDetails: OrderDetails){
         ToolbarSetup.setupToolbar(binding.orderDetailsAppbar, "Order Details", resources, {activity?.onBackPressed()})
-        val adapter = OrderDetailsAdapter()
+        val adapter = OrderDetailsAdapter(conversionRate,currencyCode)
         binding.apply {
             orderDetailsAppbar.collapsedPageName.visibility = View.GONE
             orderDetailsRecyclerView.adapter = adapter
@@ -78,11 +83,11 @@ class OrderDetailsFragment : Fragment() {
             orderDetailsQuantity.text = orderDetails.quantity
             orderDetailsShippingAddress.text = orderDetails.shippingAddress
             orderDetailsPaymentStatus.text = orderDetails.financialStatus
-            orderDetailsDiscount.text = orderDetails.discount
+            orderDetailsDiscount.text = (orderDetails.discount.toDouble()*conversionRate).toTwoDecimalPlaces()+" "+currencyCode
             orderDetailsTotalAmount.text = buildString {
-                append(orderDetails.total)
+                append((orderDetails.total.toDouble()*conversionRate).toTwoDecimalPlaces())
                 append(" ")
-                append(orderDetails.currency)
+                append(currencyCode.name)
             }
         }
     }

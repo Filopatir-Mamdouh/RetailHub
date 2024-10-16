@@ -145,7 +145,7 @@ class SignUpFragment : Fragment() {
                             else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "No internet connection",
+                                    authResultState.error,
                                     Toast.LENGTH_LONG
                                 ).show()
                             }

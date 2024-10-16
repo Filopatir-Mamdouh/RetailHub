@@ -13,19 +13,18 @@ import com.iti4.retailhub.databinding.FragmentOrdersBinding
 import com.iti4.retailhub.datastorage.network.ApiState
 import com.iti4.retailhub.features.orders.adapter.OrdersAdapter
 import com.iti4.retailhub.logic.ToolbarSetup
+import com.iti4.retailhub.models.CountryCodes
 import com.iti4.retailhub.models.Order
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class OrdersFragment : Fragment() {
-
+    private lateinit var currencyCode: CountryCodes
+    private var conversionRate: Double = 0.0
     lateinit var binding: FragmentOrdersBinding
     private val viewModel: OrdersViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +36,11 @@ class OrdersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        currencyCode = viewModel.getCurrencyCode()
+        conversionRate = viewModel.getConversionRates(currencyCode)
+
         ToolbarSetup.setupToolbar(binding.ordersAppbar, "Orders", resources, {activity?.onBackPressed()})
-        val adapter = OrdersAdapter()
+        val adapter = OrdersAdapter(conversionRate,currencyCode)
         binding.ordersRV.adapter = adapter
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED){

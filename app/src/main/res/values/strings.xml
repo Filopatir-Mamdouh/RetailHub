@@ -133,4 +133,5 @@
     <string name="oldest">Oldest</string>
     <string name="sort_the_result">Sort the Result</string>
     <string name="loginfirst">Guest User</string>
+    <string name="please_login_to_use_this_feature">Please login to use this feature</string>
 </resources>

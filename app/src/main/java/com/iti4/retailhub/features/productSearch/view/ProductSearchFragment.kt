@@ -146,7 +146,7 @@ class ProductSearchFragment : Fragment(), OnClickGoToDetails {
                         //search by brand + product title
 //                   viewModel.search("title:${"vans"}* *${newText}*")
                         //search by products name
-                        viewModel.searchProducts("title:*${newText}*")
+                        viewModel.searchProducts("${newText}")
                     }
 
                 }
