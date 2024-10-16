@@ -59,6 +59,7 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         conversionRate = mainActivityViewModel.getConversionRates(currencyCode)
         requiredView = view
         cartProducts =
@@ -366,12 +367,13 @@ class CheckoutFragment : Fragment(), OnClickBottomSheet {
         (activity as MainActivity).findViewById<BottomNavigationView>(R.id.navigationView).visibility =
             View.GONE
 
-        ToolbarSetup.setupToolbar(
+        ToolbarSetup.setupToolbarMini(
             binding.checkoutAppbar,
             "Checkout",
             resources,
             { requireActivity().onBackPressed() }
         )
+
     }
 
     private fun checkDiscount(discountCode: String): Boolean {

@@ -1,4 +1,4 @@
-package com.iti4.retailhub.features.mybag
+package com.iti4.retailhub.features.mybag.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class MyBagViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
     private val dispatcher = Dispatchers.IO
     private val _myBagProducts = MutableStateFlow<ApiState>(ApiState.Loading)
-    val products = _myBagProducts.onStart { }
+    val myBagProductsState = _myBagProducts.onStart { }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ApiState.Loading)
 
     private val _myBagProductsRemove = MutableStateFlow<ApiState>(ApiState.Loading)
@@ -32,7 +32,7 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     private val _myBagProductsUpdate = MutableStateFlow<ApiState>(ApiState.Loading)
     val myBagProductsUpdate = _myBagProductsUpdate.asStateFlow()
 
-        val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
+    val customerId by lazy {extractNumbersFromString(repository.getUserShopLocalId()!!)}
 
     fun getMyBagProducts() {
         viewModelScope.launch(dispatcher) {
@@ -55,8 +55,8 @@ class MyBagViewModel @Inject constructor(private val repository: IRepository) : 
     fun updateMyBagItem(cartProduct: CartProduct) {
         GlobalScope.launch(dispatcher) {
             repository.updateMyBagItem(cartProduct)
-                .catch { e -> _myBagProductsRemove.emit(ApiState.Error(e)) }.collect {
-                    _myBagProductsRemove.emit(ApiState.Success(it))
+                .catch { e -> _myBagProductsUpdate.emit(ApiState.Error(e)) }.collect {
+                    _myBagProductsUpdate.emit(ApiState.Success(it))
                 }
         }
     }
