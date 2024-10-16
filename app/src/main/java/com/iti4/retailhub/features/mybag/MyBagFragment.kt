@@ -1,11 +1,17 @@
 package com.iti4.retailhub.features.mybag
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -40,7 +46,7 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     private var cartProductList: MutableList<CartProduct>? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMyBagBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,13 +54,8 @@ class MyBagFragment : Fragment(), OnClickMyBag {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (userAuthViewModel.isguestMode()) {
-            binding.guestb.visibility = View.VISIBLE
-            binding.btnOkayb.setOnClickListener {
-                val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
-                intent.putExtra("guest","guest")
-                startActivity(intent)
-                requireActivity().finish()
-            }
+            binding.guestb.visibility=View.VISIBLE
+            showGuestDialog()
         } else {
             conversionRate = viewModel.getConversionRates(viewModel.getCurrencyCode())
             adapter =
@@ -106,6 +107,36 @@ class MyBagFragment : Fragment(), OnClickMyBag {
                 )
             )
         }
+    }
+    private fun showGuestDialog(){
+        val dialog = Dialog(requireContext())
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+
+        dialog.setContentView(R.layout.guest_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
+        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
+        val messag=dialog.findViewById<TextView>(R.id.messaged)
+        btnNo.setOnClickListener {
+            requireActivity().findNavController(R.id.fragmentContainerView2)
+                .navigate(R.id.homeFragment)
+            dialog.dismiss()
+        }
+        messag.text="You are guest, please login first"
+        btnYes.setOnClickListener {
+            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+            intent.putExtra("guest","guest")
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
+
+
+        dialog.show()
     }
     override fun deleteMyBagItem(cartProduct: CartProduct) {
         viewModel.deleteMyBagItem(cartProduct.draftOrderId)

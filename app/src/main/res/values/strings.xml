@@ -132,5 +132,5 @@
     <string name="newest">Newest</string>
     <string name="oldest">Oldest</string>
     <string name="sort_the_result">Sort the Result</string>
-    <string name="loginfirst">Login First</string>
+    <string name="loginfirst">Guest User</string>
 </resources>

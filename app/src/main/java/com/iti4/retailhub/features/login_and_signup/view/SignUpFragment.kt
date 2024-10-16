@@ -117,7 +117,26 @@ class SignUpFragment : Fragment() {
                             }else if (authResultState.error=="Failed to send verification email") {
                                 customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
-                            }else {
+                            }else if (authResultState.error=="Password is too weak") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Password is too weak",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }else if (authResultState.error=="Invalid email format") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Invalid email format",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }else if (authResultState.error=="Email is already in use") {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Email is already in use",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            else {
                                 Toast.makeText(
                                     requireContext(),
                                     "No internet connection",

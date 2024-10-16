@@ -67,12 +67,14 @@ lateinit var favoritesAdapter:FavoritsDiffUtilAdapter
 
 
         if (userAuthViewModel.isguestMode()){
-           binding.guestf.visibility=View.VISIBLE
+            binding.guestf.visibility=View.VISIBLE
+            showGuestDialog()
+          /* binding.guestf.visibility=View.VISIBLE
             binding.btnOkayf.setOnClickListener {
                 val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
                 intent.putExtra("guest","guest")
                 startActivity(intent)
-            }
+            }*/
         }else{
             favoritesAdapter = FavoritsDiffUtilAdapter(requireContext(),this)
             binding.favoritsRecycleView.layoutManager =
@@ -133,7 +135,36 @@ private fun savedFavoritesCollect(){
         bundle.putString("productid", variantId)
         findNavController().navigate(R.id.productDetailsFragment, bundle)
     }
+    private fun showGuestDialog(){
+        val dialog = Dialog(requireContext())
 
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+
+        dialog.setContentView(R.layout.guest_dialog)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+
+        val btnYes: Button = dialog.findViewById(R.id.btn_okayd)
+        val btnNo: Button = dialog.findViewById(R.id.btn_canceld)
+        val messag=dialog.findViewById<TextView>(R.id.messaged)
+        btnNo.setOnClickListener {
+            requireActivity().findNavController(R.id.fragmentContainerView2)
+                .navigate(R.id.homeFragment)
+            dialog.dismiss()
+        }
+        messag.text="You are guest, please login first"
+        btnYes.setOnClickListener {
+            val intent = Intent(requireContext(), LoginAuthinticationActivity::class.java)
+            intent.putExtra("guest","guest")
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
+
+
+        dialog.show()
+    }
     override fun showDeleteAlert(id: String) {
         val dialog = Dialog(requireContext())
 

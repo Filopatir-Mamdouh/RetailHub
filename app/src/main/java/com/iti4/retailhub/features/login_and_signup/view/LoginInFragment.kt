@@ -89,6 +89,7 @@ class LoginInFragment : Fragment() {
                     }
                     is AuthState.Messages -> {
                         if (authResultState.error!="Idle") {
+
                             customLoadingDialog.dismiss()
                             if (authResultState.error=="Email is not verified") {
                                 customMesssageDialog.setText(authResultState.error,"Verify your email and login again")
@@ -96,7 +97,10 @@ class LoginInFragment : Fragment() {
                             }else if (authResultState.error=="Failed to send verification email") {
                                 customMesssageDialog.setText(authResultState.error,"Please try again")
                                 customMesssageDialog.show()
-                            }else {
+                            }else if (authResultState.error=="Failed to send verification email") {
+
+                            }
+                            else {
                                 Toast.makeText(
                                     requireContext(),
                                     "No internet connection",
