@@ -233,11 +233,10 @@ class AddressFragment : Fragment(), OnClickAddress {
 
     //callback when click on the cardView
     override fun checkoutClickedAnAddress(address: CustomerAddressV2) {
-        if (reason == "changeShipping") {
-            mainActivityViewModel.customerChoseAnAddressNotDefault = true
-            mainActivityViewModel.customerChosenAddress = address
-            requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
-        }
+        mainActivityViewModel.customerChoseAnAddressNotDefault = true
+        mainActivityViewModel.customerChosenAddress = address
+        requireActivity().findNavController(R.id.fragmentContainerView2).navigateUp()
+
     }
 
 

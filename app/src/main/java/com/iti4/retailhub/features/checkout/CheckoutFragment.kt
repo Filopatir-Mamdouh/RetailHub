@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.checkout
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View

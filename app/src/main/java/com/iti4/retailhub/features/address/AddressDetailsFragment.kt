@@ -1,6 +1,7 @@
 package com.iti4.retailhub.features.address
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -161,8 +162,9 @@ class AddressDetailsFragment : Fragment() {
     private fun fillDataFromMap() {
         binding.apply {
             val address = mapAddress.address
+            Log.i("ahmedelsayed", "fillDataFromMap: "+address.house_number)
             val address1 =
-                (if (address.house_number != "null") address.house_number else "") + " " + (if (address.road != "null") address.road else "")
+                (if (address.house_number.isNullOrEmpty()) "" else address.house_number) + " " + (if (address.road != "null") address.road else "")
             etAddress.setText(address1)
             etCity.setText(address.city)
             etCountry.setText(address.country)
